@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    * body {
+    font-family: 'Poppins', sans-serif;
+  text-align: center;
+  background-color: #859766;
+}
+
+.dashboard {
+  margin: 40px auto;
+  text-align: center;
+}
+
+.dashboard h2 {
+  font-size: 24px;
+  margin-top: 0;
+  color: #fff7e5;
+}
+
+.cardbox-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.cardbox {
+  display: block;
+  width: 300px; /* Adjusted width */
+  height: 200px; /* Adjusted height */
+  margin: 40px; /* Adjusted margin */
+  background-color: #fff7e5;
+  color: black;
+  font-size: 18px;
+  text-decoration: none;
+  border-radius: 16px; /* Adjusted border-radius */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.cardbox:hover {
+    background-color: #494b42;
+    color:#fff7e5
+}
+
+.cardbox:nth-child(-n+2) {
+  margin-bottom: 20px; /* Added margin-bottom */
+}
+
+.cardbox:nth-child(3) {
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px; /* Adjusted width */
+}
+
+.icon {
+  height: 60%;
+  width: auto;
+}    
+.logout-btn {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  text-decoration: none;
+  color: #333;
+  float: left;
+  margin-left: 20px;
+  font-size: 30px;
+  font-weight: 600;
+  text-align: center; 
+  align-items: center; 
+  justify-content: center; 
+  position: relative;
+}
+
+.logout-btn:hover {
+    color: #494b42;
+}
+
+.logout-btn i {
+  margin-right: 20px;
+}

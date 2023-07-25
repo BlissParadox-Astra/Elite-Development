@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #fff7e5;
+    }
+    
+    .sidebar {
+      background-color: #859766;
+      width: 300px; /* Adjusted width */
+      max-height: 100%; /* Adjusted height */
+      overflow-y: auto; /* Added scroll bar */
+      position: fixed;
+      top: 0;
+      bottom: 0;
+    }
+    
+    .nav-link {
+      color: #fff;
+      font-size: 18px;
+    }
+    
+    .nav-link:hover,
+    .nav-link:focus {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .sidebar .nav-item.active .nav-link {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar .nav-link.collapsed::after {
+      display: none; /* Removed arrow */
+    }
+    
+    .sidebar .nav-link i {
+      margin-right: 5px;
+    }
+
+    .logo {
+      max-width: 100%;
+      height: auto;
+      margin: 20px auto; /* Adjusted margin */
+      display: block;
+      width: 250px; /* Adjusted width */
+      position: fixed; /* Added position: fixed */
+      top: 20px;
+      left: 25px;
+    }
+
+    .content {
+      margin-top: 40px; /* Adjusted margin-top to accommodate the logo */
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      background-color: #859766; /* Changed scrollbar background color */
+      padding-left: 10px; /* Added padding to the left side of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #494b42;
+      border-radius: 4px;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+      margin: top 0; ;
+      display: flex;
+      padding: 20%;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    .search-container input[type="text"] {
+      border-radius: 20px;
+      padding-left: 5%;
+      border: 1px solid black; /* Set the default border color */
+      transition: border-color 0.3s;
+    }
+
+    .search-container input[type="text"]:focus {
+      border-color: black;
+      color: #494b42;
+    }
+
+    .btn-primary {
+      background-color: #859766;
+      border-color: #fff7e5;
+      border-radius: 20px;
+    }
+
+    .btn-primary:hover {
+      background-color: #494b42;
+    }
+
+
+    .card-box {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px; /* Reduced the padding value to make it smaller */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+    }
+
+    .card-box:hover {
+      background-color: #494b42;
+      color: #fff;
+    }
+
+    .section2 {
+      padding-left: 50px;
+    }
+    
+  </style>
+  
+</head>
+<body>
+  <section>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 d-none d-md-block sidebar">
+        <img src="Florish.png" alt="storelogo" class="logo">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="sidebar-sticky">
+          <div class="nav flex-column">
+            <div class="nav flex-column">
+              <a class="nav-link" href="#">Dashboard</a>
+            </div>
+            <a class="nav-link" data-toggle="collapse" href="#productsMenu" aria-expanded="false">
+              Product
+            </a>
+            <div class="collapse" id="productsMenu">
+              <ul class="nav flex-column ml-3">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Inventory</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Stock Entry</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Stock In History</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Stock Adjustment</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav flex-column">
+            <a class="nav-link" href="#">Category</a>
+          </div>
+          <div class="nav flex-column">
+            <a class="nav-link" href="#">Brand</a>
+          </div>
+          <div class="nav flex-column">
+            <a class="nav-link" data-toggle="collapse" href="#salesMenu" aria-expanded="false">
+              Sales & Records
+            </a>
+            <div class="collapse" id="salesMenu">
+              <ul class="nav flex-column ml-3">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Sales</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Critical Stock</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Cancelled Order</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="nav flex-column">
+            <a class="nav-link" href="#">Transaction</a>
+          </div>
+          <div class="nav flex-column">
+            <a class="nav-link" href="#">User</a>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <section class="section2">
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 content">
+        <div class="search-container">
+          <input type="text" placeholder="Search..." class="form-control">
+          <button type="button" class="btn btn-primary">Search</button>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="card-box">
+              <h4>DAILY SALES</h4>
+              <p>6,367.30 PHP</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-box">
+              <h4>PRODUCT LINE</h4>
+              <p>15 PRODUCT LINES</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-box">
+              <h4>STOCK ON HAND</h4>
+              <p>500 STOCKS</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-box">
+              <h4>CRITICAL ITEMS</h4>
+              <p>03 ITEMS</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
