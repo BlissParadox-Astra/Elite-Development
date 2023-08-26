@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Florish Inventory</title>
     <link rel="icon" href="img/Icon_logo.png">
-    <link rel="stylesheet" type="text/css" href="settings.css">
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="./css/login.css">
 
 </head>
 <body>
     <div class="logo">
-        <img src="Florish.png" alt="store logo">
+        <img src="./images/Florish.png" alt="store logo">
     </div>
     <div  class="container">
         <div class="forms">
@@ -62,12 +61,12 @@
   
       // Check if the user is an admin
       if (isAdmin && username === "Admin" && password === "password") {
-        alert("Password Remembered for the next login.");
-        window.location.href = "Admin Dashboard.html"; // Redirect to admin page
+        alert("Please click OK to proceed.");
+        window.location.href = "./admin/Admin Dashboard.html"; // Redirect to admin page
         return false;
       } else if (!isAdmin && username === "Cashier" && password === "password") {
-        alert("Password Remembered for the next login.");
-        window.location.href = "CashierDashboard.html"; // Redirect to cashier page
+        alert("Please click OK to proceed.");
+        window.location.href = "./cashier/CashierDashboard.html"; // Redirect to cashier page
         return false;
       } else {
         attempt--; // Decrementing by one.
