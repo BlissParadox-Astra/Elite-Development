@@ -24,18 +24,17 @@ export default {
 };
 </script>
 
-
 <style>
-
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50; 
+  color: #2c3e50;
 }
+
 .section2 {
-    padding-left: 40px;
-    padding-top: 10px;
+  padding-left: 40px;
+  padding-top: 10px;
 }
 
 table {

@@ -65,6 +65,7 @@ import Chart from "chart.js/auto";
 
 export default {
     name: "DashboardSection",
+
     data() {
         return {
             dataByYear: [
@@ -74,9 +75,11 @@ export default {
             ],
         };
     },
+
     mounted() {
         this.createPieChart();
     },
+
     methods: {
         createPieChart() {
             const ctx = this.$refs.myPieChart.getContext("2d");
@@ -110,25 +113,21 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, color 0.3s;
 }
-
 .card-box:hover {
     background-color: #134e39;
     color: #fff;
 }
-
 .chart-legend {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 20px;
 }
-
 .chart-legend span {
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
-
 .chart-legend span:before {
     content: '';
     display: inline-block;
@@ -137,6 +136,5 @@ export default {
     margin-right: 5px;
     border-radius: 50%;
 }
-
 </style>
   

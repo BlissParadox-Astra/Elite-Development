@@ -1,18 +1,18 @@
 <template>
-    <div>
-      <v-app>
-        <StockInHistorySection /> 
-      </v-app>
-    </div>
-  </template>
+  <div>
+    <v-app>
+      <StockInHistorySection />
+    </v-app>
+  </div>
+</template>
   
-  <script>
+<script>
 import StockInHistorySection from '@/components/sections/Admin/StockInHistorySection.vue';
-  
-  export default {
-    name: 'StockHistoryView',
-    components: {
-      StockInHistorySection
-},
-  };
-  </script>
+
+export default {
+  name: 'StockHistoryView',
+  components: {
+    StockInHistorySection
+  },
+};
+</script>

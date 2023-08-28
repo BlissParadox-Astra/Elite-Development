@@ -53,24 +53,27 @@ export default {
     CustomTable,
     FilterByDate,
   },
+
   data() {
     return {
       showForm: false,
       sortByOptions: ["Category", "Total", "Alphabetically"],
       tableColumns: [
-        { key: "referenceNo", label: "Transaction No." },
+        { key: "invoiceNo", label: "Invoice No." },
         { key: "productCode", label: "Product Code" },
         { key: "barcode", label: "Bar Code" },
         { key: "description", label: "Description" },
-        { key: "category", label: "Category" },
         { key: "price", label: "Price" },
         { key: "quantity", label: "Quantity" },
         { key: "total", label: "Total" },
+        { key: "transacBy", label: "Transaction By" },
       ],
+
       products: [
-        { referenceNo: "REF001", productCode: "P001", barcode: "123456789", description: "Product 1", category: "BREVERAGES", price: 30, quantity: "5", total: "800", },
-        { referenceNo: "REF002", productCode: "P002", barcode: "987654321", description: "Product 2", category: "can goods", price: 400, quantity: "6", total: "1000", },
+        { invoiceNo: "Invoice001", productCode: "P001", barcode: "123456789", description: "Product 1", price: 30, quantity: "5", total: "800", transacBy: "cashier", },
+        { invoiceNo: "Invoice002", productCode: "P002", barcode: "987654321", description: "Product 2", price: 400, quantity: "6", total: "1000",  transacBy: "cashier", },
       ],
+
       items: [
         { title: 'Category' },
         { title: 'Total' },
@@ -78,6 +81,7 @@ export default {
       ],
     };
   },
+  
   methods: {
     calculateTotal(total) {
       return total;
@@ -95,7 +99,6 @@ export default {
   border-radius: 4px;
   margin-top: 20px;
 }
-
 .total-value {
   font-weight: bold;
   color: #333;

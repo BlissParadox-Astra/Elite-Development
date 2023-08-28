@@ -41,6 +41,7 @@ export default {
     SearchField,
     ProductClassification,
   },
+
   data() {
     return {
       showForm: false,
@@ -53,9 +54,10 @@ export default {
         { brand: "COCA COLA" },
         { brand: "Colgate" },
       ],
-      brandInputLabel: "New Category",
+      brandInputLabel: "Brand Name",
     };
   },
+
   methods: {
     handleBrandAdded(newBrand) {
       if (this.editingProductIndex !== -1) {
@@ -67,6 +69,7 @@ export default {
       }
       this.showForm = false;
     },
+
     handleBrandEdited(newBrand, index) {
       if (index !== -1) {
         this.products[index].brand = newBrand;
@@ -75,17 +78,20 @@ export default {
       this.editingProduct = null;
       this.editingProductIndex = -1;
     },
+
     cancelBrandAdd() {
       this.showForm = false;
       this.editingProduct = null;  // Reset editingProduct
       this.editingProductIndex = -1; // Reset editingProductIndex
     },
+
     editProductRow(product) {
       this.editingProduct = { ...product };
       const index = this.products.findIndex(p => p.brand === product.brand);
       this.editingProductIndex = index;
       this.showForm = true;
     },
+
     deleteProductRow(product) {
       const index = this.products.findIndex(p => p.brand === product.brand);
       if (index !== -1) {
@@ -95,5 +101,4 @@ export default {
   },
 };
 </script>
-
   

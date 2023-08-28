@@ -7,7 +7,8 @@
                 </v-col>
             </v-row>
             <SearchField />
-            <CustomTable :columns="tableColumns" :items="products" :showFetchIcon="true" @fetch-data="fetchProduct" height="480px"/>
+            <CustomTable :columns="tableColumns" :items="products" :showFetchIcon="true" @fetch-data="fetchProduct"
+                height="480px" />
         </v-container>
         <v-container>
             <v-row>
@@ -20,7 +21,8 @@
             </v-row>
             <v-row>
                 <v-col cols="6">
-                    <v-text-field v-model="selectedRow.productCode" label="Product Code" placeholder="PRODUCT CODE" readonly />
+                    <v-text-field v-model="selectedRow.productCode" label="Product Code" placeholder="PRODUCT CODE"
+                        readonly />
                 </v-col>
                 <v-col cols="6">
                     <v-text-field v-model="selectedRow.barCode" label="Bar Code" placeholder="BAR CODE" readonly />
@@ -28,7 +30,8 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field v-model="selectedRow.description" label="Description" placeholder="DESCRIPTION" readonly/>
+                    <v-text-field v-model="selectedRow.description" label="Description" placeholder="DESCRIPTION"
+                        readonly />
                 </v-col>
                 <v-col>
                     <v-text-field label="Remarks" placeholder="Enter REMARKS" />
@@ -69,6 +72,7 @@ export default {
                 barCode: "",
                 description: "",
             },
+
             tableColumns: [
                 { key: "productCode", label: "Product Code" },
                 { key: 'barCode', label: 'Barcode' },
@@ -78,15 +82,18 @@ export default {
                 { key: 'category', label: 'Category' },
                 { key: 'stockOnHand', label: 'Stock On Hand' },
             ],
+
             products: [
                 { productCode: "P001", barCode: "123456789", description: "Product 1", price: "20", brand: "CocaCola", category: "Category", stockOnHand: "100", },
                 { productCode: "P002", barCode: "987654321", description: "Product 2", price: "16", brand: "CocaCola", category: "Category", stockOnHand: "200", },
             ],
+
             commandOptions: [
-                'Romove From Inventory',
+                'Remove From Inventory',
                 'Add to Inventory',
             ],
-            Options: 'Select an Option',
+            
+            Options: 'Select an Actions',
         };
     },
     methods: {

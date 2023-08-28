@@ -12,7 +12,7 @@
         <v-row justify="center">
             <v-col cols="12">
                 <CustomTable :columns="tableColumns" :items="products" :showAddToCartIcon="true"
-                    @add-to-cart-product="addToCartProduct" height="420px"/>
+                    @add-to-cart-product="addToCartProduct" height="390px" />
             </v-col>
         </v-row>
     </v-container>
@@ -21,11 +21,13 @@
 <script>
 import SearchField from '@/components/common/SearchField.vue';
 import CustomTable from './CustomTable.vue';
+
 export default {
     components: {
         SearchField,
         CustomTable,
     },
+
     data() {
         return {
             tableColumns: [
@@ -41,11 +43,13 @@ export default {
             showProductForm: false,
         };
     },
+
     methods: {
         closeForm() {
             this.showProductForm = false;
             this.$emit('close');
         },
+        
         addToCartProduct(product) {
             this.$emit('add-to-cart-product', product);
         },
@@ -53,7 +57,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .showBrowseProductForm {
     position: fixed;
     top: 50%;

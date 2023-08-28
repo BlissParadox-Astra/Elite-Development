@@ -6,19 +6,19 @@
             </div>
             <!-- Reference Number Field and Stock In By Field -->
             <v-row class="mt-3">
-                <v-col cols="col-sm-5">
+                <v-col cols="12" sm="2" md="4" lg="3" xl="5">
                     <v-text-field label="Reference Number" placeholder="Enter Reference Number" readonly />
                 </v-col>
-                <v-col sm="2" class="d-flex justify-center align-center">
+                <v-col cols="12" sm="2" class="d-flex justify-center align-center">
                     <v-btn color="success" block>Generate</v-btn>
                 </v-col>
-                <v-col cols="col-sm-5">
+                <v-col cols="12" sm="5" md="5" lg="3" xl="5">
                     <v-text-field label="Stock In Date" type="date" />
                 </v-col>
-                <v-col cols="2" class="d-flex justify-center align-center">
+                <v-col cols="12" sm="2" class="d-flex justify-center align-center">
                     <v-btn color="success" block @click="showBrowseProductForm">Browse Product</v-btn>
                 </v-col>
-                <v-col sm="2">
+                <v-col cols="12" sm="2" md="2" lg="2" xl="2">
                     <v-text-field label="Stock In By" placeholder="Enter Stock In By" readonly />
                 </v-col>
             </v-row>
@@ -163,7 +163,7 @@ export default {
 
 };
 </script>
-<style>
+<style scoped>
 .center-dialog {
     position: fixed;
     left: 30%;

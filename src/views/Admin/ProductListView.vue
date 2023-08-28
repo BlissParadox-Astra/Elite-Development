@@ -1,18 +1,18 @@
 <template>
   <div>
     <v-app>
-      <SaleHistorySection />
+      <InventorySection />
     </v-app>
   </div>
 </template>
   
 <script>
-import SaleHistorySection from '@/components/sections/Admin/SaleHistorySection.vue';
+import InventorySection from '@/components/sections/Admin/ProductListSection.vue';
 
 export default {
   name: 'InventoryView',
   components: {
-    SaleHistorySection
+    InventorySection,
   },
 };
 </script>

@@ -12,7 +12,7 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable :columns="tableColumns" :items="products" height="500px"/>
+                <CustomTable :columns="tableColumns" :items="products" height="500px" />
             </v-col>
         </v-row>
     </v-container>
@@ -20,7 +20,6 @@
   
 <script>
 import SearchField from '../../common/SearchField.vue';
-
 import CustomTable from '../../common/CustomTable.vue';
 
 export default {
@@ -29,6 +28,7 @@ export default {
         SearchField,
         CustomTable,
     },
+
     data() {
         return {
             showForm: false,
@@ -36,6 +36,7 @@ export default {
             editingProduct: null,
             editingProductIndex: -1,
             tableColumns: [
+                { key: 'referenceNo', label: 'Reference No.' },
                 { key: 'productCode', label: 'Product Code' },
                 { key: 'barCode', label: 'Barcode' },
                 { key: 'description', label: 'Description' },

@@ -1,6 +1,6 @@
 <template>
-  <div >
-    <v-app >
+  <div>
+    <v-app>
       <LoginSection />
     </v-app>
   </div>
@@ -8,7 +8,6 @@
   
 <script>
 import LoginSection from './components/views/Login/LoginForm.vue';
-
 
 export default {
   name: 'LoginView',

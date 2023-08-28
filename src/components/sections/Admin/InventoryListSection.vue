@@ -2,7 +2,7 @@
     <v-container class="mt-5 section2">
         <v-row justify="center">
             <v-col cols="12">
-                <h2 class="text-center">CRITICAL STOCK</h2>
+                <h2 class="text-center">INVENTORY LIST</h2>
             </v-col>
         </v-row>
         <v-row>
@@ -12,7 +12,7 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable :columns="tableColumns" :items="products" height="500px" />
+                <CustomTable :columns="tableColumns" :items="products" height="500px"/>
             </v-col>
         </v-row>
     </v-container>
@@ -23,7 +23,8 @@ import SearchField from '../../common/SearchField.vue';
 import CustomTable from '../../common/CustomTable.vue';
 
 export default {
-    name: 'CriticalStockSection',
+    mixins: [CustomTable],
+    name: 'InventoryListSection',
 
     components: {
         SearchField,
@@ -33,9 +34,9 @@ export default {
     data() {
         return {
             showForm: false,
-            products: [],
             editingProduct: null,
             editingProductIndex: -1,
+
             tableColumns: [
                 { key: 'productCode', label: 'Product Code' },
                 { key: 'barCode', label: 'Barcode' },
@@ -45,6 +46,10 @@ export default {
                 { key: 'price', label: 'Price' },
                 { key: 'reorderLevel', label: 'Reorder Level' },
                 { key: 'stockOnHand', label: 'Stock On Hand' },
+            ],
+
+            products: [
+                {productCode: 'P001', barCode: 1234567, description: 'description 1', brand: 'brand 1', category: 'category 1', price: 34, reorderLevel: 10, stockOnHand: 150}
             ],
         };
     },

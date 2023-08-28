@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <v-app>
@@ -11,7 +10,6 @@
 
 <script>
 import DashboardSection from '@/components/sections/Admin/DashboardSection.vue';
-
 
 export default {
   name: 'DashboardView',

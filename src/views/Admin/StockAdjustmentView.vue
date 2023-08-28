@@ -1,18 +1,18 @@
 <template>
-    <div>
-      <v-app>
-        <StockAdjustmentSection/> 
-      </v-app>
-    </div>
-  </template>
+  <div>
+    <v-app>
+      <StockAdjustmentSection />
+    </v-app>
+  </div>
+</template>
   
-  <script>
+<script>
 import StockAdjustmentSection from '@/components/sections/Admin/StockAdjustmentSection.vue';
-  
-  export default {
-    name: 'StockAdjustmentView',
-    components: {
-        StockAdjustmentSection,
-},
-  };
-  </script>
+
+export default {
+  name: 'StockAdjustmentView',
+  components: {
+    StockAdjustmentSection,
+  },
+};
+</script>

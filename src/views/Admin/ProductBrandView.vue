@@ -1,20 +1,18 @@
 <template>
-    <div>
-      <v-app>
-        <ProductBrandSection />
-      </v-app>
-    </div>
-  </template>
+  <div>
+    <v-app>
+      <ProductBrandSection />
+    </v-app>
+  </div>
+</template>
   
-  <script>
- 
+<script>
 import ProductBrandSection from '@/components/sections/Admin/ProductBrandSection.vue';
-  
-  export default {
-    name: 'ProductBrandView',
-    components: {
 
+export default {
+  name: 'ProductBrandView',
+  components: {
     ProductBrandSection
-},
-  };
-  </script>
+  },
+};
+</script>

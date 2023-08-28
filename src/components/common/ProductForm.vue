@@ -66,19 +66,19 @@ export default {
             stockOnHand: this.initialProduct ? this.initialProduct.stockOnHand : 0,
             editingProduct: !!this.initialProduct,
 
-            productCodeError: '', // Initialize this property
-            barCodeError: '', // Initialize this property
-            descriptionError: '', // Initialize this property
-            brandError: '', // Initialize this property
-            categoryError: '', // Initialize this property
-            priceError: '', // Initialize this property
+            productCodeError: '',
+            barCodeError: '',
+            descriptionError: '',
+            brandError: '',
+            categoryError: '',
+            priceError: '',
             reorderLevelError: '',
         };
     },
     methods: {
         submitForm() {
             this.clearErrors();
-            // Check if there are any errors
+
             if (!this.productCode) this.productCodeError = 'Product Code is required.';
             if (!this.barCode) this.barCodeError = 'Barcode is required.';
             if (!this.description) this.descriptionError = 'Description is required.';
@@ -87,18 +87,17 @@ export default {
             if (!this.price) this.priceError = 'Price is required.';
             if (!this.reorderLevel) this.reorderLevelError = 'Reorder Level is required.';
 
-            // Check if there are any errors
-            // if (
-            //     this.productCodeError ||
-            //     this.barCodeError ||
-            //     this.descriptionError ||
-            //     this.brandError ||
-            //     this.categoryError ||
-            //     this.priceError ||
-            //     this.reorderLevelError
-            // ) {
-            //     return; // Prevent form submission
-            // }
+            if (
+                this.productCodeError ||
+                this.barCodeError ||
+                this.descriptionError ||
+                this.brandError ||
+                this.categoryError ||
+                this.priceError ||
+                this.reorderLevelError
+            ) {
+                return;
+            }
             const productData = {
                 productCode: this.productCode,
                 barCode: this.barCode,
@@ -109,6 +108,7 @@ export default {
                 reorderLevel: this.reorderLevel,
                 stockOnHand: this.stockOnHand,
             };
+
             if (this.editingProduct) {
                 this.$emit('update', productData);
             } else {
@@ -116,11 +116,13 @@ export default {
             }
             this.resetForm();
         },
+
         cancelForm() {
             this.resetForm();
             this.editingProduct = false;
             this.$emit('cancel');
         },
+
         resetForm() {
             this.productCode = '';
             this.barCode = '';
@@ -141,6 +143,7 @@ export default {
             this.reorderLevelError = '';
         }
     },
+    
     computed: {
         productCodeErrorRules() {
             return [v => !!v || 'Product code is required.',];

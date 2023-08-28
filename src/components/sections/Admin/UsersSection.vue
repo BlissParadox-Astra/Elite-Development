@@ -32,12 +32,14 @@
 <script>
 import CustomTable from '../../common/CustomTable.vue';
 import UserForm from '../../common/UserForm.vue';
+
 export default {
   name: 'UsersDetails',
   components: {
     CustomTable,
     UserForm,
   },
+
   data() {
     return {
       showForm: false,
@@ -56,45 +58,47 @@ export default {
 
     };
   },
+  
   methods: {
     showUserForm() {
       this.showForm = true;
     },
+
     hideUserForm() {
       this.showForm = false;
       this.editingUser = null;
       this.editingUserIndex = -1;
     },
+
     addUser(userData) {
-    console.log('Adding user:', userData);
-
-    // Check if any required field is empty
-    if (!userData.userType || !userData.userName || !userData.firstName ||
+      if (!userData.userType || !userData.userName || !userData.firstName ||
         !userData.lastName || !userData.gender || !userData.age || !userData.address) {
-      // Display a message or handle the error as needed
-      return;
-    }
+        return;
+      }
+      this.users.push(userData);
+      this.hideUserForm();
+    },
 
-    this.users.push(userData);
-    this.hideUserForm();
-  },
     updateUser(index, updatedUser) {
       this.users[index] = updatedUser;
       this.editingUser = null;
       this.hideUserForm();
     },
+
     editUserRow(user) {
       this.editingUser = { ...user };
       const index = this.users.findIndex(p => p.userCode === user.userCode);
       this.editingUserIndex = index;
       this.showForm = true;
     },
+
     deleteUserRow(user) {
       const index = this.users.findIndex(p => p.userCode === user.userCode);
       if (index !== -1) {
         this.users.splice(index, 1);
       }
     },
+
   },
 };
 </script>

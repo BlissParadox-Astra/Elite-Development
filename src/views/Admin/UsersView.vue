@@ -1,18 +1,18 @@
 <template>
-    <div>
-      <v-app>
-        <UsersSection /> 
-      </v-app>
-    </div>
-  </template>
+  <div>
+    <v-app>
+      <UsersSection />
+    </v-app>
+  </div>
+</template>
   
-  <script>
+<script>
 import UsersSection from '@/components/sections/Admin/UsersSection.vue';
-  
-  export default {
-    name: 'UserView',
-    components: {
+
+export default {
+  name: 'UserView',
+  components: {
     UsersSection
-},
-  };
-  </script>
+  },
+};
+</script>

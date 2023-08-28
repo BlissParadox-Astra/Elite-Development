@@ -15,14 +15,14 @@
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="success" block @click="showForm = true">Add Category</v-btn>
         </v-col>
-        <ProductClassification v-if="showForm" title="Category Module" :input-label="categoryInputLabel"
+        <ProductClassification v-if="showForm" :title="formTitle" :input-label="categoryInputLabel"
           :product="editingProduct" :product-index="editingProductIndex" @category-edited="handleCategoryEdited"
           @category-added="handleCategoryAdded" @cancel="cancelCategoryAdd" :initialProduct="editingProduct" />
       </v-row>
       <v-row>
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
-            @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px"/>
+            @edit-data="editProductRow" @delete-data="deleteProductRow" :itemsPerPage="10" height="500px" />
         </v-col>
       </v-row>
     </v-container>
@@ -46,35 +46,39 @@ export default {
       editingProduct: null,
       editingProductIndex: -1,
       showForm: false,
+      formTitle: "Category Module",
       tableColumns: [
-        { key: "category", label: "Category" },
+        { key: 'categoryName', label: 'Category Name' },
+        { key: 'categoryCode', label: 'Category Code' },
       ],
       products: [
-        { category: "BREVERAGES" },
-        { category: "can goods" },
+        { categoryName: 'Breverages', categoryCode: 'BV-0001' },
       ],
-      categoryInputLabel: "New Category",
+      categoryInputLabel: "Category Name",
     };
   },
   methods: {
-    handleCategoryAdded(newCategory) {
+    handleCategoryAdded(newCategory, newCategoryCode) {
       if (this.editingProductIndex !== -1) {
-        this.products[this.editingProductIndex].category = newCategory;
+        this.products[this.editingProductIndex].categoryName = newCategory;
+        this.products[this.editingProductIndex].categoryCode = newCategoryCode;
         this.editingProduct = null;
         this.editingProductIndex = -1;
       } else {
-        this.products.push({ category: newCategory });
+        this.products.push({ categoryName: newCategory, categoryCode: newCategoryCode });
       }
       this.showForm = false;
     },
-    handleCategoryEdited(newCategory, index) {
+    handleCategoryEdited(newCategory, newCategoryCode, index) {
       if (index !== -1) {
-        this.products[index].category = newCategory;
+        this.products[index].categoryName = newCategory;
+        this.products[index].categoryCode = newCategoryCode;
       }
       this.showForm = false;
       this.editingProduct = null;
       this.editingProductIndex = -1;
     },
+
     cancelCategoryAdd() {
       this.showForm = false;
       this.editingProduct = null;  // Reset editingProduct
@@ -82,12 +86,17 @@ export default {
     },
     editProductRow(product) {
       this.editingProduct = { ...product }; // Use spread operator to copy the entire object
-      const index = this.products.findIndex(p => p.category === product.category);
+      const index = this.products.findIndex(
+        p => p.categoryName === product.categoryName && p.categoryCode === product.categoryCode
+      );
       this.editingProductIndex = index;
       this.showForm = true;
     },
+
     deleteProductRow(product) {
-      const index = this.products.findIndex(p => p.category === product.category);
+      const index = this.products.findIndex(
+        p => p.categoryName === product.categoryName && p.categoryCode === product.categoryCode
+      );
       if (index !== -1) {
         this.products.splice(index, 1);
       }

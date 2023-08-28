@@ -76,30 +76,29 @@ export default {
             age: this.initialUser ? parseInt(this.initialUser.age) : '',
             address: this.initialUser ? this.initialUser.address : '',
             editingUser: !!this.initialUser,
-            userTypeError: '', // Initialize this property
-            userNameError: '', // Initialize this property
-            passwordError: '', // Initialize this property
-            firstNameError: '', // Initialize this property
-            lastNameError: '', // Initialize this property
-            genderError: '', // Initialize this property
-            ageError: '', // Initialize this property
+            userTypeError: '',
+            userNameError: '',
+            passwordError: '',
+            firstNameError: '',
+            lastNameError: '',
+            genderError: '',
+            ageError: '',
             addressError: '',
         };
     },
+
     methods: {
         submitForm() {
             console.log('Submitting form...');
             this.clearErrors();
-            // Check if there are any errors
+
             if (!this.userType) this.userTypeError = 'User Type is required.';
             if (!this.userName) this.userNameError = 'User Name is required.';
-            if (!this.password) this.password = 'Password is required.';
             if (!this.firstName) this.firstNameError = 'First Name is required.';
             if (!this.lastName) this.lastNameError = 'Last Name is required.';
             if (!this.gender) this.genderError = 'Gender is required.';
             if (!this.address) this.addressError = 'Address is required.';
 
-            // Check if there are any errors
             if (
                 this.userTypeError ||
                 this.userNameError ||
@@ -110,7 +109,7 @@ export default {
                 this.ageError ||
                 this.addressError
             ) {
-                return; // Prevent form submission
+                return;
             }
 
             const userData = {
@@ -123,6 +122,7 @@ export default {
                 age: this.age,
                 address: this.address,
             };
+
             if (this.editingUser) {
                 this.$emit('update', userData);
             } else {
@@ -130,11 +130,13 @@ export default {
             }
             this.resetForm();
         },
+
         cancelForm() {
             this.resetForm();
             this.editingUser = false;
             this.$emit('cancel');
         },
+
         resetForm() {
             this.userType = '';
             this.userName = '';
@@ -145,7 +147,6 @@ export default {
             this.age = '';
             this.address = '';
         },
-
 
         clearErrors() {
             this.userTypeError = '';
@@ -158,6 +159,7 @@ export default {
             this.addressError = '';
         },
     },
+
     computed: {
         ageRules() {
             return [
@@ -165,14 +167,17 @@ export default {
                 v => /^\d+$/.test(v) || 'Age must be a valid number.',
             ];
         },
+
         userTypeRules() {
             return [
                 v => !!v || 'User Type is required.',
             ];
         },
+
         userNameRules() {
             return [v => !!v || 'User Name is required.',];
         },
+
         passwordRules() {
             return [v => !!v || 'password is required.',
             v => (v && v.length >= 8) || 'Password must be at least 8 characters long.',
@@ -181,24 +186,29 @@ export default {
             v => (v && /\d/.test(v)) || 'Password must contain at least one number.',
             v => (v && /[!@#$%^&*]/.test(v)) || 'Password must contain at least one special character (!@#$%^&*).'];
         },
+
         firstNameRules() {
             return [v => !!v || 'First Name is required.',];
         },
+
         lastNameRules() {
             return [v => !!v || 'Last Name is required.',];
         },
+
         genderRules() {
             return [v => !!v || 'Gender is required.',];
         },
+
         addressRules() {
             return [v => !!v || 'Address is required.',];
         },
+        
     },
 
 };
 </script>
   
-<style>
+<style scoped>
 .showUserForm {
     position: fixed;
     top: 50%;
