@@ -219,6 +219,17 @@ export default {
     padding: 30px;
     max-width: 850px;
 }
+@media screen and (max-width: 960px) and (min-width: 375px) {
+  .showUserForm {
+    position: absolute;
+    width: 0 auto;
+    height: 100%;
+    transform: translate(-60%, -50%);
+    overflow-y: auto;
+    scrollbar-width: none;
+   
+  }
+}
 
 .error-message {
     color: red;
