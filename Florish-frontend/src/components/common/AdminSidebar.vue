@@ -1,20 +1,20 @@
 <template>
   <v-navigation-drawer app v-if="showSidebar"
-    :class="['admin-sidebar', 'custom-bg-color', { 'collapsed': sidebarCollapsed }]" :width="sidebarCollapsed ? 70 : 250"
+    class="custom-bg-color"
     floating permanent>
     <v-img src="../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain
-      @click="toggleSidebar"></v-img>
+     ></v-img>
     <v-list dense class="v-scrollbar">
       <v-list-item v-for="item in menuItems" :key="item.text">
         <v-hover>
           <v-row align="center">
             <v-col cols="2">
-              <v-icon @click="toggleSidebar">{{ item.icon }}</v-icon>
+              <v-icon>{{ item.icon }}</v-icon>
             </v-col>
             <v-col cols="10">
-              <v-list-item-title v-if="showMenuItems">
+              <v-list-item-title>
                 <v-menu v-if="item.items" offset-y>
-                  <template v-slot:activator="{ props }">
+                  <template v-slot:activator="{ props }" >
                     <span v-bind="props">{{ item.text }}</span>
                   </template>
                   <v-list>
@@ -30,7 +30,7 @@
         </v-hover>
       </v-list-item>
     </v-list>
-    <template v-slot:append v-if="showMenuItems">
+    <template v-slot:append>
       <div class="pa-2">
         <v-btn block>
           <router-link to="/login" class="v-btn" block>
@@ -90,32 +90,8 @@ export default {
         { text: "Sales History", route: "/sales-history", icon: "mdi-currency-usd" },
         { text: "Users", route: "/users", icon: "mdi-account-group" },
       ],
-      sidebarCollapsed: false,
-      hoveredIcon: null,
-      showMenuItems: true,
+     
     };
-  },
-  methods: {
-    toggleSidebar() {
-      this.sidebarCollapsed = !this.sidebarCollapsed;
-      this.$store.commit('setIsSidebarCollapsed', this.sidebarCollapsed);
-      localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
-      if (this.sidebarCollapsed) {
-        this.showMenuItems = false; // Hide menu items when collapsing
-      } else {
-        this.showMenuItems = true; // show menu items when expand
-      }
-
-
-    },
-    expandSidebar() {
-      this.sidebarCollapsed = false;
-      if (this.sidebarCollapsed) {
-        this.showMenuItems = false; // Hide menu items when collapsing
-      } else {
-        this.showMenuItems = true; // show menu items when expand
-      }
-    },
   },
 };
 </script>
@@ -139,19 +115,5 @@ a {
 
 .v-list-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
-}
-
-.v-navigation-drawer.collapsed {
-  width: 70px !important;
-}
-
-.v-navigation-drawer.collapsed .logo {
-  margin-top: 20px;
-}
-
-.v-navigation-drawer.collapsed .v-scrollbar {
-  margin-top: 30px;
-  justify-content: center;
-  text-align: center;
 }
 </style>

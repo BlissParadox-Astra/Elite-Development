@@ -1,10 +1,5 @@
 <template>
     <v-container class="mt-5 section2">
-        <v-row justify="center">
-            <v-col cols="12">
-                <h2 class="text-center">CRITICAL STOCK</h2>
-            </v-col>
-        </v-row>
         <v-row>
             <v-col cols="12" sm="9">
                 <SearchField />

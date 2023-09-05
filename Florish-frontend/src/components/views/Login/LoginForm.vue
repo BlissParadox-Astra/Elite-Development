@@ -7,21 +7,54 @@
         </div>
       </v-col>
       <v-col cols="6">
-        <v-card class="login-card">
-          <v-card-title class="title text-center">LOG IN</v-card-title>
-          <v-card-text>
-            <v-form @submit.prevent="validate">
-              <v-text-field v-model="username" label="Username" required></v-text-field>
-              <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
-              <v-checkbox v-model="isAdmin" label="I am an admin."></v-checkbox>
-              <v-container class="d-flex justify-center align-center">
-                <v-col cols="10" sm="5" class="d-flex justify-center align-center">
-                  <v-btn color="primary" block @click="validate">LOG IN</v-btn>
-                </v-col>
-              </v-container>
-            </v-form>
-          </v-card-text>
-        </v-card>
+      <v-card class="login-card">
+        <v-card-title class="title text-center">LOG IN</v-card-title>
+        <v-form @submit.prevent="validate">
+      <div class="text-subtitle-1 text-medium-emphasis">User Name</div>
+
+      <v-text-field
+        density="compact"
+        v-model="username" label="Username"
+        prepend-inner-icon="mdi-account-outline"
+        variant="outlined"
+        required
+      ></v-text-field>
+
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Password
+
+        <a
+          class="text-caption text-decoration-none text-blue"
+          href="#"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Forgot login password?</a>
+      </div>
+
+      <v-text-field
+      v-model="password" label="Password"
+        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="visible ? 'text' : 'password'"
+        density="compact"
+        placeholder="Enter your password"
+        prepend-inner-icon="mdi-lock-outline"
+        variant="outlined"
+        @click:append-inner="visible = !visible"
+      ></v-text-field>
+      <v-btn
+      @click="validate"
+        block
+        class="mb-8"
+        color="blue"
+        size="large"
+        variant="tonal"
+      >
+        Log In
+      </v-btn>
+      </v-form>
+      
+      </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -33,9 +66,9 @@ import { mapActions } from 'vuex';
 export default {
   data() {
     return {
+      visible: false,
       username: "",
       password: "",
-      isAdmin: false,
       attempt: 3,
     };
   },
@@ -43,8 +76,8 @@ export default {
     ...mapActions(['setAdminStatus']),
     validate() {
       if (
-        (this.isAdmin && this.username === "Admin" && this.password === "password") ||
-        (!this.isAdmin && this.username === "Cashier" && this.password === "password")
+        (this.username === "Admin" && this.password === "password") ||
+        (this.username === "Cashier" && this.password === "password")
       ) {
         alert("Password Remembered for the next login.");
 

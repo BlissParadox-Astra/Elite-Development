@@ -80,6 +80,7 @@ export default {
 
 @media screen and (max-width: 768px) {
     .ShowModule {
+        position: absolute;
         width: 90%;
         max-width: 350px;
     }
@@ -87,6 +88,15 @@ export default {
 
 @media screen and (max-width: 480px) {
     .ShowModule {
+        position: absolute;
+        width: 95%;
+        max-width: 300px;
+    }
+}
+@media screen and (max-width: 375px) {
+    .ShowModule {
+        top: 40%;
+        position: absolute;
         width: 95%;
         max-width: 300px;
     }

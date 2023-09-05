@@ -1,9 +1,6 @@
 <template>
     <v-main class="section2">
         <v-container>
-            <div class="d-flex justify-center">
-                <h2 class="display-2">STOCK IN</h2>
-            </div>
             <!-- Reference Number Field and Stock In By Field -->
             <v-row class="mt-3">
                 <v-col cols="12" sm="2" md="4" lg="3" xl="5">
@@ -26,7 +23,7 @@
                 @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" /> -->
             <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
                 @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" height="450px" />
-            <v-row class="mt-3">
+            <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
                     <v-btn color="success" @click="showConfirmation" style="width: 150px;">Save</v-btn>
                 </v-col>
@@ -170,5 +167,6 @@ export default {
     right: 15%;
     /* transform: translate(-50%, -50%); */
 }
+
 </style>
   

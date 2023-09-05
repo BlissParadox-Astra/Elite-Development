@@ -1,10 +1,5 @@
 <template>
     <v-container class="mt-5 section2">
-        <v-row justify="center">
-            <v-col cols="12">
-                <h2 class="text-center">CANCELLED ORDER LIST</h2>
-            </v-col>
-        </v-row>
         <v-row>
             <v-col cols="12" sm="9">
                 <SearchField />
@@ -52,7 +47,6 @@ export default {
     },
 };
 </script>
-  
 <style scoped>
 /* Add any scoped styles here */
 </style>
