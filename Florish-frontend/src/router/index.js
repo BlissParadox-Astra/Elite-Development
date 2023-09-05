@@ -40,7 +40,7 @@ const routes = [
     path: '/stock-history',
     name: 'stockHistory',
     component: StockHistoryView,
-    meta: { title: 'Product List' },
+    meta: { title: 'Stock In History' },
   },
 
   {
