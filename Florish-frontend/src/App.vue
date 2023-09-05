@@ -1,51 +1,40 @@
 <template>
-  <v-app>
+  <v-app id="inspire">
+    <AdminSidebar v-model="drawer" v-if="isAdmin && showMainContent" />
+    <v-app-bar>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+
+      <v-app-bar-title>{{ route.meta.title }}</v-app-bar-title>
+    </v-app-bar>
+
     <v-main>
       <router-view v-if="showMainContent" />
     </v-main>
-    <AdminSidebar v-if="isAdmin && showMainContent" />
   </v-app>
 </template>
 
+<script setup>
+  import { ref } from 'vue'
+
+  const drawer = ref(null);
+  const route = useRoute();
+</script>
+
 <script>
 import { mapGetters } from 'vuex';
+import { useRoute } from 'vue-router';
 import AdminSidebar from './components/common/AdminSidebar.vue';
-
-export default {
-  components: {
+  export default {
+    components: {
     AdminSidebar,
   },
-  computed: {
+    data: () => ({ drawer: null }),
+    computed: {
     ...mapGetters(['isAdmin']),
     showMainContent() {
       return this.isAdmin || this.$route.name === 'login';
     },
-  },
-};
+  }
+  }
+  
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
-
-.section2 {
-  padding-left: 40px;
-  padding-top: 10px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-@media screen and (min-width: 375px){
-  .section2 {
-  padding-left: 10px;
-  padding-top: 10px;
-}
-
-}
-</style>

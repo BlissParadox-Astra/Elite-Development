@@ -1,9 +1,6 @@
 <template>
     <v-main class="section2">
         <v-container>
-            <div class="d-flex justify-center">
-                <h2 class="display-2">STOCK IN</h2>
-            </div>
             <!-- Reference Number Field and Stock In By Field -->
             <v-row class="mt-3">
                 <v-col cols="12" sm="2" md="4" lg="3" xl="5">

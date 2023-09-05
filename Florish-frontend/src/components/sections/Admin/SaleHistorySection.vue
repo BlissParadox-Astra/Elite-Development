@@ -1,11 +1,6 @@
 <template>
   <v-main>
     <v-container class="mt-6">
-      <v-row justify="center">
-        <v-col cols="12">
-          <h2 class="text-center">SALES HISTORY</h2>
-        </v-col>
-      </v-row>
       <v-row>
         <v-col cols="12" sm="9">
           <FilterByDate />

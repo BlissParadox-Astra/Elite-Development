@@ -19,84 +19,98 @@ const routes = [
     path: '/',
     name: 'dashboard',
     component: DashboardView,
+    meta: { title: 'Dashboard' },
   },
 
   {
     path: '/product-list-view',
     name: 'productListView',
     component: ProductListView,
+    meta: { title: 'Product List' },
   },
 
   {
     path: '/stock-entry',
     name: 'stockEntry',
     component: StockEntryView,
+    meta: { title: 'STOCK IN' },
   },
 
   {
     path: '/stock-history',
     name: 'stockHistory',
     component: StockHistoryView,
+    meta: { title: 'Product List' },
   },
 
   {
     path: '/stock-adjustment',
     name: 'stockAdjustment',
     component: StockAdjustmentView,
+    meta: { title: 'Stock Adjustment' },
   },
 
   {
     path: '/stock-adjustment-history',
     name: 'stockAdjustmentHistory',
     component: StockAdjustmentHistoryView,
+    meta: { title: 'Stock Adjustment History' },
   },
 
   {
     path: '/inventory-list',
     name: 'inventoryList',
     component: InventoryListView,
+    meta: { title: 'INVENTORY LIST' },
   },
 
   {
     path: '/product-category',
     name: 'productCategory',
     component: ProductCategoryView,
+    meta: { title: 'CATEGORIES' },
   },
 
   {
     path: '/product-brand',
     name: 'productBrand',
     component: ProductBrandView,
+    meta: { title: 'BRAND' },
   },
 
   {
     path: '/sales-history',
     name: 'salesHistory',
     component: SaleHistoryView,
+    meta: { title: 'SALES HISTORY' },
   },
 
   {
     path: '/critical-stocks',
     name: 'criticalStocks',
     component: CriticalStockView,
+    meta: { title: 'CRITICAL STOCK' },
   },
 
   {
     path: '/cancelled-order',
     name: 'cancelledOrder',
     component: CancelledOrderView,
+    meta: { title: 'CANCELLED ORDER LIST' },
   },
 
   {
     path: '/users',
     name: 'users',
     component: UsersView,
+    meta: { title: 'USER DETAILS' },
   },
   
   {
     path: '/login',
     name: 'login',
     component: Login,
+    meta: { title: ' Login' },
   },
 ];
 

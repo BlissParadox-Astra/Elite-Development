@@ -1,12 +1,5 @@
 <template>
   <v-main>
-    <v-container class="mt-5">
-      <v-row justify="center">
-        <v-col cols="12">
-          <h2 class="text-center">CATEGORIES</h2>
-        </v-col>
-      </v-row>
-    </v-container>
     <v-container>
       <v-row>
         <v-col cols="12" sm="9">
