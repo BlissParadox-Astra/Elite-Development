@@ -8,14 +8,23 @@
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="success" block @click="showForm = true">Add BRAND</v-btn>
         </v-col>
-        <ProductClassification v-if="showForm" title="Brand Module" :input-label="brandInputLabel"
-          :product="editingProduct" :product-index="editingProductIndex" @brand-edited="handleBrandEdited"
-          @brand-added="handleBrandAdded" @cancel="cancelBrandAdd" />
+
       </v-row>
       <v-row>
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
             @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px" />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-row class="d-flex justify-center">
+            <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
+              <ProductClassification v-if="showForm" title="Brand Module" :input-label="brandInputLabel"
+                :product="editingProduct" :product-index="editingProductIndex" @brand-edited="handleBrandEdited"
+                @brand-added="handleBrandAdded" @cancel="cancelBrandAdd" />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>

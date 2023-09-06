@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <AdminSidebar v-model="drawer" v-if="isAdmin && showMainContent" />
-    <v-app-bar>
+    <v-app-bar v-if="showAppBar">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-app-bar-title>{{ route.meta.title }}</v-app-bar-title>
@@ -33,6 +33,9 @@ import AdminSidebar from './components/common/AdminSidebar.vue';
     ...mapGetters(['isAdmin']),
     showMainContent() {
       return this.isAdmin || this.$route.name === 'login';
+    },
+    showAppBar() {
+      return this.showMainContent && this.$route.name !== 'login';
     },
   }
   }

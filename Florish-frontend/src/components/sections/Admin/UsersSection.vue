@@ -13,10 +13,14 @@
             @edit-data="editUserRow" @delete-data="deleteUserRow" height="445px" />
         </v-col>
       </v-row>
-      <v-row justify="center" v-if="showForm">
-        <v-col cols="12" sm="6">
-          <UserForm @add="addUser" @update="updateUser(editingUserIndex, $event)" @cancel="hideUserForm"
-            :initialUser="editingUser" />
+      <v-row>
+        <v-col cols="12">
+          <v-row class="d-flex justify-center">
+            <v-col cols="12" sm="5" xl="10" lg="10" md="10" class="form-container">
+              <UserForm v-if="showForm" @add="addUser" @update="updateUser(editingUserIndex, $event)"
+                @cancel="hideUserForm" :initialUser="editingUser" />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -52,7 +56,7 @@ export default {
 
     };
   },
-  
+
   methods: {
     showUserForm() {
       this.showForm = true;
@@ -98,6 +102,15 @@ export default {
 </script>
   
 <style scoped>
-
+.form-container {
+  position: absolute;
+  top: 0;
+  left: 1;
+  right: 1;
+  z-index: 999;
+  max-height: 100%;
+  /* Adjust the maximum height as needed */
+  overflow-y: auto;
+}
 </style>
   

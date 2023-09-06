@@ -24,9 +24,9 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12">
+        <v-col cols="12" xl="5" lg="3">
           <v-card class="pa-3 total-card">
-            <v-row class="text-right">
+            <v-row class="text-left">
               <v-col v-for="(column, index) in tableColumns" :key="index" cols="3">
                 <span class="total-value">{{ calculateTotal(column.total) }}</span>
               </v-col>
@@ -87,8 +87,7 @@ export default {
 
 <style scoped>
 .total-card {
-  width: 20%;
-  float: right;
+
   background-color: #d8d3d3;
   border: 1px solid #ddd;
   border-radius: 4px;

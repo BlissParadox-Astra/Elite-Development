@@ -8,14 +8,22 @@
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="success" block @click="showForm = true">Add Category</v-btn>
         </v-col>
-        <ProductClassification v-if="showForm" :title="formTitle" :input-label="categoryInputLabel"
-          :product="editingProduct" :product-index="editingProductIndex" @category-edited="handleCategoryEdited"
-          @category-added="handleCategoryAdded" @cancel="cancelCategoryAdd" :initialProduct="editingProduct" />
       </v-row>
       <v-row>
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
             @edit-data="editProductRow" @delete-data="deleteProductRow" :itemsPerPage="10" height="500px" />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-row class="d-flex justify-center">
+            <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
+              <ProductClassification v-if="showForm" :title="formTitle" :input-label="categoryInputLabel"
+                :product="editingProduct" :product-index="editingProductIndex" @category-edited="handleCategoryEdited"
+                @category-added="handleCategoryAdded" @cancel="cancelCategoryAdd" :initialProduct="editingProduct" />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -97,4 +105,13 @@ export default {
   },
 };
 </script>
-  
+<style scooped>
+.form-container {
+  position: absolute;
+  top: 0;
+  left: 1;
+  right: 1;
+  z-index: 999;
+
+}
+</style>
