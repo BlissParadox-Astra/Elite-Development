@@ -202,7 +202,7 @@ export default {
         addressRules() {
             return [v => !!v || 'Address is required.',];
         },
-        
+
     },
 
 };
@@ -210,25 +210,8 @@ export default {
   
 <style scoped>
 .showUserForm {
-    position: absolute;
-    top: 45%;
-    left: 60%;
-    transform: translate(-65%, -50%);
     background-color: rgba(114, 165, 104, 0.9);
     z-index: 999;
-    padding: 30px;
-    max-width: 850px;
-}
-@media screen and (max-width: 960px) and (min-width: 375px) {
-  .showUserForm {
-    position: absolute;
-    width: 0 auto;
-    height: 100%;
-    transform: translate(-60%, -50%);
-    overflow-y: auto;
-    scrollbar-width: none;
-   
-  }
 }
 
 .error-message {

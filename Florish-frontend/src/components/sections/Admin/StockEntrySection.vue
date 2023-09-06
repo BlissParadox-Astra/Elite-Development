@@ -19,6 +19,16 @@
                     <v-text-field label="Stock In By" placeholder="Enter Stock In By" readonly />
                 </v-col>
             </v-row>
+            <!-- Browse Product Component -->
+            <v-row>
+                <v-col cols="12">
+                    <v-row class="d-flex justify-center">
+                        <v-col cols="12" sm="6" md="8" lg="10" xl="4" class="form-container">
+                            <BrowseProduct @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
+                        </v-col>
+                    </v-row>
+                </v-col>
+            </v-row>
             <!-- <ProductTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
                 @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" /> -->
             <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
@@ -60,13 +70,6 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-
-            <!-- Browse Product Component -->
-            <v-row justify="center" v-if="showBrowseProduct">
-                <v-col cols="12" sm="6">
-                    <BrowseProduct @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
-                </v-col>
-            </v-row>
         </v-container>
     </v-main>
 </template>
@@ -161,12 +164,20 @@ export default {
 };
 </script>
 <style scoped>
+.form-container {
+    position: absolute;
+    top: 0;
+    left: 1;
+    right: 1;
+    z-index: 999;
+
+}
+
 .center-dialog {
     position: fixed;
     left: 30%;
     right: 15%;
     /* transform: translate(-50%, -50%); */
 }
-
 </style>
   

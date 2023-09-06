@@ -7,61 +7,47 @@
         </div>
       </v-col>
       <v-col cols="6">
-      <v-card class="login-card">
-        <v-card-title class="title text-center">LOG IN</v-card-title>
-        <v-form @submit.prevent="validate">
-      <div class="text-subtitle-1 text-medium-emphasis">User Name</div>
+        <v-card class="login-card">
+          <v-card-title class="title text-center">LOGIN</v-card-title>
+          <v-form ref="loginForm" @submit.prevent="login">
+            <v-alert v-if="loginError" color="error" dismissible @input="loginError = false">
+              Invalid credentials
+              <template #close>
+                <v-btn icon @click="loginError = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </template>
+            </v-alert>
+            <v-label class="text-subtitle-1 font-weight-bold">User Name</v-label>
+            <v-text-field density="compact" v-model="username" label="Username" prepend-inner-icon="mdi-account-outline"
+              variant="outlined" :rules="[v => !!v || 'Username is required']"></v-text-field>
 
-      <v-text-field
-        density="compact"
-        v-model="username" label="Username"
-        prepend-inner-icon="mdi-account-outline"
-        variant="outlined"
-        required
-      ></v-text-field>
 
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Password
+            <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
+              Password
+              <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
+                Forgot password?</a>
+            </v-label>
 
-        <a
-          class="text-caption text-decoration-none text-blue"
-          href="#"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Forgot login password?</a>
-      </div>
 
-      <v-text-field
-      v-model="password" label="Password"
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Enter your password"
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
-      ></v-text-field>
-      <v-btn
-      @click="validate"
-        block
-        class="mb-8"
-        color="blue"
-        size="large"
-        variant="tonal"
-      >
-        Log In
-      </v-btn>
-      </v-form>
-      
-      </v-card>
+            <v-text-field v-model="password" label="Password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
+              prepend-inner-icon="mdi-lock-outline" variant="outlined" @click:append-inner="visible = !visible"
+              :rules="[v => !!v || 'Password is required']"></v-text-field>
+            <v-btn type="submit" block class="mb-8" color="blue" size="large" variant="tonal"
+              :disabled="!username || !password">
+              Login
+            </v-btn>
+          </v-form>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
-  
 <script>
 import { mapActions } from 'vuex';
+import axios from 'axios';
+
 
 export default {
   data() {
@@ -69,41 +55,46 @@ export default {
       visible: false,
       username: "",
       password: "",
-      attempt: 3,
+      loginError: false,
     };
   },
   methods: {
     ...mapActions(['setAdminStatus']),
-    validate() {
-      if (
-        (this.username === "Admin" && this.password === "password") ||
-        (this.username === "Cashier" && this.password === "password")
-      ) {
-        alert("Password Remembered for the next login.");
-
-        this.setAdminStatus(this.username === "Admin");
-
-        const dashboardPath = this.username === "Admin" ? "/" : "/users";
-        this.$router.push(dashboardPath); // Use Vue Router to navigate
-
-      } else {
-        this.attempt--;
-        alert(`You have ${this.attempt} attempt(s) left.`);
-        if (this.attempt === 0) {
-          this.disableFields();
+    async login() {
+      try {
+        // Validate the form fields again before submitting
+        if (!this.username || !this.password) {
+          return;
         }
+
+
+        const response = await axios.post('/login', {
+          username: this.username,
+          password: this.password,
+        });
+
+
+        const token = response.data.token;
+
+
+        this.$store.commit('setToken', token);
+
+
+        this.$router.push('/dashboard');
+      } catch (error) {
+        this.loginError = true;
+        if (error.response && error.response.status === 422) {
+          console.error('Validation error:', error.response.data);
+        } else {
+          console.error('Login error:', error);
+        }
+        this.password = "";
       }
-    },
-    disableFields() {
-      this.$refs.form.reset();
-      this.$refs.form.resetValidation();
-      this.username = "";
-      this.password = "";
-      this.attempt = 3;
     },
   },
 };
 </script>
+
 
 <style scoped>
 body,
@@ -115,6 +106,7 @@ html {
   overflow: hidden;
   /* Prevent scrolling if needed */
 }
+
 
 .content-container {
   position: fixed;
@@ -128,6 +120,7 @@ html {
   background-position: center;
 }
 
+
 .login-card {
   max-width: 400px;
   margin: 0 auto;
@@ -139,4 +132,3 @@ html {
   border-radius: 8px;
 }
 </style>
-  

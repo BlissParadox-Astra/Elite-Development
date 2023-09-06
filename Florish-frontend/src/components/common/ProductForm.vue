@@ -6,67 +6,32 @@
           <h2 class="text-center mb-4">Product Module</h2>
           <v-row justify="center">
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="productCode"
-                label="Product Code"
-                placeholder="Enter Product Code"
-                required
-                :rules="productCodeErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="productCode" label="Product Code" placeholder="Enter Product Code" required
+                :rules="productCodeErrorRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="barCode"
-                label="Bar Code"
-                placeholder="Enter Bar Code"
-                required
-                :rules="barCodeErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="barCode" label="Bar Code" placeholder="Enter Bar Code" required
+                :rules="barCodeErrorRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="description"
-                label="Description"
-                placeholder="Enter Description"
-                required
-                :rules="descriptionErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="description" label="Description" placeholder="Enter Description" required
+                :rules="descriptionErrorRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="brand"
-                label="Brand"
-                placeholder="Enter Brand Name"
-                required
-                :rules="brandErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="brand" label="Brand" placeholder="Enter Brand Name" required
+                :rules="brandErrorRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="category"
-                label="Category"
-                placeholder="Enter Category Name"
-                required
-                :rules="categoryErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="category" label="Category" placeholder="Enter Category Name" required
+                :rules="categoryErrorRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="price"
-                label="Price"
-                placeholder="Enter Price"
-                required
-                :rules="priceErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="price" label="Price" placeholder="Enter Price" required
+                :rules="priceErrorRules"></v-text-field>
             </v-col>
             <v-col cols="12" md="6" class="text-center">
-              <v-text-field
-                v-model="reorderLevel"
-                label="Reorder Level"
-                placeholder="Enter Reorder Level"
-                required
-                :rules="reorderLevelErrorRules"
-              ></v-text-field>
+              <v-text-field v-model="reorderLevel" label="Reorder Level" placeholder="Enter Reorder Level" required
+                :rules="reorderLevelErrorRules"></v-text-field>
             </v-col>
           </v-row>
           <v-row class="mt-4">
@@ -76,9 +41,7 @@
               </v-btn>
             </v-col>
             <v-col cols="6">
-              <v-btn type="button" color="secondary" block @click="cancelForm"
-                >Cancel</v-btn
-              >
+              <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -217,23 +180,8 @@ export default {
 
 <style>
 .showProductForm {
-  position: absolute;
-  top: 45%;
-  left: 60%;
-  transform: translate(-65%, -50%);
   background-color: rgba(114, 165, 104, 0.9);
   z-index: 999;
-  padding: 30px;
-  max-width: 900px;
-  min-width: auto;
-}
-@media screen and (max-width: 960px) and (min-width: 375px) {
-  .showProductForm {
-    position:absolute;
-    width: 0 auto;
-    height: 0 auto;
-    transform: translate(-60%, -45%);
-   
-  }
+
 }
 </style>

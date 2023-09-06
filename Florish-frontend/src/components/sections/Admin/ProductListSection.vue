@@ -11,13 +11,17 @@
         <v-row justify="center">
             <v-col cols="12">
                 <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
-                    @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px"/>
+                    @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px" />
             </v-col>
         </v-row>
-        <v-row justify="center" v-if="showForm">
-            <v-col cols="12" sm="6">
-                <ProductForm @add="addProduct" @update="updateProduct(editingProductIndex, $event)"
-                    @cancel="hideProductForm" :initialProduct="editingProduct" />
+        <v-row>
+            <v-col cols="12">
+                <v-row class="d-flex justify-center">
+                    <v-col cols="12" sm="5" xl="10" lg="10" md="10" class="form-container">
+                        <ProductForm v-if="showForm" @add="addProduct" @update="updateProduct(editingProductIndex, $event)"
+                            @cancel="hideProductForm" :initialProduct="editingProduct" />
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
     </v-container>
@@ -55,7 +59,7 @@ export default {
             ],
 
             products: [
-                {productCode: 'P001', barCode: 1234567, description: 'description 1', brand: 'brand 1', category: 'category 1', price: 34, reorderLevel: 10}
+                { productCode: 'P001', barCode: 1234567, description: 'description 1', brand: 'brand 1', category: 'category 1', price: 34, reorderLevel: 10 }
             ],
         };
     },
@@ -89,7 +93,7 @@ export default {
             this.editingProductIndex = index;
             this.showForm = true;
         },
-        
+
         deleteProductRow(product) {
             const index = this.products.findIndex(p => p.productCode === product.productCode);
             if (index !== -1) {
@@ -101,6 +105,15 @@ export default {
 </script>
   
 <style scoped>
-/* Add any scoped styles here */
+.form-container {
+    position: absolute;
+    top: 0;
+    left: 1;
+    right: 1;
+    z-index: 999;
+    max-height: 100%;
+    /* Adjust the maximum height as needed */
+    overflow-y: auto;
+}
 </style>
   
