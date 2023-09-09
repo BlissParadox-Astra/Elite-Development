@@ -1,6 +1,5 @@
 <template>
- <v-data-table :items-per-page="itemsPerPage" :page="page" :headers="tableHeaders"
-    :items="filteredItems" multi-sort class="elevation-1">
+  <v-table>
     <thead>
       <tr>
         <th class="text-center">#</th>
@@ -20,16 +19,13 @@
           <template v-if="column.key === 'quantity' && isStockEntryPage">
             <span @click="openEditQuantityDialog(index)">{{ item[column.key] }}</span>
           </template>
+          <template v-if="column.render">
+            <span v-html="column.render(item)"></span>
+          </template>
           <template v-else>
             {{ item[column.key] }}
           </template>
         </td>
-        <!-- <td  class="text-center" v-for="column in columns" :key="column.key">{{ item[column.key] }}</td>
-
-        <td v-if="isStockEntryPage">
-          <div @click="startEditingQuantity(index)">{{ item.quantity }}</div>
-        </td> -->
-
         <td v-if="showEditIcon" class="edit-icon-cell text-center">
           <v-icon @click="editData(item)">mdi-pencil</v-icon>
         </td>
@@ -44,7 +40,7 @@
         </td>
       </tr>
     </tbody>
-  </v-data-table>
+  </v-table>
 </template>
 
 <script>
@@ -52,25 +48,12 @@ export default {
   props: ['columns', 'items', 'showEditIcon', 'showDeleteIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage',],
   data() {
     return {
-      
       search: '',
       editingIndex: -1,
       editedQuantity: 0,
-      page: 1,
     };
   },
   computed: {
-    filteredItems() {
-      const filtered = this.items.filter(item =>
-        Object.values(item).some(value =>
-          String(value).toLowerCase().includes(this.search.toLowerCase())
-        )
-      );
-      console.log('filtered:', filtered);
-      console.log('itemsPerPage:', this.itemsPerPage);
-      console.log('page:', this.page);
-      return filtered;
-    },
     tableHeaders() {
       const headers = [
         {

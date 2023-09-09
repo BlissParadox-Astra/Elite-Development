@@ -25,9 +25,15 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = $this->productManager->getAllProducts();
+        try {
+            $products = $this->productManager->getAllProducts();
 
-        return response()->json(['products' => $products]);
+            return response()->json(['products' => $products]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -35,11 +41,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        // $productTypes = ProductType::all();
-        // $categories = Category::all();
-        // $brands = Brand::all();
-
-        // return view('products.create', compact('productTypes', 'categories', 'brands'));
+        //
     }
 
     /**
@@ -47,12 +49,17 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $validatedData = $request->validated();
+        try {
+            $validatedData = $request->validated();
 
-        // Create the product using the manager
-        $product = $this->productManager->createProduct($validatedData);
+            $product = $this->productManager->createProduct($validatedData);
 
-        return response()->json(['message' => 'Product created successfully', 'product' => $product]);
+            return response()->json(['message' => 'Product created successfully', 'product' => $product]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -60,9 +67,15 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = $this->productManager->getProductByIdWithRelations($id);
+        try {
+            $product = $this->productManager->getProductByIdWithRelations($id);
 
-        return response()->json(['product' => $product]);
+            return response()->json(['product' => $product]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -78,9 +91,15 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        $this->productManager->updateProduct($product, $request->validated());
+        try {
+            $this->productManager->updateProduct($product, $request->validated());
 
-        return response()->json(['message' => 'Product updated successfully']);
+            return response()->json(['message' => 'Product updated successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -88,17 +107,29 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = Product::findOrFail($id);
+        try {
+            $product = Product::findOrFail($id);
 
-        $this->productManager->deleteProduct($product);
+            $this->productManager->deleteProduct($product);
 
-        return response()->json(['message' => 'Product deleted successfully']);
+            return response()->json(['message' => 'Product deleted successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     public function getCriticalStock()
     {
-        $criticalProducts = $this->productManager->getCriticalStock();
+        try {
+            $criticalProducts = $this->productManager->getCriticalStock();
 
-        return response()->json($criticalProducts);
+            return response()->json($criticalProducts);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 }

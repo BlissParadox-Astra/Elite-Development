@@ -20,7 +20,7 @@
                 </v-col>
             </v-row>
             <!-- Browse Product Component -->
-            <v-row>
+            <v-row v-if="showBrowseProduct">
                 <v-col cols="12">
                     <v-row class="d-flex justify-center">
                         <v-col cols="12" sm="6" md="8" lg="10" xl="4" class="form-container">
@@ -114,15 +114,7 @@ export default {
         },
         addToCartProduct(product) {
             console.log("Adding to cart:", product);
-            this.products.push({
-                referenceNo: "REF001",
-                productCode: product.productCode,
-                barCode: product.barCode,
-                description: product.description,
-                quantity: 1,
-                stockInDate: "2023/01/27",
-                stockInBy: "John",
-            });
+            this.products.push;
         },
         deleteProductRow(product) {
             const index = this.products.findIndex(p => p.productCode === product.productCode);

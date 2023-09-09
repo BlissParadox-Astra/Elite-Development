@@ -30,6 +30,7 @@
 <script>
 import CustomTable from '../../common/CustomTable.vue';
 import UserForm from '../../common/UserForm.vue';
+import axios from 'axios';
 
 export default {
   name: 'UsersDetails',
@@ -45,10 +46,10 @@ export default {
       editingUser: null,
       editingUserIndex: -1,
       tableColumns: [
-        { key: 'userType', label: 'User Type' },
-        { key: 'userName', label: 'User Name' },
-        { key: 'firstName', label: 'First Name' },
-        { key: 'lastName', label: 'Last Name' },
+        { key: 'user_type', label: 'User Type', render: this.renderUserType },
+        { key: 'username', label: 'User Name', render: this.renderUserName },
+        { key: 'first_name', label: 'First Name' },
+        { key: 'last_name', label: 'Last Name' },
         { key: 'gender', label: 'Gender' },
         { key: 'age', label: 'Age' },
         { key: 'address', label: 'Address' },
@@ -56,8 +57,17 @@ export default {
 
     };
   },
-
+  mounted() {
+    this.getUsers();
+  },
   methods: {
+    getUsers() {
+      axios.get('/users').then(res => {
+        this.users = res.data.users
+        // console.log(this.users)
+      });
+    },
+
     showUserForm() {
       this.showForm = true;
     },
@@ -95,6 +105,16 @@ export default {
       if (index !== -1) {
         this.users.splice(index, 1);
       }
+    },
+
+    // Custom render function for 'User Type' column
+    renderUserType(user) {
+      return user.user_type ? user.user_type.user_type : 'Unknown';
+    },
+
+    // Custom render function for 'User Name' column
+    renderUserName(user) {
+      return user.user_credential ? user.user_credential.username : 'Unknown';
     },
 
   },

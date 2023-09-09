@@ -12,26 +12,36 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->only('username', 'password');
+        try {
+            $credentials = $request->only('username', 'password');
 
-        $userCredential = UserCredential::where('username', $credentials['username'])->first();
+            $userCredential = UserCredential::where('username', $credentials['username'])->first();
 
-        if (!$userCredential || !Hash::check($credentials['password'], $userCredential->password)) {
-            throw ValidationException::withMessages(['message' => 'Invalid credentials']);
+            if (!$userCredential || !Hash::check($credentials['password'], $userCredential->password)) {
+                throw ValidationException::withMessages(['message' => 'Invalid credentials']);
+            }
+
+            $user = $userCredential->user;
+
+            $token = $user->createToken('authToken')->plainTextToken;
+
+            return response()->json(['token' => $token]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid credentials'], 422);
         }
-
-        $user = $userCredential->user;
-
-        $token = $user->createToken('authToken')->plainTextToken;
-
-        return response()->json(['token' => $token]);
     }
 
     public function logout(Request $request)
     {
-        $user = $request->user(); // Make sure $user is an instance of User model
-        $user->tokens()->delete(); // Correct usage of tokens() method
+        try {
+            $user = $request->user();
+            $user->tokens()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+            return response()->json(['message' => 'Logged out successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 }

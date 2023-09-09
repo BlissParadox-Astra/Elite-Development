@@ -31,6 +31,7 @@
 import SearchField from '../../common/SearchField.vue';
 import ProductForm from '../../common/ProductForm.vue';
 import CustomTable from '../../common/CustomTable.vue';
+import axios from 'axios';
 
 export default {
     mixins: [CustomTable],
@@ -47,24 +48,31 @@ export default {
             showForm: false,
             editingProduct: null,
             editingProductIndex: -1,
-
+            products: [],
             tableColumns: [
-                { key: 'productCode', label: 'Product Code' },
-                { key: 'barCode', label: 'Barcode' },
+                { key: 'product_code', label: 'Product Code' },
+                { key: 'barcode', label: 'Barcode' },
                 { key: 'description', label: 'Description' },
-                { key: 'brand', label: 'Brand' },
-                { key: 'category', label: 'Category' },
+                { key: 'brand', label: 'Brand', render: this.renderProductBrand },
+                { key: 'category', label: 'Category', render: this.renderProductCategory },
                 { key: 'price', label: 'Price' },
-                { key: 'reorderLevel', label: 'Reorder Level' },
-            ],
-
-            products: [
-                { productCode: 'P001', barCode: 1234567, description: 'description 1', brand: 'brand 1', category: 'category 1', price: 34, reorderLevel: 10 }
+                { key: 'reorder_level', label: 'Reorder Level' },
             ],
         };
     },
 
+    mounted() {
+        this.getProducts();
+    },
+
     methods: {
+        getProducts() {
+            axios.get('/products').then(res => {
+                this.products = res.data.products
+                console.log(this.products)
+            });
+        },
+
         showProductForm() {
             this.showForm = true;
         },
@@ -89,7 +97,7 @@ export default {
 
         editProductRow(product) {
             this.editingProduct = { ...product };
-            const index = this.products.findIndex(p => p.productCode === product.productCode);
+            const index = this.products.findIndex(p => p.product_code === product.product_code);
             this.editingProductIndex = index;
             this.showForm = true;
         },
@@ -99,6 +107,14 @@ export default {
             if (index !== -1) {
                 this.products.splice(index, 1);
             }
+        },
+
+        renderProductCategory(category) {
+            return category.category ? category.category.category_name : 'Unknown';
+        },
+
+        renderProductBrand(brand) {
+            return brand.brand ? brand.brand.brand_name : 'Unknown';
         },
     },
 };

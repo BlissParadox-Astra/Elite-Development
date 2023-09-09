@@ -16,15 +16,21 @@ class StockAdjustmentController extends Controller
     {
         $this->stockAdjustmentManager = $stockAdjustmentManager;
     }
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $stockAdjustment = $this->stockAdjustmentManager->getAllStockAdjustment(); // Replace with your manager method
+        try {
+            $stockAdjustment = $this->stockAdjustmentManager->getAllStockAdjustment(); // Replace with your manager method
 
-        return response()->json(['stock_adjustments' => $stockAdjustment]);
+            return response()->json(['stock_adjustments' => $stockAdjustment]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -40,12 +46,17 @@ class StockAdjustmentController extends Controller
      */
     public function store(StockAdjustmentRequest $request)
     {
-        $validatedData = $request->validated();
+        try {
+            $validatedData = $request->validated();
 
-        // Create the stock adjustment using the manager
-        $this->stockAdjustmentManager->createStockAdjustment($validatedData);
+            $this->stockAdjustmentManager->createStockAdjustment($validatedData);
 
-        return response()->json(['message' => 'Stock adjustment created successfully']);
+            return response()->json(['message' => 'Stock adjustment created successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -53,7 +64,6 @@ class StockAdjustmentController extends Controller
      */
     public function show(StockAdjustment $stockAdjustment)
     {
-        
     }
 
     /**

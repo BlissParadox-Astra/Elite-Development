@@ -16,8 +16,8 @@ import Login from '../components/views/Login/LoginForm.vue';
 
 const routes = [
   {
-    path: '/',
-    name: 'dashboard',
+    path: '/dashboard',
+    name: 'Dashboard',
     component: DashboardView,
     meta: { title: 'Dashboard' },
   },
@@ -33,7 +33,7 @@ const routes = [
     path: '/stock-entry',
     name: 'stockEntry',
     component: StockEntryView,
-    meta: { title: 'STOCK IN' },
+    meta: { title: 'Stock In' },
   },
 
   {
@@ -61,49 +61,49 @@ const routes = [
     path: '/inventory-list',
     name: 'inventoryList',
     component: InventoryListView,
-    meta: { title: 'INVENTORY LIST' },
+    meta: { title: 'Inventory List' },
   },
 
   {
     path: '/product-category',
     name: 'productCategory',
     component: ProductCategoryView,
-    meta: { title: 'CATEGORIES' },
+    meta: { title: 'Categories' },
   },
 
   {
     path: '/product-brand',
     name: 'productBrand',
     component: ProductBrandView,
-    meta: { title: 'BRAND' },
+    meta: { title: 'Brands' },
   },
 
   {
     path: '/sales-history',
     name: 'salesHistory',
     component: SaleHistoryView,
-    meta: { title: 'SALES HISTORY' },
+    meta: { title: 'Sales History' },
   },
 
   {
     path: '/critical-stocks',
     name: 'criticalStocks',
     component: CriticalStockView,
-    meta: { title: 'CRITICAL STOCK' },
+    meta: { title: 'Critical Stock' },
   },
 
   {
     path: '/cancelled-order',
     name: 'cancelledOrder',
     component: CancelledOrderView,
-    meta: { title: 'CANCELLED ORDER LIST' },
+    meta: { title: 'Cancelled Order List' },
   },
 
   {
     path: '/users',
     name: 'users',
     component: UsersView,
-    meta: { title: 'USER DETAILS' },
+    meta: { title: 'User Details' },
   },
   
   {
@@ -118,35 +118,4 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
-
-router.beforeEach((to, from, next) => {
-  console.log('Navigating to:', to.name);
-
-  if (to.name === 'login') {
-    console.log('Allowing access to login page');
-    next();
-  } else {
-    const user = getUser();
-    console.log('User:', user);
-
-    if (user && user.isAdmin) {
-      console.log('Allowing access to:', to.name);
-      next();
-    } else {
-      console.log('Redirecting to login');
-      next('/login');
-    }
-  }
-});
-
-
-function getUser() {
-  // Replace this function with your logic to fetch the user's information from the authentication system
-  // For example, you might use localStorage or Vuex to store user information
-  return {
-    isAdmin: true, // Replace with the actual value indicating if the user is an admin
-    // ... other user properties ...
-  };
-}
-
 export default router;

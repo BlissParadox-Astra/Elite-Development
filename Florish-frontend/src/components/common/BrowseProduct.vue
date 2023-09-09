@@ -27,6 +27,7 @@
 <script>
 import SearchField from "@/components/common/SearchField.vue";
 import CustomTable from "./CustomTable.vue";
+import axios from 'axios';
 
 export default {
   components: {
@@ -36,31 +37,29 @@ export default {
 
   data() {
     return {
+      products: [],
       tableColumns: [
-        { key: "productCode", label: "Product Code" },
-        { key: "barCode", label: "Barcode" },
+        { key: "product_code", label: "Product Code" },
+        { key: "barcode", label: "Barcode" },
         { key: "description", label: "Description" },
-        { key: "stockOnHand", label: "Stock On Hand" },
-      ],
-      products: [
-        {
-          productCode: "P001",
-          barCode: "123456789",
-          description: "Product 1",
-          stockOnHand: "100",
-        },
-        {
-          productCode: "P002",
-          barCode: "987654321",
-          description: "Product 2",
-          stockOnHand: "200",
-        },
+        { key: "stock_on_hand", label: "Stock On Hand" },
       ],
       showProductForm: false,
     };
   },
 
+  mounted() {
+        this.getProducts();
+    },
+
   methods: {
+    getProducts() { 
+            axios.get('/products').then(res => {
+                this.products = res.data.products
+                // console.log(this.users)
+            });
+        },
+
     closeForm() {
       this.showProductForm = false;
       this.$emit("close");

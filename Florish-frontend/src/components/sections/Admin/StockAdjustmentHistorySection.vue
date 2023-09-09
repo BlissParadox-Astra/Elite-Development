@@ -10,7 +10,7 @@
         <v-col cols="12">
           <CustomTable
             :columns="tableColumns"
-            :items="products"
+            :items="adjustments"
             height="480px"
           />
         </v-col>
@@ -22,50 +22,78 @@
 <script>
 import SearchField from "../../common/SearchField.vue";
 import CustomTable from "../../common/CustomTable.vue";
+import axios from 'axios';
 
 export default {
-  name: "StockAdjustmentHistory",
-  components: {
-    SearchField,
-    CustomTable,
-  },
-  data() {
-    return {
-      selectedRow: {
-        referenceNo: "",
-        action: "",
-        productCode: "",
-        barCode: "",
-        description: "",
-        remarks: "",
-        quantity: "",
-        user: "",
-      },
+    name: "StockAdjustmentHistory",
+    components: {
+        SearchField,
+        CustomTable,
+    },
+    data() {
+        return {
+            adjustments: [],
+            selectedRow: {
+                referenceNo: "",
+                action: "",
+                productCode: "",
+                barCode: "",
+                description: "",
+                remarks: "",
+                quantity: "",
+                user: "",
+            },
 
-      tableColumns: [
-        { key: "referenceNo", label: "Reference No." },
-        { key: "action", label: "Action" },
-        { key: "productCode", label: "Product Code" },
-        { key: "barCode", label: "Barcode" },
-        { key: "description", label: "Description" },
-        { key: "remarks", label: "Remarks" },
-        { key: "quantity", label: "Quantity" },
-        { key: "user", label: "User" },
-      ],
+            tableColumns: [
+                { key: "reference_number", label: "Reference No." },
+                { key: "action", label: "Action" },
+                { key: "product_code", label: "Product Code", render: this.renderProductCode },
+                { key: "barcode", label: "Barcode", render: this.renderProductBarcode },
+                { key: "description", label: "Description", render: this.renderProductDescription },
+                { key: "remarks", label: "Remarks" },
+                { key: 'quantity', label: 'Quantity' },
+                { key: 'user', label: 'User', render: this.renderUser },
+            ],
 
-      products: [
-        {
-          referenceNo: "2023828",
-          action: "remove from inventory",
-          productCode: "BV-0001",
-          barCode: "123456789",
-          description: "Product 1",
-          remarks: "damage",
-          quantity: "2",
-          user: "John Doe",
+        };
+    },
+
+    mounted() {
+        this.getStockAdjustments();
+    },
+
+    methods: {
+        async getStockAdjustments() {
+            try {
+                const response = await axios.get('/stockAdjustments');
+                this.adjustments = response.data.stock_adjustments;
+                console.log('Records:', this.adjustments);
+            } catch (error) {
+                console.error('Error fetching stock in records:', error);
+            }
         },
-      ],
-    };
-  },
+
+        renderProductCode(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
+        },
+
+        renderProductBarcode(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
+        },
+
+        renderProductDescription(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
+        },
+
+        renderUser(stock_adjustment_by_user) {
+            if (stock_adjustment_by_user.stock_adjustment_by_user) {
+                const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
+                return `${first_name} ${last_name}`;
+            } else {
+                return 'Unknown';
+            }
+        },
+    }
+
 };
 </script>

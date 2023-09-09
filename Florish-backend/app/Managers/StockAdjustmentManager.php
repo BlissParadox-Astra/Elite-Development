@@ -13,16 +13,19 @@ class StockAdjustmentManager
         $stockAdjustmentData['reference_number'] = $this->generateReferenceNumber();
         $stockAdjustmentData['user'] = Auth::id(); // Set the current user's ID
 
-        StockAdjustment::create($stockAdjustmentData);
-
         $product = Product::findOrFail($stockAdjustmentData['product_id']);
         if ($stockAdjustmentData['action'] === 'add') {
             $product->stock_on_hand += $stockAdjustmentData['quantity'];
         } elseif ($stockAdjustmentData['action'] === 'remove') {
+            if ($product->stock_on_hand < $stockAdjustmentData['quantity']) {
+                throw new \Exception('Cannot remove more products than available in stock.');
+            }
             $product->stock_on_hand -= $stockAdjustmentData['quantity'];
         }
 
         $product->save();
+
+        StockAdjustment::create($stockAdjustmentData);
     }
 
     public function getAllStockAdjustment()

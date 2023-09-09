@@ -11,7 +11,7 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
+          <CustomTable :columns="tableColumns" :items="categories" :showEditIcon="true" :showDeleteIcon="true"
             @edit-data="editProductRow" @delete-data="deleteProductRow" :itemsPerPage="10" height="500px" />
         </v-col>
       </v-row>
@@ -34,6 +34,7 @@
 import CustomTable from "../../common/CustomTable.vue";
 import SearchField from "../../common/SearchField.vue";
 import ProductClassification from "../../common/ProductClassification.vue";
+import axios from 'axios';
 
 export default {
   name: "ProductCategorySection",
@@ -44,36 +45,47 @@ export default {
   },
   data() {
     return {
+
       editingProduct: null,
       editingProductIndex: -1,
       showForm: false,
       formTitle: "Category Module",
+      categories: [],
       tableColumns: [
-        { key: 'categoryName', label: 'Category Name' },
-        { key: 'categoryCode', label: 'Category Code' },
-      ],
-      products: [
-        { categoryName: 'Breverages', categoryCode: 'BV-0001' },
+        { key: 'category_name', label: 'Category Name' },
+        { key: 'category_code', label: 'Category Code' },
       ],
       categoryInputLabel: "Category Name",
     };
   },
+
+  mounted() {
+        this.getCategories();
+    },
+
   methods: {
+    getCategories() {
+            axios.get('/categories').then(res => {
+                this.categories = res.data.categories
+                console.log(this.categories)
+            });
+        },
+
     handleCategoryAdded(newCategory, newCategoryCode) {
       if (this.editingProductIndex !== -1) {
-        this.products[this.editingProductIndex].categoryName = newCategory;
-        this.products[this.editingProductIndex].categoryCode = newCategoryCode;
+        this.categories[this.editingProductIndex].categoryName = newCategory;
+        this.categories[this.editingProductIndex].categoryCode = newCategoryCode;
         this.editingProduct = null;
         this.editingProductIndex = -1;
       } else {
-        this.products.push({ categoryName: newCategory, categoryCode: newCategoryCode });
+        this.categories.push({ categoryName: newCategory, categoryCode: newCategoryCode });
       }
       this.showForm = false;
     },
     handleCategoryEdited(newCategory, newCategoryCode, index) {
       if (index !== -1) {
-        this.products[index].categoryName = newCategory;
-        this.products[index].categoryCode = newCategoryCode;
+        this.categories[index].categoryName = newCategory;
+        this.categories[index].categoryCode = newCategoryCode;
       }
       this.showForm = false;
       this.editingProduct = null;
@@ -87,7 +99,7 @@ export default {
     },
     editProductRow(product) {
       this.editingProduct = { ...product }; // Use spread operator to copy the entire object
-      const index = this.products.findIndex(
+      const index = this.categories.findIndex(
         p => p.categoryName === product.categoryName && p.categoryCode === product.categoryCode
       );
       this.editingProductIndex = index;
@@ -95,11 +107,11 @@ export default {
     },
 
     deleteProductRow(product) {
-      const index = this.products.findIndex(
+      const index = this.categories.findIndex(
         p => p.categoryName === product.categoryName && p.categoryCode === product.categoryCode
       );
       if (index !== -1) {
-        this.products.splice(index, 1);
+        this.categories.splice(index, 1);
       }
     },
   },
