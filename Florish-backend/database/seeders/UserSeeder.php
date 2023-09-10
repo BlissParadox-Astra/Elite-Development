@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
                         'gender' => 'male',
                         'age' => 30,
                         'address' => '123 Main St',
+                        'contact_number' => '09503803215',
                     ],
                     [
                         'user_type_id' => 2,
@@ -30,6 +31,7 @@ class UserSeeder extends Seeder
                         'gender' => 'female',
                         'age' => 28,
                         'address' => '456 Elm St',
+                        'contact_number' => '09876890643',
                     ],
                     // Add more user data as needed
                 ];

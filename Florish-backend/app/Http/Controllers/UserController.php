@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Managers\UserManager;
 use App\Models\User;
+use App\Models\UserType;
 
 class UserController extends Controller
 {
@@ -56,6 +57,7 @@ class UserController extends Controller
                     'gender' => $validatedData['gender'],
                     'age' => $validatedData['age'],
                     'address' => $validatedData['address'],
+                    'contact_number' => $validatedData['contact_number'],
                 ],
                 [
                     'username' => $validatedData['username'],
@@ -63,7 +65,11 @@ class UserController extends Controller
                 ]
             );
 
-            return response()->json(['message' => 'User registered successfully']);
+            if ($user) {
+                return response()->json(['status' => 200, 'message' => 'User registered successfully'], 200);
+            } else {
+                return response()->json(['status' => 500, 'message' => 'Something went Wrong'], 200);
+            }
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
@@ -126,6 +132,21 @@ class UserController extends Controller
             $errorMessage = $e->getMessage();
 
             return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    /**
+     * Show user types in user type field in User Form.
+     */
+    public function getUserTypes()
+    {
+        try {
+            $userTypes = UserType::all(); // Assuming UserType is your model
+
+            return response()->json($userTypes);
+        } catch (\Exception $e) {
+            // Handle the error gracefully
+            return response()->json(['error' => 'Unable to fetch user types.'], 500);
         }
     }
 }
