@@ -26,10 +26,20 @@ class UserRequest extends FormRequest
             'first_name' => 'required',
             'last_name' => 'required',
             'gender' => 'required',
-            'age' => 'required',
+            'age' => 'required|numeric',
             'address' => 'required',
+            'contact_number' => [
+                'required',
+                'regex:/^[0-9]{11}$/'
+            ],
             'username' => 'required|string|unique:user_credentials',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ],
         ];
     }
 }

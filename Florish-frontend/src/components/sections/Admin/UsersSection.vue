@@ -18,7 +18,7 @@
           <v-row class="d-flex justify-center">
             <v-col cols="12" sm="5" xl="10" lg="10" md="10" class="form-container">
               <UserForm v-if="showForm" @add="addUser" @update="updateUser(editingUserIndex, $event)"
-                @cancel="hideUserForm" :initialUser="editingUser" />
+                @cancel="hideUserForm" :initialUser="editingUser" :userTypes="userTypes" />
             </v-col>
           </v-row>
         </v-col>
@@ -53,12 +53,15 @@ export default {
         { key: 'gender', label: 'Gender' },
         { key: 'age', label: 'Age' },
         { key: 'address', label: 'Address' },
+        { key: 'contact_number', label: 'Contact Number' },
       ],
 
+      userTypes: [],
     };
   },
   mounted() {
     this.getUsers();
+    this.fetchUserTypes();
   },
   methods: {
     getUsers() {
@@ -66,6 +69,15 @@ export default {
         this.users = res.data.users
         // console.log(this.users)
       });
+    },
+
+    async fetchUserTypes() {
+      try {
+        const response = await axios.get('/user-types'); // Replace with your actual API endpoint
+        this.userTypes = response.data; // Store user types in the variable
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     showUserForm() {

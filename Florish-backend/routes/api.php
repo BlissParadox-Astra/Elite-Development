@@ -32,12 +32,18 @@ Route::get('/stockIns', [StockInController::class, 'index'])->name('stockIns.ind
 Route::get('/products/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
 Route::get('/stockAdjustments', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
 
+//store
+Route::post('/user', [UserController::class, 'store'])->name('users.store');
+//update
+Route::put('/user/{user}', [UserController::class, 'update'])->name('users.update');
+//bind user type in user form
+Route::get('/user-types', [UserController::class, 'getUserTypes'])->name('user-types.get');
+
+
 Route::middleware('auth:sanctum')->group(function () {
 
     // Group for user management routes
     Route::prefix('/user')->group(function () {
-        Route::post('/', [UserController::class, 'store'])->name('users.store');
-        Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::get('{id}', [UserController::class, 'show'])->name('users.show');
         Route::delete('{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });

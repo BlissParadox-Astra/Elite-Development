@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'other']);
             $table->integer('age');
             $table->string('address');
+            $table->string('contact_number');
             $table->rememberToken();
             $table->timestamps();
         });
