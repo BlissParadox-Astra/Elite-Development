@@ -33,6 +33,6 @@ class StockInManager
 
     public function getAllStockIns()
     {
-        return StockIn::with(['stockInByUser'])->get();
+        return StockIn::with(['adjustedProduct', 'stockInByUser'])->get();
     }
 }

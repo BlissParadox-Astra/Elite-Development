@@ -22,9 +22,15 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = $this->categoryManager->getAllCategories();
+        try {
+            $categories = $this->categoryManager->getAllCategories();
 
-        return response()->json(['categories' => $categories], Response::HTTP_OK);
+            return response()->json(['categories' => $categories], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -40,11 +46,17 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-        $categoryData = $request->all();
+        try {
+            $categoryData = $request->all();
 
-        $this->categoryManager->createCategory($categoryData);
+            $this->categoryManager->createCategory($categoryData);
 
-        return response()->json(['message' => 'Category created successfully'], Response::HTTP_CREATED);
+            return response()->json(['message' => 'Category created successfully'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -52,14 +64,19 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
+        try {
+            $category = $this->categoryManager->getCategoryById($id);
 
-        $category = $this->categoryManager->getCategoryById($id);
+            if (!$category) {
+                return response()->json(['message' => 'Category not found'], Response::HTTP_NOT_FOUND);
+            }
 
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['category' => $category], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
         }
-
-        return response()->json(['category' => $category], Response::HTTP_OK);
     }
 
     /**
@@ -75,22 +92,33 @@ class CategoryController extends Controller
      */
     public function update(CategoryRequest $request, Category $category)
     {
+        try {
+            $this->categoryManager->updateCategory($category, $request->validated());
 
-        $this->categoryManager->updateCategory($category, $request->validated());
+            return response()->json(['message' => 'Category updated successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
 
-        return response()->json(['message' => 'Category updated successfully']);
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
 
-     public function destroy(string $id)
-     {
-         $category = Category::findOrFail($id);
- 
-         $this->categoryManager->deleteCategory($category);
- 
-         return response()->json(['message' => 'Category deleted successfully']);
-     }
+    public function destroy(string $id)
+    {
+        try {
+            $category = Category::findOrFail($id);
+
+            $this->categoryManager->deleteCategory($category);
+
+            return response()->json(['message' => 'Category deleted successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
 }

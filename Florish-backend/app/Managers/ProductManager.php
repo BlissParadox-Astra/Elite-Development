@@ -51,6 +51,6 @@ class ProductManager
 
     public function getCriticalStock()
     {
-        return Product::where('stock_on_hand', '<=', DB::raw('reorder_level'))->get();
+        return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->get();
     }
 }

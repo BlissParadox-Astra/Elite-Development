@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Managers\UserManager;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -23,9 +21,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->userManager->getAllUsers();
+        try {
+            $users = $this->userManager->getAllUsers();
 
-        return response()->json(['users' => $users]);
+            return response()->json(['users' => $users]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -41,26 +45,30 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $validatedData = $request->validated();
+        try {
+            $validatedData = $request->validated();
 
-        $user = $this->userManager->createUser(
-            // Pass user data
-            [
-                'user_type_id' => $validatedData['user_type_id'],
-                'first_name' => $validatedData['first_name'],
-                'last_name' => $validatedData['last_name'],
-                'gender' => $validatedData['gender'],
-                'age' => $validatedData['age'],
-                'address' => $validatedData['address'],
-            ],
-            // Pass user credential data
-            [
-                'username' => $validatedData['username'],
-                'password' => $validatedData['password'],
-            ]
-        );
+            $user = $this->userManager->createUser(
+                [
+                    'user_type_id' => $validatedData['user_type_id'],
+                    'first_name' => $validatedData['first_name'],
+                    'last_name' => $validatedData['last_name'],
+                    'gender' => $validatedData['gender'],
+                    'age' => $validatedData['age'],
+                    'address' => $validatedData['address'],
+                ],
+                [
+                    'username' => $validatedData['username'],
+                    'password' => $validatedData['password'],
+                ]
+            );
 
-        return response()->json(['message' => 'User registered successfully']);
+            return response()->json(['message' => 'User registered successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -68,9 +76,15 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = $this->userManager->getUserByIdWithRelations($id);
+        try {
+            $user = $this->userManager->getUserByIdWithRelations($id);
 
-        return response()->json(['user' => $user]);
+            return response()->json(['user' => $user]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -86,9 +100,15 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
-        $this->userManager->updateUser($user, $request->validated());
+        try {
+            $this->userManager->updateUser($user, $request->validated());
 
-        return response()->json(['message' => 'User updated successfully']);
+            return response()->json(['message' => 'User updated successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -96,11 +116,16 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $user = User::findOrFail($id);
 
-        // Use the UserManager to delete the user and associated credentials
-        $this->userManager->deleteUserWithCredentials($user);
+            $this->userManager->deleteUserWithCredentials($user);
 
-        return response()->json(['message' => 'User and associated credentials deleted successfully']);
+            return response()->json(['message' => 'User and associated credentials deleted successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 }

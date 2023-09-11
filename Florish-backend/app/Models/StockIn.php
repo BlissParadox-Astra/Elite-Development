@@ -21,4 +21,8 @@ class StockIn extends Model
     {
         return $this->belongsTo(User::class, 'stock_in_by', 'id');
     }
+    public function adjustedProduct()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 }

@@ -22,9 +22,15 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = $this->brandManager->getAllBrands();
+        try {
+            $brands = $this->brandManager->getAllBrands();
 
-        return response()->json(['brands' => $brands], Response::HTTP_OK);
+            return response()->json(['brands' => $brands], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -40,11 +46,17 @@ class BrandController extends Controller
      */
     public function store(BrandRequest $request)
     {
-        $brandData = $request->all();
+        try {
+            $brandData = $request->all();
 
-        $this->brandManager->createBrand($brandData);
+            $this->brandManager->createBrand($brandData);
 
-        return response()->json(['message' => 'Brand created successfully'], Response::HTTP_CREATED);
+            return response()->json(['message' => 'Brand created successfully'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -52,13 +64,19 @@ class BrandController extends Controller
      */
     public function show(string $id)
     {
-        $brand = $this->brandManager->getBrandById($id);
+        try {
+            $brand = $this->brandManager->getBrandById($id);
 
-        if (!$brand) {
-            return response()->json(['message' => 'Brand not found'], Response::HTTP_NOT_FOUND);
+            if (!$brand) {
+                return response()->json(['message' => 'Brand not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json(['brand' => $brand], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
         }
-
-        return response()->json(['brand' => $brand], Response::HTTP_OK);
     }
 
     /**
@@ -74,9 +92,15 @@ class BrandController extends Controller
      */
     public function update(BrandRequest $request, Brand $brand)
     {
-        $this->brandManager->updateBrand($brand, $request->validated());
+        try {
+            $this->brandManager->updateBrand($brand, $request->validated());
 
-        return response()->json(['message' => 'Brand updated successfully']);
+            return response()->json(['message' => 'Brand updated successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -84,10 +108,16 @@ class BrandController extends Controller
      */
     public function destroy(string $id)
     {
-        $brand = Brand::findOrFail($id);
+        try {
+            $brand = Brand::findOrFail($id);
 
-        $this->brandManager->deleteBrand($brand);
+            $this->brandManager->deleteBrand($brand);
 
-        return response()->json(['message' => 'Brand deleted successfully']);
+            return response()->json(['message' => 'Brand deleted successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 }

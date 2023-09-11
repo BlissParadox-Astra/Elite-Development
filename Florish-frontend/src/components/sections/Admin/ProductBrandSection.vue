@@ -12,7 +12,7 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
+          <CustomTable :columns="tableColumns" :items="brands" :showEditIcon="true" :showDeleteIcon="true"
             @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px" />
         </v-col>
       </v-row>
@@ -35,6 +35,7 @@
 import CustomTable from "../../common/CustomTable.vue";
 import SearchField from "../../common/SearchField.vue";
 import ProductClassification from "../../common/ProductClassification.vue";
+import axios from 'axios';
 
 export default {
   name: "ProductBrandSection",
@@ -50,31 +51,39 @@ export default {
       editingProduct: null,
       editingProductIndex: -1,
       tableColumns: [
-        { key: "brand", label: "BRAND" },
+        { key: "brand_name", label: "BRAND" },
       ],
-      products: [
-        { brand: "COCA COLA" },
-        { brand: "Colgate" },
-      ],
+      brands: [],
       brandInputLabel: "Brand Name",
     };
   },
 
+  mounted() {
+    this.getBrands();
+  },
+
   methods: {
+    getBrands() {
+      axios.get('/brands').then(res => {
+        this.brands = res.data.brands
+        // console.log(this.brands)
+      });
+    },
+
     handleBrandAdded(newBrand) {
       if (this.editingProductIndex !== -1) {
-        this.products[this.editingProductIndex].brand = newBrand;
+        this.brands[this.editingProductIndex].brand = newBrand;
         this.editingProduct = null;
         this.editingProductIndex = -1;
       } else {
-        this.products.push({ brand: newBrand });
+        this.brands.push({ brand: newBrand });
       }
       this.showForm = false;
     },
 
     handleBrandEdited(newBrand, index) {
       if (index !== -1) {
-        this.products[index].brand = newBrand;
+        this.brands[index].brand = newBrand;
       }
       this.showForm = false;
       this.editingProduct = null;
@@ -89,15 +98,15 @@ export default {
 
     editProductRow(product) {
       this.editingProduct = { ...product };
-      const index = this.products.findIndex(p => p.brand === product.brand);
+      const index = this.brands.findIndex(p => p.brand === product.brand);
       this.editingProductIndex = index;
       this.showForm = true;
     },
 
     deleteProductRow(product) {
-      const index = this.products.findIndex(p => p.brand === product.brand);
+      const index = this.brands.findIndex(p => p.brand === product.brand);
       if (index !== -1) {
-        this.products.splice(index, 1);
+        this.brands.splice(index, 1);
       }
     },
   },

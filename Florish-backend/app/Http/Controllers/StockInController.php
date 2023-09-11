@@ -13,16 +13,22 @@ class StockInController extends Controller
 
     public function __construct(StockInManager $stockInManager)
     {
-       $this->stockInManager = $stockInManager;
+        $this->stockInManager = $stockInManager;
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $stockIns = $this->stockInManager->getAllStockIns(); // Replace with your manager method
+        try {
+            $stockIns = $this->stockInManager->getAllStockIns();
 
-        return response()->json(['stock_ins' => $stockIns]);
+            return response()->json(['stock_ins' => $stockIns]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
@@ -38,12 +44,18 @@ class StockInController extends Controller
      */
     public function store(StockInRequest $request)
     {
-        $validatedData = $request->validated();
+        try {
+            $validatedData = $request->validated();
 
-        // Create the stock-in record using the manager
-        $this->stockInManager->createStockIn($validatedData);
+            // Create the stock-in record using the manager
+            $this->stockInManager->createStockIn($validatedData);
 
-        return response()->json(['message' => 'Stock-In record created successfully']);
+            return response()->json(['message' => 'Stock-In record created successfully']);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     /**
