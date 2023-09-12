@@ -14,7 +14,7 @@
                                 :error-messages="lastNameError" @input="clearFieldErrors('lastName')"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="user_name" label="User Name" placeholder="Enter User Name" required
+                            <v-text-field v-model="username" label="User Name" placeholder="Enter User Name" required
                                 :error-messages="userNameError" @input="clearFieldErrors('userName')"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
@@ -26,12 +26,12 @@
                             </v-select>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="password" label="Password" placeholder="Enter Password" required
+                            <v-text-field v-model="password" :label="passwordLabel" placeholder="Enter Password" required
                                 :error-messages="passwordError" @input="clearFieldErrors('password')"
                                 :rules="passwordRules"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="password_confirmation" label="Confirm Password"
+                            <v-text-field v-model="password_confirmation" :label="passwordConfirmationLabel"
                                 placeholder="Enter Confirm Password" required :error-messages="confirmPasswordError"
                                 @input="clearFieldErrors('confirmPassword')" :rules="confirmPasswordRules"></v-text-field>
                         </v-col>
@@ -78,7 +78,7 @@ export default {
     data() {
         return {
             user_type: this.initialUser ? this.initialUser.user_type : '',
-            user_name: this.initialUser ? this.initialUser.user_name : '',
+            username: this.initialUser ? this.initialUser.username : '',
             password: this.initialUser ? this.initialUser.password : '',
             password_confirmation: this.initialUser ? this.initialUser.password_confirmation : '',
             first_name: this.initialUser ? this.initialUser.first_name : '',
@@ -128,7 +128,7 @@ export default {
                 age: this.age,
                 address: this.address,
                 contact_number: this.contact_number,
-                username: this.user_name,
+                username: this.username,
                 password: this.password,
                 password_confirmation: this.password_confirmation,
             };
@@ -209,7 +209,7 @@ export default {
 
         resetFormFields() {
             this.user_type = '';
-            this.user_name = '';
+            this.username = '';
             this.password = '';
             this.password_confirmation = '';
             this.first_name = '';
@@ -238,6 +238,16 @@ export default {
         },
     },
     computed: {
+        passwordLabel() {
+            return this.editingUser ? 'New Password' : 'Password';
+        },
+        passwordConfirmationLabel() {
+            return this.editingUser ? 'Confirm New Password' : 'Confirm Password';
+        },
+        userTypeDisplayName() {
+            const userType = this.userTypes.find(type => type.id === this.user_type);
+            return userType ? userType.user_type : '';
+        },
         ageRules() {
             return [
                 v => !!v || 'Age is required.',

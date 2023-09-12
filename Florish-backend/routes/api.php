@@ -38,14 +38,14 @@ Route::post('/user', [UserController::class, 'store'])->name('users.store');
 Route::put('/user/{user}', [UserController::class, 'update'])->name('users.update');
 //bind user type in user form
 Route::get('/user-types', [UserController::class, 'getUserTypes'])->name('user-types.get');
-
+//delete user
+Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
 Route::middleware('auth:sanctum')->group(function () {
 
     // Group for user management routes
     Route::prefix('/user')->group(function () {
         Route::get('{id}', [UserController::class, 'show'])->name('users.show');
-        Route::delete('{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
     // Group for category management routes
