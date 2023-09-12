@@ -30,15 +30,6 @@
         </v-hover>
       </v-list-item>
     </v-list>
-    <template v-slot:append>
-      <div class="pa-2">
-        <v-btn block>
-          <router-link to="/login" class="v-btn" block>
-            Logout
-          </router-link>
-        </v-btn>
-      </div>
-    </template>
   </v-navigation-drawer>
 </template>
 

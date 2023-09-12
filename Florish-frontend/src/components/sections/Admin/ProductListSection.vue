@@ -17,7 +17,7 @@
         <v-row>
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
-                    <v-col cols="12" sm="5" xl="10" lg="10" md="10" class="form-container">
+                    <v-col cols="12" sm="10" xl="10" lg="10" md="10" class="form-container">
                         <ProductForm v-if="showForm" @add="addProduct" @update="updateProduct(editingProductIndex, $event)"
                             @cancel="hideProductForm" :initialProduct="editingProduct" />
                     </v-col>

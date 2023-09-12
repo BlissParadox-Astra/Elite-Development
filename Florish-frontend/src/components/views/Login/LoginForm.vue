@@ -1,12 +1,12 @@
 <template>
-  <v-container permanent class="content-container">
+  <v-container permanent class="content-container fill-height">
     <v-row>
-      <v-col cols="6">
+      <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
         <div class="logo">
           <v-img src="../../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain></v-img>
         </div>
       </v-col>
-      <v-col cols="6">
+      <v-col   cols="12" sm="6" md="6" xl="6" lg="6">
         <v-card class="login-card">
           <v-card-title class="title text-center">LOGIN</v-card-title>
           <v-form ref="loginForm" @submit.prevent="login">
@@ -26,7 +26,8 @@
             <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
               Password
               <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
-                Forgot password?</a>
+                Forgot password?
+              </a>
             </v-label>
 
 
@@ -97,37 +98,21 @@ export default {
 
 
 <style scoped>
-body,
-html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
+.fill-height {
   overflow: hidden;
-  /* Prevent scrolling if needed */
+ 
 }
 
-
 .content-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
   background-image: url("../../../assets/assets/vuejs.jpg");
   background-size: cover;
   background-position: center;
 }
 
-
 .login-card {
-  max-width: 400px;
   margin: 0 auto;
   margin-top: 20%;
-  /* Adjust as needed */
   background-color: rgba(255, 255, 255, 0.8);
-  /* Add a semi-transparent background */
   padding: 20px;
   border-radius: 8px;
 }
