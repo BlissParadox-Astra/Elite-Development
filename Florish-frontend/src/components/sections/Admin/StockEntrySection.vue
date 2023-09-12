@@ -3,7 +3,7 @@
         <v-container>
             <!-- Reference Number Field and Stock In By Field -->
             <v-row class="mt-3">
-                <v-col cols="12" sm="2" md="4" lg="3" xl="5">
+                <v-col cols="12" sm="5" md="5" lg="3" xl="5">
                     <v-text-field label="Reference Number" placeholder="Enter Reference Number" readonly />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
@@ -23,9 +23,9 @@
             <v-row v-if="showBrowseProduct">
                 <v-col cols="12">
                     <v-row class="d-flex justify-center">
-                        <v-col cols="12" sm="6" md="8" lg="10" xl="4" class="form-container">
-                            <BrowseProduct @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
-                        </v-col>
+                        <v-col cols="12" sm="10" md="10" lg="10" xl="10" class="form-container">
+                            <BrowseProduct  @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
+                        </v-col> 
                     </v-row>
                 </v-col>
             </v-row>
@@ -64,7 +64,7 @@
                     <v-card-text>
                         <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
                     </v-card-text>
-                    <v-card-actions>
+                    <v-card-actions class="d-flex justify-center">
                         <v-btn color="primary" @click="saveEditedQuantity">Save</v-btn>
                         <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                     </v-card-actions>
