@@ -302,7 +302,6 @@ export default {
     top: 25px;
     right: 20px;
     z-index: 999;
-    z-index: 999;
 }
 
 .error-messages {
