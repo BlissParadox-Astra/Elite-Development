@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>FlorishIS Transaction</title>
+  <link rel="stylesheet" href="./css/transaction.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<main>
+  <div class="content">
+    <section class="main-header grid">
+      <h1>Florish Transaction Cart</h1>
+      <h1 class="h1s">Total: <input value="₱ 195.00" type="text" style="width: 200px;" readonly></h1>
+    </section>
+
+    <section class="table-header grid">
+      <h2>Barcode: <input type="text" style="width: 300px;" value="1234567890123456" readonly> <a href="" class="fa-solid fa-search" ></a></h2>
+      <h2>Transaction ID: <input value="0000000000000000000000001" type="text" style="width: 400px;" readonly></h2>
+
+    </section>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Product Code</th>
+            <th>Barcode</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+    
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>P001</td>
+            <td>7092985145</td>
+            <td>Coca Cola 330ml</td>
+            <td>30.00</td>
+            <td>3</td>
+            <td>90.00</td>
+            <td>
+              <button class="fa-solid fa-minus"></button>
+              <button class="fa-solid fa-plus"></button>
+              <button class="fa-solid fa-cancel"></button>
+            </td>
+          </tr>
+    
+          <tr class="selected">
+            <td>2</td>
+            <td>P002</td>
+            <td>1234567890</td>
+            <td>Sprite 300ml</td>
+            <td>35.00</td>
+            <td>3</td>
+            <td>105.00</td>
+            <td>
+              <button class="fa-solid fa-minus"></button>
+              <button class="fa-solid fa-plus"></button>
+              <button class="fa-solid fa-cancel"></button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>1</td>
+            <td>P001</td>
+            <td>7092985145</td>
+            <td>Coca Cola 330ml</td>
+            <td>30.00</td>
+            <td>3</td>
+            <td>90.00</td>
+            <td>
+              <span><button class="fa-solid fa-minus"></button></span>
+              <span><button class="fa-solid fa-plus"></button></span>
+              <span><button class="fa-solid fa-cancel"></button></span>
+            </td>
+          </tr>
+    
+          <tr class="selected">
+            <td>2</td>
+            <td>P002</td>
+            <td>1234567890</td>
+            <td>Sprite 300ml</td>
+            <td>35.00</td>
+            <td>3</td>
+            <td>105.00</td>
+            <td>
+              <button class="fa-solid fa-minus"></button>
+              <button class="fa-solid fa-plus"></button>
+              <button class="fa-solid fa-cancel"></button>
+            </td>
+          </tr>
+    
+          <!-- Other rows -->
+    
+        </tbody>
+      </table>
+    </div>
+    
+    <script>
+      function decreaseQuantity(button) {
+        var quantityElement = button.nextElementSibling;
+        var quantity = parseInt(quantityElement.textContent);
+        if (quantity > 1) {
+          quantityElement.textContent = quantity - 1;
+        }
+      }
+    
+      function increaseQuantity(button) {
+        var quantityElement = button.previousElementSibling;
+        var quantity = parseInt(quantityElement.textContent);
+        quantityElement.textContent = quantity + 1;
+      }
+    
+      function deleteRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+      }
+    </script>
+
+    <section class="table-footer grid">
+      <span>Florish Convenience Store | J. Panis Street, Banilad, Cebu City, Cebu, Philippines, 6000</span>
+      <div class="paging grid">
+        <a href="CashierDashboard.html">
+        <button class="button2">
+          <i class="fa-solid fa-cancel"></i>
+          <span>Cancel Purchase</span>
+        </button>
+      </a>
+      </div>
+    </section>
+</main>
+<!-- partial -->
+  
+</body>
+</html>

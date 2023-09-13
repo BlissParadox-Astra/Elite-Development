@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florish Inventory</title>
+    <link rel="icon" href="img/Icon_logo.png">
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="./css/login.css">
+
+</head>
+<body>
+    <div class="logo">
+        <img src="./images/Florish.png" alt="store logo">
+    </div>
+    <div  class="container">
+        <div class="forms">
+            <div class="form login">    
+                <span class="title">LOG IN </span>
+
+                <form action="#">
+                    <div class="input-field">
+                        <input id="username" type="text" placeholder="Username" required>
+                        <i class="uil uil-user icon"></i>
+                    </div>
+                    <div class="input-field">
+                        <input id="password" type="password" class="password" placeholder="Password" required>
+                        <i class="uil uil-lock icon"></i>
+                        <i class="uil uil-eye-slash showHidePw"></i>
+                    </div>
+
+                    <div class="checkbox-text">
+                        <div class="checkbox-content">
+                            <input type="checkbox" id="logCheck">
+                            <label for="logCheck" class="text">I am an admin.</label>
+                        </div>
+                    </div>
+
+                    <div class="input-field button">
+                        <input class="log-sub" type="button" onclick=" validate()" value="LOG IN" id="submit">
+                    </div>
+                </form>
+                 <div class="login-signup">
+                        <span class="text">Florish Convenience Store</span><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    var attempt = 3; // Variable to count number of attempts.
+  
+    // Below function Executes on click of login button.
+    function validate() {
+      var username = document.getElementById("username").value;
+      var password = document.getElementById("password").value;
+      var isAdmin = document.getElementById("logCheck").checked;
+  
+      // Check if the user is an admin
+      if (isAdmin && username === "Admin" && password === "password") {
+        alert("Please click OK to proceed.");
+        window.location.href = "./admin/Admin Dashboard.html"; // Redirect to admin page
+        return false;
+      } else if (!isAdmin && username === "Cashier" && password === "password") {
+        alert("Please click OK to proceed.");
+        window.location.href = "./cashier/CashierDashboard.html"; // Redirect to cashier page
+        return false;
+      } else {
+        attempt--; // Decrementing by one.
+        alert("You have " + attempt + " attempt(s) left.");
+        // Disabling fields after 3 attempts.
+        if (attempt === 0) {
+          document.getElementById("username").disabled = true;
+          document.getElementById("password").disabled = true;
+          document.getElementById("submit").disabled = true;
+          return false;
+        }
+      }
+    }
+  </script>
+  
+</html>

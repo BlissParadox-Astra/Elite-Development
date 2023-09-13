@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pop-up Form</title>
+  <style>
+    /* Pop-up form container */
+    .popup-form-container {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+    
+    /* Pop-up form */
+    .popup-form {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+    }
+    
+    /* Flex container */
+    .flex-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    /* Flex item */
+    .flex-item {
+      flex-basis: 48%;
+      margin-bottom: 10px;
+    }
+    
+    /* Submit and close buttons */
+    .submit-btn,
+    .close-btn {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    
+    /* Close button */
+    .close-btn {
+      float: right;
+    }
+    
+    /* Style the header */
+    .form-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    /* Style the textfields */
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    
+    /* Style the dropdown */
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Button to open the form -->
+  <button onclick="openForm()">Open Form</button>
+  
+  <!-- Pop-up form container -->
+  <div id="popup-form-container" class="popup-form-container">
+    <!-- Pop-up form -->
+    <div class="popup-form">
+      <!-- SOLD ITEM -->
+      <h2 class="form-header">SOLD ITEM</h2>
+      <!-- First flex container -->
+      <div class="flex-container">
+        <div class="flex-item">
+          <label for="id">ID:</label>
+          <input type="text" id="id" name="id">
+        </div>
+        <div class="flex-item">
+          <label for="product-code">Product Code:</label>
+          <input type="text" id="product-code" name="product-code">
+        </div>
+        <div class="flex-item">
+          <label for="description">Description:</label>
+          <input type="text" id="description" name="description">
+        </div>
+        <div class="flex-item">
+          <label for="quantity">Quantity:</label>
+          <input type="text" id="quantity" name="quantity">
+        </div>
+      </div>
+      <!-- Second flex container -->
+      <div class="flex-container">
+        <div class="flex-item">
+          <label for="transaction">Transaction:</label>
+          <input type="text" id="transaction" name="transaction">
+        </div>
+        <div class="flex-item">
+          <label for="barcode">Barcode:</label>
+          <input type="text" id="barcode" name="barcode">
+        </div>
+        <div class="flex-item">
+          <label for="price">Price:</label>
+          <input type="text" id="price" name="price">
+        </div>
+        <div class="flex-item">
+          <label for="total">Total:</label>
+          <input type="text" id="total" name="total">
+        </div>
+      </div>
+      
+      <!-- CANCEL ITEM(S) -->
+      <h2 class="form-header">CANCEL ITEM(S)</h2>
+      <!-- First flex container -->
+      <div class="flex-container">
+        <div class="flex-item">
+          <label for="void-by">Void By:</label>
+          <input type="text" id="void-by" name="void-by">
+        </div>
+        <div class="flex-item">
+          <label for="cancelled-by">Cancelled By:</label>
+          <input type="text" id="cancelled-by" name="cancelled-by">
+        </div>
+        <div class="flex-item">
+          <label for="add-to-inventory">Add to Inventory:</label>
+          <select id="add-to-inventory" name="add-to-inventory">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+      <!-- Second flex container -->
+      <div class="flex-container">
+        <div class="flex-item">
+          <label for="cancelled-quantity">Cancelled Quantity:</label>
+          <input type="text" id="cancelled-quantity" name="cancelled-quantity">
+        </div>
+        <div class="flex-item">
+          <label for="reasons">Reason(s):</label>
+          <textarea id="reasons" name="reasons"></textarea>
+        </div>
+      </div>
+      
+      <!-- Submit and close buttons -->
+      <button class="submit-btn" type="submit">Submit</button>
+      <button class="close-btn" onclick="closeForm()">Close</button>
+    </div>
+  </div>
+  
+  <script>
+    // Open the form
+    function openForm() {
+      document.getElementById("popup-form-container").style.display = "block";
+    }
+    
+    // Close the form
+    function closeForm() {
+      document.getElementById("popup-form-container").style.display = "none";
+    }
+  </script>
+</body>
+</html>
