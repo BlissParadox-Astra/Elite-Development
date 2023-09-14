@@ -1,8 +1,11 @@
 <?php
 
+
 namespace App\Http\Requests;
 
+
 use Illuminate\Foundation\Http\FormRequest;
+
 
 class CategoryRequest extends FormRequest
 {
@@ -14,6 +17,7 @@ class CategoryRequest extends FormRequest
         return true;
     }
 
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,9 +26,7 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_name' => 'required',
-            'category_code' => 'required|regex:/^[A-Za-z]{2,3}$/|unique:categories,category_code',
+            'category_name' => 'required|unique:categories,category_name',
         ];
     }
-    
 }

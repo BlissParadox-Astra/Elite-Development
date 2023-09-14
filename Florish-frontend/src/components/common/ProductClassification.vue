@@ -1,14 +1,15 @@
 <template>
-    <v-container class="mt-14 ShowModule">
-        <h2 class="text-center mb-4">{{ title }}</h2>
-        <v-row class="d-flex justify-center">
+    <v-container class="mt-2 ShowModule">
+        <v-row class="justify-center">
             <v-col cols="12">
-                <v-text-field v-model="newItem" :label="inputLabel"></v-text-field>
-                <v-text-field v-if="showCategoryCode" v-model="categoryCode" label="Category Code"></v-text-field>
-                <div class=" mt-2 button-container">
-                    <v-btn color="primary" @click="saveItem">Save</v-btn>
-                    <v-btn @click="cancel">Cancel</v-btn>
-                </div>
+                <v-form @submit.prevent="saveItem">
+                    <h2 class="text-center mb-4">{{ title }}</h2>
+                    <v-text-field v-model="newItem" :label="inputLabel"></v-text-field>
+                    <div class=" mt-2 button-container">
+                        <v-btn color="primary" type="submit">{{ editMode ? 'Save' : 'Add' }}</v-btn>
+                        <v-btn @click="cancel">Cancel</v-btn>
+                    </div>
+                </v-form>
             </v-col>
         </v-row>
     </v-container>
@@ -25,37 +26,23 @@ export default {
         },
         product: Object, // Add this prop
         productIndex: Number, // Add this prop
+        editMode: Boolean,
     },
     data() {
         return {
             newItem: this.title === "Brand Module" ? (this.product ? this.product.brand : "") :
                 this.title === "Category Module" ? (this.product ? this.product.categoryName : "") :
                     "",
-            categoryCode: this.title === "Category Module" && this.product ? this.product.categoryCode : "",
         };
-    },
-    computed: {
-        showCategoryCode() {
-            return this.title === "Category Module";
-        },
     },
     methods: {
         saveItem() {
             if (this.title === "Category Module") {
-                if (this.productIndex !== -1) {
-                    this.$emit("category-edited", this.newItem, this.categoryCode, this.productIndex);
-                } else {
-                    this.$emit("category-added", this.newItem, this.categoryCode);
-                }
+                this.$emit("add-category", this.newItem);
             } else if (this.title === "Brand Module") {
-                if (this.productIndex !== -1) {
-                    this.$emit("brand-edited", this.newItem, this.productIndex);
-                } else {
-                    this.$emit("brand-added", this.newItem);
-                }
+                this.$emit("add-brand", this.newItem);
             }
-            this.newItem = "";
-            this.categoryCode = "";
+            // this.newItem = "";
         },
         cancel() {
             this.$emit("cancel");
