@@ -23,6 +23,7 @@ class BrandRequest extends FormRequest
     {
         return [
             'brand_name' => 'required',
+            'category_id' => 'required|exists:categories,id',
         ];
     }
 }

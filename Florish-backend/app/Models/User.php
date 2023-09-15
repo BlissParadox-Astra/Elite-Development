@@ -27,7 +27,7 @@ class User extends Authenticatable
         'contact_number',
     ];
 
-        public function userType()
+    public function userType()
     {
         return $this->belongsTo(UserType::class);
     }

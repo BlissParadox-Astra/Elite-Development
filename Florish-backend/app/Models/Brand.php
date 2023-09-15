@@ -10,10 +10,16 @@ class Brand extends Model
     use HasFactory;
     protected $fillable = [
         'brand_name',
+        'category_id',
     ];
 
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

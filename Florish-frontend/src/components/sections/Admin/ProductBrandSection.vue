@@ -21,8 +21,8 @@
           <v-row class="d-flex justify-center">
             <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
               <ProductClassification v-if="showForm" title="Brand Module" :input-label="brandInputLabel"
-                :product="editingProduct" :product-index="editingProductIndex" @brand-edited="handleBrandEdited"
-                @brand-added="handleBrandAdded" @cancel="cancelBrandAdd" />
+                :product="editingProduct" :product-index="editingProductIndex" :existingCategories="existingCategories"
+                @brand-edited="handleBrandEdited" @add-brand="handleBrandAdded" @cancel="cancelBrandAdd" />
             </v-col>
           </v-row>
         </v-col>
@@ -55,30 +55,52 @@ export default {
       ],
       brands: [],
       brandInputLabel: "Brand Name",
+      existingCategories: []
     };
   },
 
   mounted() {
     this.getBrands();
+    this.fetchCategories();
   },
 
   methods: {
     getBrands() {
       axios.get('/brands').then(res => {
         this.brands = res.data.brands
-        // console.log(this.brands)
       });
     },
 
-    handleBrandAdded(newBrand) {
-      if (this.editingProductIndex !== -1) {
-        this.brands[this.editingProductIndex].brand = newBrand;
-        this.editingProduct = null;
-        this.editingProductIndex = -1;
-      } else {
-        this.brands.push({ brand: newBrand });
-      }
+    handleBrandAdded(newProduct, categoryId) {
+      const brandData = {
+        brand_name: newProduct,
+        category_id: categoryId,
+      };
+      axios.post('/brand', brandData)
+        .then(response => {
+          this.brands.push(response.data);
+          alert(response.data.message);
+          this.reloadPage();
+        })
+        .catch(error => {
+          if (error.response) {
+            console.error('Server responded with errors:', error.response.data);
+          } else if (error.request) {
+            console.error('Request made but no response received:', error.request);
+          } else {
+            console.error('Error setting up the request:', error.message);
+          }
+        });
       this.showForm = false;
+    },
+
+    async fetchCategories() {
+      try {
+        const response = await axios.get('/get-categories'); // Replace with your actual API endpoint
+        this.existingCategories = response.data; // Store user types in the variable
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     handleBrandEdited(newBrand, index) {
@@ -108,6 +130,9 @@ export default {
       if (index !== -1) {
         this.brands.splice(index, 1);
       }
+    },
+    reloadPage() {
+      window.location.reload();
     },
   },
 };

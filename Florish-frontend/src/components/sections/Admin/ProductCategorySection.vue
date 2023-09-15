@@ -55,6 +55,7 @@ export default {
         { key: 'category_name', label: 'Category Name' },
       ],
       categoryInputLabel: "Category Name",
+      editMode: false,
     };
   },
 
@@ -72,11 +73,6 @@ export default {
     },
 
     handleCategoryAdded(newCategory) {
-      // if (this.editingProductIndex !== -1) {
-      //   this.categories[this.editingProductIndex].category_name = newCategory;
-      //   this.editingProduct = null;
-      //   this.editingProductIndex = -1;
-      // } else {
       const categoryData = {
         category_name: newCategory,
       };
@@ -92,13 +88,20 @@ export default {
       this.showForm = false;
     },
 
-    handleCategoryEdited(newCategory, index) {
-      if (index !== -1) {
-        this.categories[index].category_name = newCategory;
-      }
-      this.showForm = false;
-      this.editingProduct = null;
-      this.editingProductIndex = -1;
+    handleCategoryEdited(newCategory, categoryId) {
+      const categoryData = {
+        category_name: newCategory,
+      };
+      axios.put(`/category/${categoryId}`, categoryData) // Assuming your API supports category updates via PUT
+        .then(response => {
+          // Handle success
+          this.categories[this.editingProductIndex].category_name = newCategory;
+          alert(response.data.message);
+          this.showForm = false;
+        })
+        .catch(error => {
+          console.error('Error updating category:', error);
+        });
     },
 
     cancelCategoryAdd() {
@@ -106,6 +109,7 @@ export default {
       this.editingProduct = null;  // Reset editingProduct
       this.editingProductIndex = -1; // Reset editingProductIndex
     },
+    
     editProductRow(product) {
       this.editingProduct = { ...product }; // Use spread operator to copy the entire object
       const index = this.categories.findIndex(
@@ -113,6 +117,8 @@ export default {
       );
       this.editingProductIndex = index;
       this.showForm = true;
+      this.editMode = true;
+      this.$refs.productClassification.populateForm(product.category_name);
     },
 
     reloadPage() {

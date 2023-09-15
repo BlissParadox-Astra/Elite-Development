@@ -14,7 +14,12 @@ return new class extends Migration
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
             $table->string('brand_name');
+            $table->unsignedBigInteger('category_id');
             $table->timestamps();
+        });
+
+        Schema::table('brands', function (Blueprint $table) {
+            $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 

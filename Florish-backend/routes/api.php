@@ -39,8 +39,10 @@ Route::put('/category/{category}', [CategoryController::class, 'update'])->name(
 
 
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+Route::post('brand', [BrandController::class, 'store'])->name('brands.store');
 Route::get('/brand/{id}', [BrandController::class, 'show'])->name('brands.show');
 Route::put('/brand/{brand}', [BrandController::class, 'update'])->name('brands.update');
+Route::get('/get-categories', [BrandController::class, 'getCategories'])->name('get-categories.get');
 
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
