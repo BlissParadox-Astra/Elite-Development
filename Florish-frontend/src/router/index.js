@@ -13,6 +13,9 @@ import CriticalStockView from '../views/Admin/CriticalStockView.vue';
 import CancelledOrderView from '../views/Admin/CancelOrderView.vue';
 import UsersView from '../views/Admin/UsersView.vue';
 import Login from '../components/views/Login/LoginForm.vue';
+//cashier part
+import CashierDashboard from '../components/sections/Cashier/CashierDashboard.vue';
+import TransactionCart from '../components/sections/Cashier/transactionCart.vue';
 
 const routes = [
   {
@@ -112,7 +115,21 @@ const routes = [
     component: Login,
     meta: { title: ' Login' },
   },
+  //Cashier route
+  {
+    path: '/cashierdashboard',
+    name: 'cashierdashboard',
+    component: CashierDashboard,
+  
+  },
+  {
+    path: '/transactionCart',
+    name: 'transactionCart',
+    component: TransactionCart,
+  
+  },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
