@@ -102,19 +102,17 @@ export default {
             editedQuantity: 0,
             editingIndex: -1,
             tableColumns: [
-                { key: "invoiceNo", label: "Invoice No." },
-                { key: "productCode", label: "Product Code" },
-                { key: "barcode", label: "Bar Code" },
+                { key: "PCode", label: "PCode" },
+                { key: "BarCode", label: "BarCode" },
                 { key: "description", label: "Description" },
                 { key: "price", label: "Price" },
                 { key: "quantity", label: "Quantity" },
                 { key: "total", label: "Total" },
-                { key: "transacBy", label: "Transaction By" },
             ],
 
             products: [
-                { invoiceNo: "Invoice001", productCode: "P001", barcode: "123456789", description: "Product 1", price: 30, quantity: "5", total: "800", transacBy: "cashier", },
-                { invoiceNo: "Invoice002", productCode: "P002", barcode: "987654321", description: "Product 2", price: 400, quantity: "6", total: "1000", transacBy: "cashier", },
+                {  PCode: "P001", BarCode: "123456789", description: "Product 1", price: 30, quantity: "5", total: "800",  },
+                {  PCode: "P002", BarCode: "987654321", description: "Product 2", price: 400, quantity: "6", total: "1000", },
             ],
         };
     },

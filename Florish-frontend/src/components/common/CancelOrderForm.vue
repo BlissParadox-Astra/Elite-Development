@@ -18,38 +18,29 @@
                     </v-col>
                     <v-row justify="center">
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="first_name" label="ID" required :error-messages="firstNameError"
-                                @input="clearFieldErrors('firstName')"></v-text-field>
+                            <v-text-field label="ID"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="last_name" label="Transaction" required :error-messages="lastNameError"
-                                @input="clearFieldErrors('lastName')"></v-text-field>
+                            <v-text-field label="Transaction" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="user_name" label="Product Code" required :error-messages="userNameError"
-                                @input="clearFieldErrors('userName')"></v-text-field>
+                            <v-text-field label="Product Code" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="user_name" label="Bar Code" required :error-messages="userNameError"
-                                @input="clearFieldErrors('userName')"></v-text-field>
+                            <v-text-field label="Bar Code" required></v-text-field>
                         </v-col>
 
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="password" label="Description" required :error-messages="passwordError"
-                                @input="clearFieldErrors('password')" :rules="passwordRules"></v-text-field>
+                            <v-text-field label="Description"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="password_confirmation" label="Price" required
-                                :error-messages="confirmPasswordError" @input="clearFieldErrors('confirmPassword')"
-                                :rules="confirmPasswordRules"></v-text-field>
+                            <v-text-field label="Price" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="gender" label="Quantity" required :error-messages="genderError"
-                                @input="clearFieldErrors('gender')"></v-text-field>
+                            <v-text-field label="Quantity"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="age" label="Total" required :error-messages="ageError"
-                                @input="clearFieldErrors('age')" :rules="ageRules"></v-text-field>
+                            <v-text-field label="Total" required></v-text-field>
                         </v-col>
                     </v-row>
                     <v-col>
@@ -57,20 +48,16 @@
                     </v-col>
                     <v-row justify="center">
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="first_name" label="VIOD BY" required :error-messages="firstNameError"
-                                @input="clearFieldErrors('firstName')"></v-text-field>
+                            <v-text-field label="VIOD BY" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="last_name" label="CANCEL QUANTITY" required
-                                :error-messages="lastNameError" @input="clearFieldErrors('lastName')"></v-text-field>
+                            <v-text-field label="CANCEL QUANTITY" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="user_name" label="CANCEL BY" required :error-messages="userNameError"
-                                @input="clearFieldErrors('userName')"></v-text-field>
+                            <v-text-field label="CANCEL BY"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="user_name" label="REASON(S)" required :error-messages="userNameError"
-                                @input="clearFieldErrors('userName')"></v-text-field>
+                            <v-text-field label="REASON(S)" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
                             <v-combobox v-model="value" :items="items" label="Default"></v-combobox>
@@ -105,17 +92,6 @@ export default {
             address: this.initialUser ? this.initialUser.address : '',
             contact_number: this.initialUser ? this.initialUser.contact_number : '',
             editingUser: !!this.initialUser,
-
-            userTypeError: '',
-            userNameError: '',
-            passwordError: '',
-            confirmPasswordError: '',
-            firstNameError: '',
-            lastNameError: '',
-            genderError: '',
-            ageError: '',
-            addressError: '',
-            contactNumberError: '',
             items: ['Yes', 'NO'],
             value: 'Select Options',
         };
