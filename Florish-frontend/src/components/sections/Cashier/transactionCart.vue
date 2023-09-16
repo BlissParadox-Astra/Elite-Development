@@ -13,16 +13,13 @@
                         <v-label class="mr-3">TRANSACTION ID:</v-label> <!-- Added margin-right -->
                     </v-col>
                     <v-col cols="12" sm="6" lg="3">
-                        <v-text-field class="ml-n6" label="Transaction ID" hide-details></v-text-field>
+                        <v-text-field class="ml-n6" label="Transaction ID" variant="plain"></v-text-field>
                     </v-col>
-                </v-row>
-
-                <v-row>
                     <v-col cols="12" sm="6" lg="2" class="d-flex align-center w-auto">
                         <v-label class="mr-n7">TRANSACTION DATE:</v-label>
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3">
-                        <v-text-field class="ml-n5" label="Transaction Date" outlined></v-text-field>
+                    <v-col cols="12" sm="6" lg="4" >
+                        <v-text-field class="ml-n2" label="Transaction Date" variant="plain"></v-text-field>
                     </v-col>
                 </v-row>
                 <v-row>
@@ -30,10 +27,11 @@
                         <v-label >BARCODE:</v-label>
                     </v-col>
                     <v-col cols="12" sm="6" lg="3">
-                        <v-text-field class="ml-n5" label="Barcode" outlined></v-text-field>
+                       <SearchField class="ml-n6"></SearchField>
                     </v-col>
                     <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <v-btn color="success" block @click="showBrowseProductForm">Browse Product</v-btn>
+                        <h5 class="text-blue"  @click="showBrowseProductForm" >[CLICK HERE TO BROWSE PRODUCT] </h5>
+                        <!-- <v-btn color="success" block>Browse Product</v-btn> -->
                     </v-col>
                     <v-col cols="12" xl="5" lg="3" class="d-flex align-center">
                         <v-card class="pa-3 total-card">
@@ -49,9 +47,8 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
-                    @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" height="450px" />
-                <!-- <CustomTable :columns="tableColumns" :items="products" @edit-quantity="openEditQuantityDialog"  height="460px" /> -->
+                <CustomTable :columns="tableColumns" :items="products" :showMinusIcon="true" :showPlusCartIcon="true"  :isStockEntryPage="true"
+                    @delete-data="deleteProductRow" :showDeleteIcon="true"  @edit-quantity="openEditQuantityDialog" height="450px" />
             </v-col>
         </v-row>
         <!--Browse Product -->
@@ -79,7 +76,7 @@
         </v-dialog>
         <v-row class="d-flex justify-space-between">
             <v-col cols="12" sm="6" lg="3" class="text-start">
-                <v-btn color="success" block>BACK</v-btn>
+                <v-btn to="/cashierdashboard" color="success" block>BACK</v-btn>
             </v-col>
             <v-col cols="12" sm="6" lg="3" class="text-end">
                 <v-btn color="success" block>SOLD</v-btn>
@@ -90,16 +87,17 @@
 <script>
 import CustomTable from "../../common/CustomTable.vue";
 import BrowseProduct from '../../common/BrowseProduct.vue';
+import SearchField from '../../common/SearchField.vue';
 export default {
     name: 'transactionCart',
     components: {
         CustomTable,
         BrowseProduct,
+        SearchField,
     },
     data() {
         return {
             showEditQuantityDialog: false,
-            showConfirmationDialog: false,
             showBrowseProduct: false,
             editedQuantity: 0,
             editingIndex: -1,
@@ -117,12 +115,6 @@ export default {
             products: [
                 { invoiceNo: "Invoice001", productCode: "P001", barcode: "123456789", description: "Product 1", price: 30, quantity: "5", total: "800", transacBy: "cashier", },
                 { invoiceNo: "Invoice002", productCode: "P002", barcode: "987654321", description: "Product 2", price: 400, quantity: "6", total: "1000", transacBy: "cashier", },
-            ],
-
-            items: [
-                { title: 'Category' },
-                { title: 'Total' },
-                { title: 'Alphabetically' },
             ],
         };
     },
@@ -165,15 +157,6 @@ export default {
             this.editingIndex = -1;
             this.editedQuantity = 0
                 ;
-        },
-        showConfirmation() {
-            this.showConfirmationDialog = true;
-        },
-        saveRecord() {
-            this.showConfirmationDialog = false;
-        },
-        cancelSave() {
-            this.showConfirmationDialog = false;
         },
     },
 }

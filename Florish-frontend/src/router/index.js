@@ -16,6 +16,8 @@ import Login from '../components/views/Login/LoginForm.vue';
 //cashier part
 import CashierDashboard from '../components/sections/Cashier/CashierDashboard.vue';
 import TransactionCart from '../components/sections/Cashier/transactionCart.vue';
+import LowStock from '@/components/sections/Cashier/CriticalStock.vue';
+import SoldPurchase from '@/components/sections/Cashier/SoldPurchase.vue';
 
 const routes = [
   {
@@ -126,6 +128,18 @@ const routes = [
     path: '/transactionCart',
     name: 'transactionCart',
     component: TransactionCart,
+  
+  },
+  {
+    path: '/lowStock',
+    name: 'lowStock',
+    component: LowStock,
+  
+  },
+  {
+    path: '/soldPurchase',
+    name: 'soldPurchase',
+    component: SoldPurchase,
   
   },
 ];
