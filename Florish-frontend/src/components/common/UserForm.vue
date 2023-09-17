@@ -27,13 +27,12 @@
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="password" :label="passwordLabel" placeholder="Enter Password" required
-                                :error-messages="passwordError" @input="clearFieldErrors('password')"
-                                :rules="passwordRules"></v-text-field>
+                                :error-messages="passwordError" @input="clearFieldErrors('password')"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="password_confirmation" :label="passwordConfirmationLabel"
                                 placeholder="Enter Confirm Password" required :error-messages="confirmPasswordError"
-                                @input="clearFieldErrors('confirmPassword')" :rules="confirmPasswordRules"></v-text-field>
+                                @input="clearFieldErrors('confirmPassword')"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-select v-model="gender" :items="['male', 'female', 'other']" label="Gender"
@@ -42,8 +41,7 @@
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="age" label="Age" placeholder="Enter Age" required
-                                :error-messages="ageError" @input="clearFieldErrors('age')"
-                                :rules="ageRules"></v-text-field>
+                                :error-messages="ageError" @input="clearFieldErrors('age')"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="address" label="Address" placeholder="Enter Address" required
@@ -111,20 +109,18 @@ export default {
             const userTypeId = this.findUserTypeIdByName(this.user_type);
             if (!userTypeId) {
                 this.userTypeError = 'User Type is required.';
-            }
-            else if (
+            } else if (
                 this.userTypeError ||
                 this.userNameError ||
-                this.passwordError ||
                 this.firstNameError ||
                 this.lastNameError ||
                 this.genderError ||
                 this.ageError ||
-                this.addressError ||
-                this.confirmPasswordError
+                this.addressError
             ) {
                 return;
             }
+
             const userData = {
                 user_type_id: userTypeId,
                 first_name: this.first_name,
@@ -134,9 +130,16 @@ export default {
                 address: this.address,
                 contact_number: this.contact_number,
                 username: this.username,
-                password: this.password,
-                password_confirmation: this.password_confirmation,
+                password: this.password || '',
+                password_confirmation: this.password_confirmation || '',
             };
+
+            if (this.password) {
+                userData.password = this.password;
+            }
+            if (this.password_confirmation) {
+                userData.password_confirmation = this.password_confirmation;
+            }
 
             if (this.editingUser) {
                 axios
@@ -144,8 +147,8 @@ export default {
                     .then((response) => {
                         if (response.status === 200) {
                             this.$emit('update', response.data);
-                            this.resetFormFields();
                             alert(response.data.message);
+                            this.resetFormFields();
                             this.clearErrors();
                             this.reloadPage();
                         } else {
@@ -175,8 +178,8 @@ export default {
                     .then((response) => {
                         if (response.status === 200) {
                             this.$emit('add', response.data);
-                            this.resetFormFields();
                             alert(response.data.message);
+                            this.resetFormFields();
                             this.clearErrors();
                             this.reloadPage();
                         } else {
@@ -244,7 +247,6 @@ export default {
             this[fieldName + 'Error'] = '';
         },
 
-
         reloadPage() {
             window.location.reload();
         },
@@ -262,30 +264,6 @@ export default {
         userTypeDisplayName() {
             const userType = this.userTypes.find(type => type.id === this.user_type);
             return userType ? userType.user_type : '';
-        },
-
-        ageRules() {
-            return [
-                v => !!v || 'Age is required.',
-                v => /^\d+$/.test(v) || 'Age must be a valid number.',
-            ];
-        },
-
-        passwordRules() {
-            return [v => !!v || 'Password is required.',
-            v => (v && v.length >= 8) || 'Password must be at least 8 characters long.',
-            v => (v && /[A-Z]/.test(v)) || 'Password must contain at least one uppercase letter.',
-            v => (v && /[a-z]/.test(v)) || 'Password must contain at least one lowercase letter.',
-            v => (v && /\d/.test(v)) || 'Password must contain at least one number.',
-            v => (v && /[!@#$%^&*]/.test(v)) || 'Password must contain at least one special character (!@#$%^&*).'];
-        },
-
-        confirmPasswordRules() {
-            return [v => !!v || 'Confirm password is required'];
-        },
-
-        contactNumberRules() {
-            return [v => !!v || 'Contact Number is required.',];
         },
     },
 };

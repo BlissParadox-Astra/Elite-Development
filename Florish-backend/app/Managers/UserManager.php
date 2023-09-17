@@ -28,16 +28,31 @@ class UserManager
     {
         return User::with(['userType', 'userCredential'])->findOrFail($id);
     }
-
     public function updateUser(User $user, array $data)
     {
-        $user->update($data);
-        $user->userCredential->update([
-            'username' => $data['username'],
-            'password' => Hash::make($data['password']),
+        $user->update([
+            'user_type_id' => $data['user_type_id'],
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'gender' => $data['gender'],
+            'age' => $data['age'],
+            'address' => $data['address'],
+            'contact_number' => $data['contact_number'],
         ]);
+
+        if (isset($data['username'])) {
+            $user->userCredential->update([
+                'username' => $data['username'],
+            ]);
+        }
+
+        if (!empty($data['password'])) {
+            $user->userCredential->update([
+                'password' => Hash::make($data['password']),
+            ]);
+        }
     }
-    
+
     public function deleteUserWithCredentials(User $user): void
     {
         if ($user->userCredential) {
@@ -46,5 +61,4 @@ class UserManager
 
         $user->delete();
     }
-
 }
