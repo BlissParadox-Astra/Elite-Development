@@ -73,7 +73,7 @@ class BrandController extends Controller
     public function show(string $id)
     {
         try {
-            $brand = $this->brandManager->getBrandById($id);
+            $brand = $this->brandManager->getBrandByIdWithRelations($id);
 
             if (!$brand) {
                 return response()->json(['message' => 'Brand not found'], Response::HTTP_NOT_FOUND);

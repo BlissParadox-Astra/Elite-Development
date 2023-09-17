@@ -6,22 +6,22 @@
           <SearchField />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-          <v-btn color="success" block @click="showForm = true">Add Category</v-btn>
+          <v-btn color="success" block @click="showCategoryForm">Add Category</v-btn>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row justify="center">
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="categories" :showEditIcon="true" :showDeleteIcon="true"
-            @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px" />
+            @edit-data="editCategoryRow" @delete-data="showDeleteConfirmation" class="custom-table" />
         </v-col>
       </v-row>
+      <DeleteConfirmationDialog @confirm-delete="deleteCategory" ref="deleteConfirmationDialog" />
       <v-row>
         <v-col cols="12">
           <v-row class="d-flex justify-center">
-            <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
-              <ProductClassification v-if="showForm" :title="formTitle" :input-label="categoryInputLabel"
-                :product="editingProduct" :product-index="editingProductIndex" @category-edited="handleCategoryEdited"
-                @add-category="handleCategoryAdded" @cancel="cancelCategoryAdd" :initialProduct="editingProduct" />
+            <v-col cols="12" sm="5" xl="5" lg="5" md="5 " class="form-container">
+              <CategoryForm v-if="showForm" @add="addCategory" @update="updateCategory(editingCategoryIndex, $event)"
+                @cancel="hideCategoryForm" :initialCategory="editingCategory" />
             </v-col>
           </v-row>
         </v-col>
@@ -33,7 +33,8 @@
 <script>
 import CustomTable from "../../common/CustomTable.vue";
 import SearchField from "../../common/SearchField.vue";
-import ProductClassification from "../../common/ProductClassification.vue";
+import CategoryForm from "../../common/CategoryForm.vue";
+import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 
@@ -42,20 +43,18 @@ export default {
   components: {
     CustomTable,
     SearchField,
-    ProductClassification,
+    CategoryForm,
+    DeleteConfirmationDialog,
   },
   data() {
     return {
-      editingProduct: null,
-      editingProductIndex: -1,
       showForm: false,
-      formTitle: "Category Module",
       categories: [],
+      editingCategory: null,
+      editingCategoryIndex: -1,
       tableColumns: [
         { key: 'category_name', label: 'Category Name' },
       ],
-      categoryInputLabel: "Category Name",
-      editMode: false,
     };
   },
 
@@ -68,74 +67,73 @@ export default {
     getCategories() {
       axios.get('/categories').then(res => {
         this.categories = res.data.categories
-        console.log(this.categories)
       });
     },
 
-    handleCategoryAdded(newCategory) {
-      const categoryData = {
-        category_name: newCategory,
-      };
-      axios.post('/category', categoryData)
-        .then(response => {
-          this.categories.push(response.data);
-          alert(response.data.message);
-          this.reloadPage();
-        })
-        .catch(error => {
-          console.error('Error adding category:', error);
-        });
-      this.showForm = false;
+    addCategory(categoryData) {
+      if (!categoryData.category_name) {
+        return;
+      }
+      this.categories.push(categoryData);
+      this.hideCategoryForm();
     },
 
-    handleCategoryEdited(newCategory, categoryId) {
-      const categoryData = {
-        category_name: newCategory,
-      };
-      axios.put(`/category/${categoryId}`, categoryData) // Assuming your API supports category updates via PUT
-        .then(response => {
-          // Handle success
-          this.categories[this.editingProductIndex].category_name = newCategory;
-          alert(response.data.message);
-          this.showForm = false;
-        })
-        .catch(error => {
-          console.error('Error updating category:', error);
-        });
-    },
-
-    cancelCategoryAdd() {
-      this.showForm = false;
-      this.editingProduct = null;  // Reset editingProduct
-      this.editingProductIndex = -1; // Reset editingProductIndex
-    },
-    
-    editProductRow(product) {
-      this.editingProduct = { ...product }; // Use spread operator to copy the entire object
+    editCategoryRow(category) {
+      this.editingCategory = { ...category };
       const index = this.categories.findIndex(
-        p => p.category_name === product.category_name
+        p => p.categoryCode === category.category
       );
       this.editingProductIndex = index;
       this.showForm = true;
-      this.editMode = true;
-      this.$refs.productClassification.populateForm(product.category_name);
     },
 
-    reloadPage() {
-      window.location.reload();
+    updateCategory(index, updatedCategory) {
+      this.categories[index] = updatedCategory;
+      this.editingCategory = null;
+      this.hideCategoryForm();
     },
 
-    deleteProductRow(product) {
-      const index = this.categories.findIndex(
-        p => p.category_name === product.category_name
-      );
-      if (index !== -1) {
-        this.categories.splice(index, 1);
+    deleteCategory() {
+      if (this.itemToDelete) {
+        axios.delete(`/category/${this.itemToDelete.id}`)
+          .then(() => {
+            const index = this.categories.findIndex(category => category.id === this.itemToDelete.id);
+            if (index !== -1) {
+              this.categories.splice(index, 1);
+            }
+            this.$refs.deleteConfirmationDialog.closeDialog();
+          })
+          .catch(error => {
+            console.error('Error deleting item:', error);
+          });
       }
+    },
+
+    showDeleteConfirmation(item) {
+      this.itemToDelete = item;
+      this.$refs.deleteConfirmationDialog.showConfirmationDialog();
+    },
+
+    showCategoryForm() {
+      this.showForm = true;
+    },
+
+    hideCategoryForm() {
+      this.showForm = false;
+      this.editingCategory = null;
+      this.editingCategoryIndex = -1;
+    },
+
+
+    cancelCategoryAdd() {
+      this.showForm = false;
+      this.editingProduct = null;
+      this.editingProductIndex = -1;
     },
   },
 };
 </script>
+
 <style scooped>
 .form-container {
   position: absolute;
@@ -143,7 +141,10 @@ export default {
   left: 1;
   right: 1;
   z-index: 999;
-
-
+  max-height: 100%;
+  overflow-y: auto;
+}
+.custom-table {
+  height: 500px;
 }
 </style>

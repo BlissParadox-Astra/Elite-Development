@@ -23,10 +23,17 @@ class CategoryRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules()
     {
-        return [
-            'category_name' => 'required|unique:categories,category_name',
+        $rules = [
+        'category_name' => 'required|unique:categories,category_name',
         ];
+
+        if ($this->isMethod('PUT')) {
+            $rules = [
+                'category_name' => 'required'
+            ];
+        }
+        return $rules;
     }
 }

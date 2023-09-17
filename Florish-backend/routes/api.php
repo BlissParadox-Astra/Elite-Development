@@ -36,12 +36,14 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::post('/category', [CategoryController::class, 'store'])->name('categories.store');
 Route::get('/category/{id}', [CategoryController::class, 'show'])->name('categories.show');
 Route::put('/category/{category}', [CategoryController::class, 'update'])->name('categories.update');
+Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
-Route::post('brand', [BrandController::class, 'store'])->name('brands.store');
+Route::post('/brand', [BrandController::class, 'store'])->name('brands.store');
 Route::get('/brand/{id}', [BrandController::class, 'show'])->name('brands.show');
 Route::put('/brand/{brand}', [BrandController::class, 'update'])->name('brands.update');
+Route::delete('/brand/{id}', [BrandController::class, 'destroy'])->name('brands.destroy');
 Route::get('/get-categories', [BrandController::class, 'getCategories'])->name('get-categories.get');
 
 
@@ -73,14 +75,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Group for category management routes
     // Route::prefix('/category')->group(function () {
     //     Route::post('/', [CategoryController::class, 'store'])->name('categories.store');
-    //     Route::delete('{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    //     
     // });
 
 
     // Group for brand management routes
     // Route::prefix('/brand')->group(function () {
     //     Route::post('/', [BrandController::class, 'store'])->name('brands.store');
-    //     Route::delete('{id}', [BrandController::class, 'destroy'])->name('brands.destroy');
+    //     
     // });
 
 
