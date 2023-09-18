@@ -6,13 +6,13 @@
           <v-btn color="success" block @click="showUserForm">Add User</v-btn>
         </v-col>
       </v-row>
-
       <v-row justify="center">
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="users" :showEditIcon="true" :showDeleteIcon="true"
-            @edit-data="editUserRow" @delete-data="deleteUserRow" height="445px" />
+            class="custom-table" @edit-data="editUserRow" @delete-data="showDeleteConfirmation" />
         </v-col>
       </v-row>
+      <DeleteConfirmationDialog @confirm-delete="deleteUser" ref="deleteConfirmationDialog" />
       <v-row>
         <v-col cols="12">
           <v-row class="d-flex justify-center">
@@ -26,17 +26,20 @@
     </v-container>
   </v-main>
 </template>
-  
+ 
 <script>
 import CustomTable from '../../common/CustomTable.vue';
 import UserForm from '../../common/UserForm.vue';
+import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
 import axios from 'axios';
+
 
 export default {
   name: 'UsersDetails',
   components: {
     CustomTable,
     UserForm,
+    DeleteConfirmationDialog,
   },
 
   data() {
@@ -59,35 +62,17 @@ export default {
       userTypes: [],
     };
   },
+
   mounted() {
     this.getUsers();
     this.fetchUserTypes();
   },
+
   methods: {
     getUsers() {
       axios.get('/users').then(res => {
         this.users = res.data.users
-        // console.log(this.users)
       });
-    },
-
-    async fetchUserTypes() {
-      try {
-        const response = await axios.get('/user-types'); // Replace with your actual API endpoint
-        this.userTypes = response.data; // Store user types in the variable
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    showUserForm() {
-      this.showForm = true;
-    },
-
-    hideUserForm() {
-      this.showForm = false;
-      this.editingUser = null;
-      this.editingUserIndex = -1;
     },
 
     addUser(userData) {
@@ -99,16 +84,50 @@ export default {
       this.hideUserForm();
     },
 
+    editUserRow(user) {
+      const userType = this.userTypes.find(userType => userType.user_type === user.user_type.user_type);
+      const username = user.user_credential ? user.user_credential.username : '';
+
+      this.editingUser = { ...user, user_type: userType ? userType.user_type : null, username: username };
+      const index = this.users.findIndex(p => p.userCode === user.userCode);
+      this.editingUserIndex = index;
+      this.showForm = true;
+    },
+
     updateUser(index, updatedUser) {
       this.users[index] = updatedUser;
       this.editingUser = null;
       this.hideUserForm();
     },
+    
+    deleteUser() {
+      if (this.itemToDelete) {
+        axios.delete(`/user/${this.itemToDelete.id}`)
+          .then(() => {
+            const index = this.users.findIndex(user => user.id === this.itemToDelete.id);
+            if (index !== -1) {
+              this.users.splice(index, 1);
+            }
+            this.$refs.deleteConfirmationDialog.closeDialog();
+          })
+          .catch(error => {
+            console.error('Error deleting item:', error);
+          });
+      }
+    },
 
-    editUserRow(user) {
-      this.editingUser = { ...user };
-      const index = this.users.findIndex(p => p.userCode === user.userCode);
-      this.editingUserIndex = index;
+    showDeleteConfirmation(item) {
+      this.itemToDelete = item;
+      this.$refs.deleteConfirmationDialog.showConfirmationDialog();
+    },
+
+    hideUserForm() {
+      this.showForm = false;
+      this.editingUser = null;
+      this.editingUserIndex = -1;
+    },
+
+    showUserForm() {
       this.showForm = true;
     },
 
@@ -119,20 +138,26 @@ export default {
       }
     },
 
-    // Custom render function for 'User Type' column
     renderUserType(user) {
       return user.user_type ? user.user_type.user_type : 'Unknown';
     },
 
-    // Custom render function for 'User Name' column
     renderUserName(user) {
       return user.user_credential ? user.user_credential.username : 'Unknown';
     },
-
+    
+    async fetchUserTypes() {
+      try {
+        const response = await axios.get('/user-types');
+        this.userTypes = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 };
 </script>
-  
+ 
 <style scoped>
 .form-container {
   position: absolute;
@@ -141,8 +166,11 @@ export default {
   right: 1;
   z-index: 999;
   max-height: 100%;
-  /* Adjust the maximum height as needed */
   overflow-y: auto;
 }
+
+.custom-table {
+  height: 445px;
+}
 </style>
-  
+ 

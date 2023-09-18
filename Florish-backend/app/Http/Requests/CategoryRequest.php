@@ -1,8 +1,11 @@
 <?php
 
+
 namespace App\Http\Requests;
 
+
 use Illuminate\Foundation\Http\FormRequest;
+
 
 class CategoryRequest extends FormRequest
 {
@@ -14,17 +17,23 @@ class CategoryRequest extends FormRequest
         return true;
     }
 
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules()
     {
-        return [
-            'category_name' => 'required',
-            'category_code' => 'required|regex:/^[A-Za-z]{2,3}$/|unique:categories,category_code',
+        $rules = [
+        'category_name' => 'required|unique:categories,category_name',
         ];
+
+        if ($this->isMethod('PUT')) {
+            $rules = [
+                'category_name' => 'required'
+            ];
+        }
+        return $rules;
     }
-    
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BrandRequest;
 use App\Managers\BrandManager;
 use App\Models\Brand;
-use Illuminate\Http\Request;
+use App\Models\Category;
 use Illuminate\Http\Response;
 
 class BrandController extends Controller
@@ -47,11 +47,19 @@ class BrandController extends Controller
     public function store(BrandRequest $request)
     {
         try {
-            $brandData = $request->all();
+            $brandData = $request->validated();
 
-            $this->brandManager->createBrand($brandData);
-
-            return response()->json(['message' => 'Brand created successfully'], Response::HTTP_CREATED);
+            $brand = $this->brandManager->createBrand(
+                [
+                    'brand_name' => $brandData['brand_name'],
+                    'category_id' => $brandData['category_id'],
+                ]
+            );
+            if ($brand) {
+                return response()->json(['status' => 200, 'message' => 'Brand created successfully'], 200);
+            } else {
+                return response()->json(['status' => 500, 'message' => 'Brand creation failed'], 500);
+            }
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
@@ -65,7 +73,7 @@ class BrandController extends Controller
     public function show(string $id)
     {
         try {
-            $brand = $this->brandManager->getBrandById($id);
+            $brand = $this->brandManager->getBrandByIdWithRelations($id);
 
             if (!$brand) {
                 return response()->json(['message' => 'Brand not found'], Response::HTTP_NOT_FOUND);
@@ -118,6 +126,21 @@ class BrandController extends Controller
             $errorMessage = $e->getMessage();
 
             return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    /**
+     * Show categories from category table.
+     */
+
+    public function getCategories()
+    {
+        try {
+            $categories = Category::all();
+
+            return response()->json($categories);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to fetch categories'], 500);
         }
     }
 }

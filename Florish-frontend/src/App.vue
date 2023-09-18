@@ -49,7 +49,7 @@ export default {
 }
 
 </script>
-<style scooped>
+<style>
 .align-center {
   display: flex;
   align-items: center;
