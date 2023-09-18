@@ -6,23 +6,22 @@
           <SearchField />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-          <v-btn color="success" block @click="showForm = true">Add BRAND</v-btn>
+          <v-btn color="success" block @click="showBrandForm">Add Brand</v-btn>
         </v-col>
-
       </v-row>
       <v-row>
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="brands" :showEditIcon="true" :showDeleteIcon="true"
-            @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px" />
+            @edit-data="editBrandRow" @delete-data="showDeleteConfirmation" class="custom-table" />
         </v-col>
       </v-row>
+      <DeleteConfirmationDialog @confirm-delete="deleteBrand" ref="deleteConfirmationDialog" />
       <v-row>
         <v-col cols="12">
           <v-row class="d-flex justify-center">
             <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
-              <ProductClassification v-if="showForm" title="Brand Module" :input-label="brandInputLabel"
-                :product="editingProduct" :product-index="editingProductIndex" @brand-edited="handleBrandEdited"
-                @brand-added="handleBrandAdded" @cancel="cancelBrandAdd" />
+              <BrandForm v-if="showForm" @add="addBrand" :existingCategories="existingCategories"
+                @update="updateBrand(editingBrandIndex, $event)" @cancel="hideBrandForm" :initialBrand="editingBrand" />
             </v-col>
           </v-row>
         </v-col>
@@ -34,7 +33,8 @@
 <script>
 import CustomTable from "../../common/CustomTable.vue";
 import SearchField from "../../common/SearchField.vue";
-import ProductClassification from "../../common/ProductClassification.vue";
+import BrandForm from "../../common/BrandForm.vue";
+import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 export default {
@@ -42,74 +42,141 @@ export default {
   components: {
     CustomTable,
     SearchField,
-    ProductClassification,
+    BrandForm,
+    DeleteConfirmationDialog,
   },
 
   data() {
     return {
       showForm: false,
-      editingProduct: null,
-      editingProductIndex: -1,
-      tableColumns: [
-        { key: "brand_name", label: "BRAND" },
-      ],
       brands: [],
-      brandInputLabel: "Brand Name",
+      editingBrand: null,
+      editingBrandIndex: -1,
+      tableColumns: [
+        { key: "brand_name", label: "Brand Name" },
+      ],
+      existingCategories: [],
+      loadingCategories: false,
     };
   },
 
-  mounted() {
-    this.getBrands();
+  async mounted() {
+    this.loadingCategories = true;
+    await this.fetchCategories();
+    this.loadingCategories = false;
+    await this.getBrands();
   },
 
   methods: {
     getBrands() {
       axios.get('/brands').then(res => {
-        this.brands = res.data.brands
-        // console.log(this.brands)
+        this.brands = res.data.brands.map(brand => ({
+          ...brand,
+          category_name: brand.category.category_name,
+        }))
       });
     },
 
-    handleBrandAdded(newBrand) {
-      if (this.editingProductIndex !== -1) {
-        this.brands[this.editingProductIndex].brand = newBrand;
-        this.editingProduct = null;
-        this.editingProductIndex = -1;
-      } else {
-        this.brands.push({ brand: newBrand });
+    addBrand(brandData) {
+      if (!brandData.brand_name || !brandData.categoryName) {
+        return;
       }
-      this.showForm = false;
+      this.brands.push(brandData);
+      this.hideBrandForm();
     },
 
-    handleBrandEdited(newBrand, index) {
-      if (index !== -1) {
-        this.brands[index].brand = newBrand;
+    editBrandRow(brand) {
+      const category = this.existingCategories.find(category => category.category_name === brand.category.category_name);
+
+      if (category) {
+        this.editingBrand = {
+          ...brand,
+          category_id: category.id,
+        };
+
+        const index = this.brands.findIndex(p => p.id === brand.id);
+        this.editingBrandIndex = index;
+        this.showForm = true;
+      } else {
+        console.error(`Category "${brand.category.category_name}" not found.`);
       }
+    },
+
+    async fetchCategories() {
+      try {
+        const response = await axios.get('/categories');
+        this.existingCategories = response.data.categories;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    },
+
+    updateBrand(index, updatedBrand) {
+      this.brands[index] = updatedBrand;
+      this.editingBrand = null;
+      this.hideBrandForm();
+    },
+
+    deleteBrand() {
+      if (this.itemToDelete) {
+        axios.delete(`/brand/${this.itemToDelete.id}`)
+          .then(() => {
+            const index = this.brands.findIndex(brand => brand.id === this.itemToDelete.id);
+            if (index !== -1) {
+              this.brands.splice(index, 1);
+            }
+            this.$refs.deleteConfirmationDialog.closeDialog();
+          })
+          .catch(error => {
+            console.error('Error deleting item:', error);
+          });
+      }
+    },
+
+    showDeleteConfirmation(item) {
+      this.itemToDelete = item;
+      this.$refs.deleteConfirmationDialog.showConfirmationDialog();
+    },
+
+    showBrandForm() {
+      this.showForm = true;
+    },
+
+    hideBrandForm() {
       this.showForm = false;
-      this.editingProduct = null;
-      this.editingProductIndex = -1;
+      this.editingBrand = null;
+      this.editingBrandIndex = -1;
     },
 
     cancelBrandAdd() {
       this.showForm = false;
-      this.editingProduct = null;  // Reset editingProduct
-      this.editingProductIndex = -1; // Reset editingProductIndex
+      this.editingBrand = null;
+      this.editingBrandndex = -1;
     },
 
-    editProductRow(product) {
-      this.editingProduct = { ...product };
-      const index = this.brands.findIndex(p => p.brand === product.brand);
-      this.editingProductIndex = index;
-      this.showForm = true;
+    resetFormFields() {
+      this.brand_name = '';
     },
-
-    deleteProductRow(product) {
-      const index = this.brands.findIndex(p => p.brand === product.brand);
-      if (index !== -1) {
-        this.brands.splice(index, 1);
-      }
+    clearErrors() {
+      this.brandError = '';
     },
   },
 };
 </script>
+
+<style scooped>
+.form-container {
+  position: absolute;
+  top: 0;
+  left: 1;
+  right: 1;
+  z-index: 999;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.custom-table {
+  height: 500px;
+}
+</style>
   

@@ -19,10 +19,19 @@ class BrandRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules()
     {
-        return [
-            'brand_name' => 'required',
+        $rules = [
+            'brand_name' => 'required|unique:brands,brand_name',
+            'category_id' => 'required|exists:categories,id',
         ];
+
+        if ($this->isMethod('PUT')) {
+            $rules = [
+                'brand_name' => 'required',
+                'category_id' => 'required|exists:categories,id',
+            ];
+        }
+        return $rules;
     }
 }

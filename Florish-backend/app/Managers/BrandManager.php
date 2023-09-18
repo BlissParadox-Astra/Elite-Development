@@ -5,19 +5,21 @@ use App\Models\Brand;
 
 class BrandManager
 {
-    public function createBrand($brandData)
+    public function createBrand(array $brandData)
     {
-        $brand = new Brand();
-        $brand->brand_name = $brandData['brand_name'];
-
-        $brand->save();
+        $brand = Brand::create($brandData);
 
         return $brand;
     }
 
+    public function getBrandByIdWithRelations($id)
+    {
+        return Brand::with(['category'])->findOrFail($id);
+    }
+
     public function getAllBrands()
     {
-        return Brand::all();
+        return Brand::with(['category'])->get();
     }
 
     public function getBrandById(string $id)
