@@ -46,8 +46,11 @@ Route::put('/brand/{brand}', [BrandController::class, 'update'])->name('brands.u
 Route::delete('/brand/{id}', [BrandController::class, 'destroy'])->name('brands.destroy');
 Route::get('/get-categories', [BrandController::class, 'getCategories'])->name('get-categories.get');
 
-
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::post('/product', [ProductController::class, 'store'])->name('products.store');
+Route::put('/product/{product}', [ProductController::class, 'update'])->name('products.update');
+Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+
 Route::get('/stockIns', [StockInController::class, 'index'])->name('stockIns.index');
 Route::get('/products/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
 Route::get('/stockAdjustments', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
@@ -88,11 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Group for product routes
     Route::prefix('/product')->group(function () {
-        Route::post('/', [ProductController::class, 'store'])->name('products.store');
         //Route for critical-stock
         Route::get('{id}', [ProductController::class, 'show'])->name('products.show');
-        Route::put('{product}', [ProductController::class, 'update'])->name('products.update');
-        Route::delete('{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
 
 
