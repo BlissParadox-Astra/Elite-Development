@@ -21,15 +21,14 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [ 
-            'barcode' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'price' => 'required|numeric|min:0',
-            'reorder_level' => 'required|integer|min:0',
+        return [
+            'barcode' => 'required|string|max:39|unique:products,barcode',
+            'description' => 'required|string|max:1000|min:5',
+            'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0',
+            'reorder_level' => 'required|integer|min:1',
             'stock_on_hand' => 'nullable|integer|min:0',
-            'product_type_id' => 'required|exists:product_types,id',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
+            'category_id' => 'required|integer|exists:categories,id',
+            'brand_id' => 'required|integer|exists:brands,id',
         ];
     }
 }

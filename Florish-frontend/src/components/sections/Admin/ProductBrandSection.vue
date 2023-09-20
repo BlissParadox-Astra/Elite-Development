@@ -93,7 +93,7 @@ export default {
           ...brand,
           category_id: category.id,
         };
-
+        
         const index = this.brands.findIndex(p => p.id === brand.id);
         this.editingBrandIndex = index;
         this.showForm = true;

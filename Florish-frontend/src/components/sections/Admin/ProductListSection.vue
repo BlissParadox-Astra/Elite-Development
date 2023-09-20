@@ -11,14 +11,16 @@
         <v-row justify="center">
             <v-col cols="12">
                 <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
-                    @edit-data="editProductRow" @delete-data="deleteProductRow" height="500px" />
+                    @edit-data="editProductRow" @delete-data="showDeleteConfirmation" class="custom-table" />
             </v-col>
         </v-row>
+        <DeleteConfirmationDialog @confirm-delete="deleteProduct" ref="deleteConfirmationDialog" />
         <v-row>
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="10" xl="10" lg="10" md="10" class="form-container">
                         <ProductForm v-if="showForm" @add="addProduct" @update="updateProduct(editingProductIndex, $event)"
+                            :existingCategories="existingCategories" :existingBrands="existingBrands"
                             @cancel="hideProductForm" :initialProduct="editingProduct" />
                     </v-col>
                 </v-row>
@@ -31,6 +33,7 @@
 import SearchField from '../../common/SearchField.vue';
 import ProductForm from '../../common/ProductForm.vue';
 import CustomTable from '../../common/CustomTable.vue';
+import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 export default {
@@ -41,6 +44,7 @@ export default {
         SearchField,
         ProductForm,
         CustomTable,
+        DeleteConfirmationDialog,
     },
 
     data() {
@@ -49,6 +53,8 @@ export default {
             editingProduct: null,
             editingProductIndex: -1,
             products: [],
+            loadingCategories: false,
+            loadingBrands: false,
             tableColumns: [
                 { key: 'product_code', label: 'Product Code' },
                 { key: 'barcode', label: 'Barcode' },
@@ -61,8 +67,14 @@ export default {
         };
     },
 
-    mounted() {
-        this.getProducts();
+    async mounted() {
+        this.loadingCategories = true;
+        await this.fetchCategories();
+        this.loadingCategories = false;
+        this.loadingBrands = true;
+        await this.fetchBrands();
+        this.loadingBrands = false;
+        await this.getProducts();
     },
 
     methods: {
@@ -73,14 +85,22 @@ export default {
             });
         },
 
-        showProductForm() {
-            this.showForm = true;
+        async fetchCategories() {
+            try {
+                const response = await axios.get('/categories');
+                this.existingCategories = response.data.categories;
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
         },
 
-        hideProductForm() {
-            this.showForm = false;
-            this.editingProduct = null;
-            this.editingProductIndex = -1;
+        async fetchBrands() {
+            try {
+                const response = await axios.get('/brands');
+                this.existingBrands = response.data.brands;
+            } catch (error) {
+                console.error('Error fetching brands:', error);
+            }
         },
 
         addProduct(productData) {
@@ -89,24 +109,60 @@ export default {
             this.hideProductForm();
         },
 
+        editProductRow(product) {
+            const category = this.existingCategories.find(category => category.category_name === product.category.category_name);
+            const brand = this.existingBrands.find(brand => brand.brand_name === product.brand.brand_name);
+
+            if (category && brand) {
+                this.editingProduct = {
+                    ...product,
+                    category_name: product.category.category_name,
+                    brand_name: product.brand.brand_name,
+                };
+
+                const index = this.products.findIndex(p => p.product_code === product.product_code);
+                this.editingProductIndex = index;
+                this.showForm = true;
+            } else {
+                console.error(`Category "${product.category.category_name}" or brand "${product.brand.brand_name}" not found.`);
+            }
+        },
+
         updateProduct(index, updatedProduct) {
             this.products[index] = updatedProduct;
             this.editingProduct = null;
             this.hideProductForm();
         },
 
-        editProductRow(product) {
-            this.editingProduct = { ...product };
-            const index = this.products.findIndex(p => p.product_code === product.product_code);
-            this.editingProductIndex = index;
+        deleteProduct() {
+            if (this.itemToDelete) {
+                axios.delete(`/product/${this.itemToDelete.id}`)
+                    .then(() => {
+                        const index = this.products.findIndex(product => product.id === this.itemToDelete.id);
+                        if (index !== -1) {
+                            this.products.splice(index, 1);
+                        }
+                        this.$refs.deleteConfirmationDialog.closeDialog();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting item:', error);
+                    });
+            }
+        },
+
+        showDeleteConfirmation(item) {
+            this.itemToDelete = item;
+            this.$refs.deleteConfirmationDialog.showConfirmationDialog();
+        },
+
+        showProductForm() {
             this.showForm = true;
         },
 
-        deleteProductRow(product) {
-            const index = this.products.findIndex(p => p.productCode === product.productCode);
-            if (index !== -1) {
-                this.products.splice(index, 1);
-            }
+        hideProductForm() {
+            this.showForm = false;
+            this.editingProduct = null;
+            this.editingProductIndex = -1;
         },
 
         renderProductCategory(category) {
@@ -128,8 +184,10 @@ export default {
     right: 1;
     z-index: 999;
     max-height: 100%;
-    /* Adjust the maximum height as needed */
     overflow-y: auto;
+}
+.custom-table {
+  height: 445px;
 }
 </style>
   
