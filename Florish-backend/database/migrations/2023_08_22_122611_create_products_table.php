@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('product_code', 10);
-            $table->string('barcode', 20);
+            $table->string('barcode', 39);
             $table->text('description');
             $table->decimal('price', 10, 2);
             $table->integer('reorder_level');
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->unsignedBigInteger('brand_id');
             $table->timestamps();
         });
-        // Define foreign key relationship outside the create method
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('product_type_id')->references('id')->on('product_types');
             $table->foreign('category_id')->references('id')->on('categories');

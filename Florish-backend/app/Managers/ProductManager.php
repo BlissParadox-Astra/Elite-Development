@@ -11,6 +11,8 @@ class ProductManager
     public function createProduct(array $productData)
     {
         $productData['stock_on_hand'] = 0;
+
+        $productData['product_type_id'] = 1;
         
         $categoryId = $productData['category_id'];
         $productData['product_code'] = $this->generateProductCode($categoryId);
