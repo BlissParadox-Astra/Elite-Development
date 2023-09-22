@@ -26,6 +26,13 @@ class UserRequest extends FormRequest
             'user_type_id' => 'required|exists:user_types,id',
             'first_name' => 'required',
             'last_name' => 'required',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ],
             'gender' => 'required',
             'age' => 'required|numeric',
             'address' => 'required',
