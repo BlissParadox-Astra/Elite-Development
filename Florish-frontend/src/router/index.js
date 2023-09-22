@@ -24,7 +24,7 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: DashboardView,
-    meta: { title: 'Dashboard' },
+    meta: { title: 'Dashboard', requiresAuth: true },
   },
 
   {
@@ -122,6 +122,7 @@ const routes = [
     path: '/cashierdashboard',
     name: 'cashierdashboard',
     component: CashierDashboard,
+    meta: { requiresAuth: true },
   
   },
   {

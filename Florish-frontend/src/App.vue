@@ -19,7 +19,7 @@ const route = useRoute();
 </script>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex/dist/vuex.esm-browser.js';
 import { useRoute } from 'vue-router';
 import AdminSidebar from './components/common/AdminSidebar.vue';
 import Profile from './components/common/Profile.vue';
@@ -37,13 +37,16 @@ export default {
   computed: {
     ...mapGetters(['isAdmin']),
     showMainContent() {
-      return this.isAdmin || this.$route.name === 'login';
+      const routeName = this.$route.name;
+      const userType = this.$store.state.userType;
+
+      return userType === 'Admin' || (userType === 'Cashier' && routeName !== 'login') || routeName === 'login';
     },
     showAppBar() {
       return this.showMainContent && this.$route.name !== 'login';
     },
     showNavIcon() {
-      return this.isAdmin && this.$route.name !== 'login';
+      return this.isAdmin && this.$route.name !== 'login' && this.$store.state.userType !== 'cashier';
     },
   }
 }

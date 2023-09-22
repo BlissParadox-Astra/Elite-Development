@@ -6,24 +6,35 @@ const store = createStore({
   state: {
     isAdmin: false, // Set the initial value of isAdmin
     token: null,
+    userType: null,
+    isCashier: false,
  
   },
   mutations: {
     setIsAdmin(state, value) {
       state.isAdmin = value;
     },
-    setToken(state, newToken) {
-      state.token = newToken;
-      state.isAdmin = true; // Assuming successful login means the user is an admin
+    setIsCashier(state, value) {
+      state.isCashier = value;
+    },
+    setToken(state, { token, userType }) {
+      state.token = token;
+      state.isAdmin = userType === 'Admin';
+      state.isCashier = userType === 'Cashier';
+      state.userType = userType;
     },
   },
   actions: {
     setAdminStatus({ commit }, value) {
       commit('setIsAdmin', value);
     },
+    setCashierStatus({ commit }, value) {
+      commit('setIsCashier', value);
+    },
   },
   getters: {
     isAdmin: state => state.isAdmin,
+    isCashier: state => state.isCashier
   },
 });
 

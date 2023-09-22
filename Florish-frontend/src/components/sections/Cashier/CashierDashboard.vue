@@ -1,5 +1,5 @@
 <template>
-    <v-content>
+   
         <v-container class="dashboard" fluid>
             <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
             <v-row justify="center" class="cardbox-container">
@@ -27,7 +27,6 @@
                 </v-col>
             </v-row>
         </v-container>
-    </v-content>
 </template>
   
 <script>

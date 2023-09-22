@@ -24,8 +24,10 @@ class AuthController extends Controller
             $user = $userCredential->user;
 
             $token = $user->createToken('authToken')->plainTextToken;
+            
+            $userType = $user->userType->user_type;
 
-            return response()->json(['token' => $token]);
+            return response()->json(['token' => $token, 'userType' => $userType]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Invalid credentials'], 422);
         }

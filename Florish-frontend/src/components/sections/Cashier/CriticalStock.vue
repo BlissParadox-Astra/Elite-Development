@@ -25,7 +25,7 @@
     background-color: #680c07;
     right: -90px;
     top: 50%;
-    transform: rotate(-90deg);
+    transform: rotate(-90deg) translate(0, 0) scale(1, 1); /* Update the transform property values */
     color: #FFF;
 }
 

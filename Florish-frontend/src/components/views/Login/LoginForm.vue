@@ -6,7 +6,7 @@
           <v-img src="../../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain></v-img>
         </div>
       </v-col>
-      <v-col   cols="12" sm="6" md="6" xl="6" lg="6">
+      <v-col cols="12" sm="6" md="6" xl="6" lg="6">
         <v-card class="login-card">
           <v-card-title class="title text-center">LOGIN</v-card-title>
           <v-form ref="loginForm" @submit.prevent="login">
@@ -60,7 +60,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['setAdminStatus']),
+    ...mapActions(['setAdminStatus','setCashierStatus']),
     async login() {
       try {
         // Validate the form fields again before submitting
@@ -76,12 +76,20 @@ export default {
 
 
         const token = response.data.token;
+        const userType = response.data.userType;
 
 
-        this.$store.commit('setToken', token);
-
-
-        this.$router.push('/dashboard');
+        this.$store.commit('setToken', { token, userType });
+        if (userType === 'Admin') {
+          this.$store.dispatch('setAdminStatus', true);
+          this.$router.push('/dashboard');
+        } else if (userType === 'Cashier') {
+          this.$store.dispatch('setCashierStatus', true);
+          this.$router.push('/cashierdashboard');
+        } else {
+          console.error('Invalid user type:', userType);
+          this.errorMessage = 'Invalid user type';
+        }
       } catch (error) {
         this.loginError = true;
         if (error.response && error.response.status === 422) {
@@ -89,7 +97,7 @@ export default {
         } else {
           console.error('Login error:', error);
         }
-        this.password = "";
+        this.password = '';
       }
     },
   },
@@ -100,7 +108,7 @@ export default {
 <style scoped>
 .fill-height {
   overflow: hidden;
- 
+
 }
 
 .content-container {
