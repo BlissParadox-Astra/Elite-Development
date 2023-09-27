@@ -29,9 +29,6 @@ export default {
   name: 'UserProfile',
   data: () => ({
     drawer: null,
-    user: {
-      initials: 'JD',
-    },
   }),
   // methods: {
   //   logout() {

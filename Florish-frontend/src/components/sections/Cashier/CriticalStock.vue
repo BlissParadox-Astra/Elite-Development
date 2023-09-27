@@ -2,7 +2,7 @@
      <v-container fluid>
         <h1 class="text-center mb-4">CRITICAL STOCK</h1>
         <v-row>
-            <v-col v-for="n in 21" :key="n" cols="12" sm="10" md="4" lg="4">
+            <v-col v-for="n in 21" :key="n" cols="12" sm="12" md="12" lg="4">
                 <v-card class=" h-100 card pa-12 rounded-xl" sm="2">
                     <h1 class="text-center mb-4">Surf Fabric Conditioner</h1>
                     <v-row class="text-center">

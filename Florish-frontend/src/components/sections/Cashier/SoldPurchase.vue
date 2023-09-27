@@ -8,7 +8,7 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="6" lg="9">
+                    <v-col cols="12" sm="12" lg="9" md="12">
                         <FilterByDate></FilterByDate>
                     </v-col>
                     <v-col cols="12" xl="5" lg="3" class="d-flex align-center">
