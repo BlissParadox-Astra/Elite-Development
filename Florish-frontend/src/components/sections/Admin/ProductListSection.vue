@@ -10,8 +10,9 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
-                    @edit-data="editProductRow" @delete-data="showDeleteConfirmation" class="custom-table" />
+                <CustomTable :columns="tableColumns" :items="paginatedProducts" :showEditIcon="true" :showDeleteIcon="true"
+                    @edit-data="editProductRow" @delete-data="showDeleteConfirmation" height="440" />
+                <v-pagination v-model="currentPage" :length="totalPages" />
             </v-col>
         </v-row>
         <DeleteConfirmationDialog @confirm-delete="deleteProduct" ref="deleteConfirmationDialog" />
@@ -49,6 +50,8 @@ export default {
 
     data() {
         return {
+            currentPage: 1,
+            itemsPerPage: 10,
             showForm: false,
             editingProduct: null,
             editingProductIndex: -1,
@@ -173,6 +176,16 @@ export default {
             return brand.brand ? brand.brand.brand_name : 'Unknown';
         },
     },
+    computed: {
+    paginatedProducts() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.products.slice(startIndex, endIndex);
+    },
+    totalPages() {
+      return Math.ceil(this.products.length / this.itemsPerPage);
+    },
+  },
 };
 </script>
   
@@ -185,9 +198,6 @@ export default {
     z-index: 999;
     max-height: 100%;
     overflow-y: auto;
-}
-.custom-table {
-  height: 445px;
 }
 </style>
   
