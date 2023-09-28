@@ -10,8 +10,9 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
-        <CustomTable v-if="stockIns.length > 0" :columns="tableColumns" :items="stockIns" height="450px" />
-        <div v-else>No stock in records available.</div>
+        <CustomTable v-if="stockIns.length > 0" :columns="tableColumns" :items="stockInsPagination" height="500px" />
+          <v-pagination v-if="stockIns.length > 0" v-model="currentPage" :length="totalPages" />
+          <div v-else>No stock in records available.</div>
       </v-col>
     </v-row>
   </v-container>
@@ -30,6 +31,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       stockIns: [],
       tableColumns: [
         { key: "reference_number", label: "Reference No." },
@@ -46,7 +49,16 @@ export default {
   mounted() {
     this.getStockIns();
   },
-
+  computed: {
+    stockInsPagination() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.stockIns.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.stockIns.length / this.itemsPerPage);
+        },
+    },
   methods: {
     async getStockIns() {
       try {

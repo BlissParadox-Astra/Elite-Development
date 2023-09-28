@@ -7,7 +7,8 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable :columns="tableColumns" :items="products" height="500px" />
+                <CustomTable :columns="tableColumns" :items="paginatedProducts" height="500px" />
+                <v-pagination v-model="currentPage" :length="totalPages" />
             </v-col>
         </v-row>
     </v-container>
@@ -26,6 +27,8 @@ export default {
 
     data() {
         return {
+            currentPage: 1,
+            itemsPerPage: 10,
             showForm: false,
             products: [],
             editingProduct: null,
@@ -45,6 +48,16 @@ export default {
             ],
         };
     },
+    computed: {
+    paginatedProducts() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.products.slice(startIndex, endIndex);
+    },
+    totalPages() {
+      return Math.ceil(this.products.length / this.itemsPerPage);
+    },
+  },
 };
 </script>
 <style scoped>

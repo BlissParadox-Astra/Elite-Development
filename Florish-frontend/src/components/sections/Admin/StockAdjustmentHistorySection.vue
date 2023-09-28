@@ -1,22 +1,19 @@
 <template>
-  <v-main>
-    <v-container class="mt-5">
-      <v-row>
-        <v-col cols="12" sm="9">
-          <SearchField />
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="12">
-          <CustomTable
-            :columns="tableColumns"
-            :items="adjustments"
-            height="480px"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-main>
+    <v-main>
+        <v-container class="mt-5">
+            <v-row>
+                <v-col cols="12" sm="9">
+                    <SearchField />
+                </v-col>
+            </v-row>
+            <v-row justify="center">
+                <v-col cols="12">
+                    <CustomTable :columns="tableColumns" :items="paginatedProducts" height="500" />
+                    <v-pagination v-model="currentPage" :length="totalPages" />
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-main>
 </template>
 
 <script>
@@ -32,6 +29,8 @@ export default {
     },
     data() {
         return {
+            currentPage: 1,
+            itemsPerPage: 10,
             adjustments: [],
             selectedRow: {
                 referenceNo: "",
@@ -57,7 +56,16 @@ export default {
 
         };
     },
-
+    computed: {
+        paginatedProducts() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.adjustments.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.adjustments.length / this.itemsPerPage);
+        },
+    },
     mounted() {
         this.getStockAdjustments();
     },

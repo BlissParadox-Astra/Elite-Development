@@ -20,7 +20,8 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="products" height="460px" />
+          <CustomTable :columns="tableColumns" :items="paginatedProducts" height="500px" />
+          <v-pagination v-model="currentPage" :length="totalPages" />
         </v-col>
       </v-row>
       <v-row>
@@ -51,6 +52,8 @@ export default {
 
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       showForm: false,
       sortByOptions: ["Category", "Total", "Alphabetically"],
       tableColumns: [
@@ -66,7 +69,7 @@ export default {
 
       products: [
         { invoiceNo: "Invoice001", productCode: "P001", barcode: "123456789", description: "Product 1", price: 30, quantity: "5", total: "800", transacBy: "cashier", },
-        { invoiceNo: "Invoice002", productCode: "P002", barcode: "987654321", description: "Product 2", price: 400, quantity: "6", total: "1000",  transacBy: "cashier", },
+        { invoiceNo: "Invoice002", productCode: "P002", barcode: "987654321", description: "Product 2", price: 400, quantity: "6", total: "1000", transacBy: "cashier", },
       ],
 
       items: [
@@ -76,7 +79,16 @@ export default {
       ],
     };
   },
-  
+  computed: {
+        paginatedProducts() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.products.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.products.length / this.itemsPerPage);
+        },
+    },
   methods: {
     calculateTotal(total) {
       return total;

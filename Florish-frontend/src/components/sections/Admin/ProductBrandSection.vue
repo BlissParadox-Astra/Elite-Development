@@ -11,9 +11,10 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="brands" :showEditIcon="true" :showDeleteIcon="true"
+          <CustomTable :columns="tableColumns" :items="paginatedBrands" :showEditIcon="true" :showDeleteIcon="true"
             @edit-data="editBrandRow" @delete-data="showDeleteConfirmation" class="custom-table" />
-        </v-col>
+            <v-pagination v-model="currentPage" :length="totalPages" />
+          </v-col>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteBrand" ref="deleteConfirmationDialog" />
       <v-row>
@@ -48,6 +49,8 @@ export default {
 
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       showForm: false,
       brands: [],
       editingBrand: null,
@@ -59,6 +62,16 @@ export default {
       loadingCategories: false,
     };
   },
+  computed: {
+    paginatedBrands() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.brands.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.brands.length / this.itemsPerPage);
+        },
+    },
 
   async mounted() {
     this.loadingCategories = true;

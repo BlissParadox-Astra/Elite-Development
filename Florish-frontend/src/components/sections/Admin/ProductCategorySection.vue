@@ -11,8 +11,9 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="categories" :showEditIcon="true" :showDeleteIcon="true"
+          <CustomTable :columns="tableColumns" :items="paginatedCategories" :showEditIcon="true" :showDeleteIcon="true"
             @edit-data="editCategoryRow" @delete-data="showDeleteConfirmation" class="custom-table" />
+            <v-pagination v-model="currentPage" :length="totalPages" />
         </v-col>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteCategory" ref="deleteConfirmationDialog" />
@@ -48,6 +49,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       showForm: false,
       categories: [],
       editingCategory: null,
@@ -62,7 +65,16 @@ export default {
   mounted() {
     this.getCategories();
   },
-
+  computed: {
+    paginatedCategories() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.categories.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.categories.length / this.itemsPerPage);
+        },
+    },
   methods: {
     getCategories() {
       axios.get('/categories').then(res => {

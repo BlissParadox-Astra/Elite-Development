@@ -8,8 +8,9 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <CustomTable v-if="products.length > 0" :columns="tableColumns" :items="products" :showFetchIcon="true" @fetch-data="fetchProduct"
-            height="480px" />
+          <CustomTable v-if="products.length > 0" :columns="tableColumns" :items="paginatedProducts" :showFetchIcon="true"
+            @fetch-data="fetchProduct" height="500px" />
+            <v-pagination v-model="currentPage" :length="totalPages" />
         </v-col>
       </v-row>
     </v-container>
@@ -68,6 +69,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       products: [],
       selectedRow: {
         product_code: "",
@@ -94,6 +97,16 @@ export default {
   mounted() {
     this.getProducts();
   },
+  computed: {
+        paginatedProducts() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.products.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.products.length / this.itemsPerPage);
+        },
+    },
 
   methods: {
     getProducts() {

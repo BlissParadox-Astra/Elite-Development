@@ -8,8 +8,9 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="users" :showEditIcon="true" :showDeleteIcon="true"
-            class="custom-table" @edit-data="editUserRow" @delete-data="showDeleteConfirmation" />
+          <CustomTable :columns="tableColumns" :items="paginatedUsers" :showEditIcon="true" :showDeleteIcon="true"
+            height="500" @edit-data="editUserRow" @delete-data="showDeleteConfirmation" />
+          <v-pagination v-model="currentPage" :length="totalPages" />
         </v-col>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteUser" ref="deleteConfirmationDialog" />
@@ -44,6 +45,8 @@ export default {
 
   data() {
     return {
+      currentPage: 1,
+      itemsPerPage: 10,
       showForm: false,
       users: [],
       editingUser: null,
@@ -61,6 +64,16 @@ export default {
 
       userTypes: [],
     };
+  },
+  computed: {
+    paginatedUsers() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.users.slice(startIndex, endIndex);
+    },
+    totalPages() {
+      return Math.ceil(this.users.length / this.itemsPerPage);
+    },
   },
 
   mounted() {
@@ -99,7 +112,6 @@ export default {
       this.editingUser = null;
       this.hideUserForm();
     },
-    
     deleteUser() {
       if (this.itemToDelete) {
         axios.delete(`/user/${this.itemToDelete.id}`)
@@ -145,7 +157,7 @@ export default {
     renderUserName(user) {
       return user.user_credential ? user.user_credential.username : 'Unknown';
     },
-    
+
     async fetchUserTypes() {
       try {
         const response = await axios.get('/user-types');
@@ -167,10 +179,6 @@ export default {
   z-index: 999;
   max-height: 100%;
   overflow-y: auto;
-}
-
-.custom-table {
-  height: 445px;
 }
 </style>
  

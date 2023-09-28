@@ -11,7 +11,7 @@
         <v-row justify="center">
             <v-col cols="12">
                 <CustomTable :columns="tableColumns" :items="paginatedProducts" :showEditIcon="true" :showDeleteIcon="true"
-                    @edit-data="editProductRow" @delete-data="showDeleteConfirmation" height="440" />
+                    @edit-data="editProductRow" @delete-data="showDeleteConfirmation" height="500" />
                 <v-pagination v-model="currentPage" :length="totalPages" />
             </v-col>
         </v-row>

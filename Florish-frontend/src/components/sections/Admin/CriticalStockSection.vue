@@ -7,7 +7,8 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable v-if="products.length > 0" :columns="tableColumns" :items="products" height="500px" />
+                <CustomTable v-if="products.length > 0" :columns="tableColumns" :items="paginatedProducts" height="500" />
+                <v-pagination v-if="products.length > 0" v-model="currentPage" :length="totalPages" />
                 <div v-else>No critical products available.</div>
             </v-col>
         </v-row>
@@ -29,6 +30,8 @@ export default {
 
     data() {
         return {
+            currentPage: 1,
+            itemsPerPage: 10,
             showForm: false,
             editingProductIndex: -1,
             products: [],
@@ -48,7 +51,16 @@ export default {
     mounted() {
         this.getCriticalStocks();
     },
-
+    computed: {
+        paginatedProducts() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.products.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.products.length / this.itemsPerPage);
+        },
+    },
     methods: {
         async getCriticalStocks() {
             try {

@@ -24,15 +24,16 @@
                 <v-col cols="12">
                     <v-row class="d-flex justify-center">
                         <v-col cols="12" sm="10" md="10" lg="10" xl="10" class="form-container">
-                            <BrowseProduct  @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
-                        </v-col> 
+                            <BrowseProduct @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
+                        </v-col>
                     </v-row>
                 </v-col>
             </v-row>
             <!-- <ProductTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
                 @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" /> -->
-            <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
-                @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" height="450px" />
+            <CustomTable :columns="tableColumns" :items="paginatedProducts" :showDeleteIcon="true" :isStockEntryPage="true"
+                @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog" height="500px" />
+                <v-pagination  v-model="currentPage" :length="totalPages" />
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
                     <v-btn color="success" @click="showConfirmation" style="width: 150px;">Save</v-btn>
@@ -87,6 +88,8 @@ export default {
     },
     data() {
         return {
+            currentPage: 1,
+            itemsPerPage: 10,
             showEditQuantityDialog: false,
             showConfirmationDialog: false,
             showBrowseProduct: false,
@@ -104,6 +107,16 @@ export default {
             ],
 
         };
+    },
+    computed: {
+        paginatedProducts() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.products.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.products.length / this.itemsPerPage);
+        },
     },
     methods: {
         showBrowseProductForm() {
