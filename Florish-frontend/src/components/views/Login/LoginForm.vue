@@ -22,14 +22,12 @@
             <v-text-field density="compact" v-model="username" label="Username" prepend-inner-icon="mdi-account-outline"
               variant="outlined" :rules="[v => !!v || 'Username is required']"></v-text-field>
 
-
             <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
               Password
               <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
                 Forgot password?
               </a>
             </v-label>
-
 
             <v-text-field v-model="password" label="Password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
               :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
@@ -45,55 +43,71 @@
     </v-row>
   </v-container>
 </template>
+
 <script>
 import { mapActions } from 'vuex';
 import axios from 'axios';
-
+import Cookies from 'js-cookie';
 
 export default {
   data() {
     return {
       visible: false,
-      username: "",
-      password: "",
+      username: '',
+      password: '',
       loginError: false,
+      errorMessage: '',
     };
   },
   methods: {
-    ...mapActions(['setAdminStatus','setCashierStatus']),
+    ...mapActions(['setAdminStatus', 'setCashierStatus']),
     async login() {
       try {
-        // Validate the form fields again before submitting
         if (!this.username || !this.password) {
           return;
         }
-
 
         const response = await axios.post('/login', {
           username: this.username,
           password: this.password,
         });
 
-
         const token = response.data.token;
         const userType = response.data.userType;
+        const user = response.data.user;
+        
+        console.log('Received Token: ' + token);
 
+        Cookies.set('token', token, { expires: 1 });
 
-        this.$store.commit('setToken', { token, userType });
-        if (userType === 'Admin') {
-          this.$store.dispatch('setAdminStatus', true);
-          this.$router.push('/dashboard');
-        } else if (userType === 'Cashier') {
-          this.$store.dispatch('setCashierStatus', true);
-          this.$router.push('/cashierdashboard');
+        if (Cookies.get('token')) {
+          this.$store.commit('setToken', { token, userType, user });
+          if (userType === 'Admin') {
+            this.$store.dispatch('setAdminStatus', true);
+            this.$router.push('/dashboard');
+          } else if (userType === 'Cashier') {
+            this.$store.dispatch('setCashierStatus', true);
+            this.$router.push('/cashierdashboard');
+          } else {
+            console.error('Invalid user type:', userType);
+            this.errorMessage = 'Invalid user type';
+          }
         } else {
-          console.error('Invalid user type:', userType);
-          this.errorMessage = 'Invalid user type';
+          console.error('Token not stored in cookies');
+          this.loginError = true;
+          this.errorMessage = 'Token not stored in cookies';
         }
       } catch (error) {
         this.loginError = true;
-        if (error.response && error.response.status === 422) {
-          console.error('Validation error:', error.response.data);
+        if (error.response) {
+          if (error.response.status === 401) {
+            console.error('Invalid credentials');
+            this.errorMessage = 'Invalid credentials';
+          } else if (error.response.status === 422) {
+            console.error('Validation error:', error.response.data);
+          } else {
+            console.error('Login error:', error);
+          }
         } else {
           console.error('Login error:', error);
         }
@@ -103,7 +117,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .fill-height {

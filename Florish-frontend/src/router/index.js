@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Cookies from 'js-cookie';
+import store from '../store';
 import DashboardView from '../views/Admin/DashboardView.vue';
 import ProductListView from '../views/Admin/ProductListView.vue';
 import StockEntryView from '../views/Admin/StockEntryView.vue';
@@ -31,88 +33,89 @@ const routes = [
     path: '/product-list-view',
     name: 'productListView',
     component: ProductListView,
-    meta: { title: 'Product List' },
+    meta: { title: 'Product List', requiresAuth: true },
   },
 
   {
     path: '/stock-entry',
     name: 'stockEntry',
     component: StockEntryView,
-    meta: { title: 'Stock In' },
+    meta: { title: 'Stock In', requiresAuth: true },
   },
 
   {
     path: '/stock-history',
     name: 'stockHistory',
     component: StockHistoryView,
-    meta: { title: 'Stock In History' },
+    meta: { title: 'Stock In History',requiresAuth: true },
   },
 
   {
     path: '/stock-adjustment',
     name: 'stockAdjustment',
     component: StockAdjustmentView,
-    meta: { title: 'Stock Adjustment' },
+    meta: { title: 'Stock Adjustment', requiresAuth: true },
   },
 
   {
     path: '/stock-adjustment-history',
     name: 'stockAdjustmentHistory',
     component: StockAdjustmentHistoryView,
-    meta: { title: 'Stock Adjustment History' },
+    meta: { title: 'Stock Adjustment History', requiresAuth: true },
   },
 
   {
     path: '/inventory-list',
     name: 'inventoryList',
     component: InventoryListView,
-    meta: { title: 'Inventory List' },
+    meta: { title: 'Inventory List', requiresAuth: true },
   },
 
   {
     path: '/product-category',
     name: 'productCategory',
     component: ProductCategoryView,
-    meta: { title: 'Categories' },
+    meta: { title: 'Categories', requiresAuth: true },
   },
 
   {
     path: '/product-brand',
     name: 'productBrand',
     component: ProductBrandView,
-    meta: { title: 'Brands' },
+    meta: { title: 'Brands', requiresAuth: true },
   },
 
   {
     path: '/sales-history',
     name: 'salesHistory',
     component: SaleHistoryView,
-    meta: { title: 'Sales History' },
+    meta: { title: 'Sales History', requiresAuth: true },
   },
 
   {
     path: '/critical-stocks',
     name: 'criticalStocks',
     component: CriticalStockView,
-    meta: { title: 'Critical Stock' },
+    meta: { title: 'Critical Stock', requiresAuth: true },
   },
 
   {
     path: '/cancelled-order',
     name: 'cancelledOrder',
     component: CancelledOrderView,
-    meta: { title: 'Cancelled Order List' },
+    meta: { title: 'Cancelled Order List', requiresAuth: true },
   },
 
   {
     path: '/users',
     name: 'users',
     component: UsersView,
-    meta: { title: 'User Details' },
+    meta: { title: 'User Details',  requiresAuth: true },
   },
-  
+
   {
     path: '/login',
+    alias: '/',
     name: 'login',
     component: Login,
     meta: { title: ' Login' },
@@ -123,31 +126,52 @@ const routes = [
     name: 'cashierdashboard',
     component: CashierDashboard,
     meta: { requiresAuth: true },
-  
+
   },
   {
     path: '/transactionCart',
     name: 'transactionCart',
     component: TransactionCart,
-  
+
   },
   {
     path: '/lowStock',
     name: 'lowStock',
     component: LowStock,
-  
+
   },
   {
     path: '/soldPurchase',
     name: 'soldPurchase',
     component: SoldPurchase,
-  
+
   },
 ];
-
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((route) => route.meta.requiresAuth)) {
+    const token = Cookies.get('token');
+
+    if (token) {
+      next();
+    } else {
+      next('/login');
+    }
+  } else if (to.name === 'login' && store.getters.isAuthenticated) {
+    if (store.getters.isAdmin) {
+      next('/dashboard');
+    } else if (store.getters.isCashier) {
+      next('/cashierdashboard');
+    }
+  } else {
+    next();
+  }
+});
+
 export default router;
