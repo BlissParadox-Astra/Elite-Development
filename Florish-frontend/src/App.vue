@@ -1,12 +1,12 @@
 <template>
   <v-app id="inspire">
     <AdminSidebar v-model="drawer" v-if="isAdmin && showMainContent" />
-    <MessageAlert :message="alertMessage" v-if="alertMessage" />
     <v-app-bar v-if="showAppBar">
       <v-app-bar-nav-icon v-if="showNavIcon" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-app-bar-title>{{ route.meta.title }}</v-app-bar-title>
       <Profile></Profile>
     </v-app-bar>
+    <MessageAlert :message="alertMessage" v-if="alertMessage" />
     <v-main>
       <router-view v-if="showMainContent" />
     </v-main>
@@ -29,7 +29,7 @@ export default {
   components: {
     AdminSidebar,
     Profile,
-    MessageAlert,
+    MessageAlert
   },
   data: () => ({
     drawer: null,
@@ -57,10 +57,12 @@ export default {
   },
   watch: {
     alertMessage() {
+      console.log('alertMessage changed:', this.alertMessage);
       if (this.alertMessage) {
         setTimeout(() => {
+          console.log('Clearing alertMessage');
           this.$store.commit('clearAlertMessage');
-        }, 5000);
+        }, 8000);
       }
     },
   },

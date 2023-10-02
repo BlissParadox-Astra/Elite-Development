@@ -34,7 +34,7 @@
     color: white;
     padding: 10px;
     border-radius: 5px;
-    z-index: 1000;
+    z-index: 9999;
   }
   
   .alert-content {

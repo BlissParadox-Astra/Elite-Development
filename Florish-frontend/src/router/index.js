@@ -47,7 +47,7 @@ const routes = [
     path: '/stock-history',
     name: 'stockHistory',
     component: StockHistoryView,
-    meta: { title: 'Stock In History',requiresAuth: true, role: 'admin' },
+    meta: { title: 'Stock In History', requiresAuth: true, role: 'admin' },
   },
 
   {
@@ -110,7 +110,7 @@ const routes = [
     path: '/users',
     name: 'users',
     component: UsersView,
-    meta: { title: 'User Details',  requiresAuth: true, role: 'admin' },
+    meta: { title: 'User Details', requiresAuth: true, role: 'admin' },
   },
 
   {
@@ -157,7 +157,8 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((route) => route.meta.requiresAuth)) {
     const token = Cookies.get('token');
     if (!token) {
-      // If no token is found, redirect to login
+      // If no token is found, redirect to login and set the alert message
+      store.commit('setAlertMessage', 'Please log in to access this page.');
       next('/login');
     } else {
       // Check user's role and allow access based on the 'role' meta field
@@ -167,18 +168,19 @@ router.beforeEach((to, from, next) => {
       } else if (to.meta.role === 'cashier' && userRole === 'Cashier') {
         next();
       } else {
-        // If user's role doesn't match, display a message and redirect to their dashboard
+        // If user's role doesn't match, display a message and redirect
         const errorMessage = `You are not allowed to navigate to ${to.name} route.`;
-        store.commit('setAlertMessage', errorMessage);  // Set the error message in the store
+        store.commit('setAlertMessage', errorMessage);
         if (userRole === 'Admin') {
-          next('/dashboard'); // Redirect admin to their dashboard
+          next('/dashboard');
         } else if (userRole === 'Cashier') {
-          next('/cashierdashboard'); // Redirect cashier to their dashboard
+          next('/cashierdashboard');
         }
       }
     }
   } else if (to.name === 'login' && store.getters.isAuthenticated) {
-    // If user is authenticated and trying to access login, redirect to the dashboard
+    // If user is authenticated and trying to access login, redirect and set the alert message
+    store.commit('setAlertMessage', 'You are already logged in.');
     if (store.getters.isAdmin) {
       next('/dashboard');
     } else if (store.getters.isCashier) {
@@ -188,5 +190,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
 
 export default router;
