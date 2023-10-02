@@ -6,10 +6,11 @@ import Cookies from 'js-cookie';
 const store = createStore({
   plugins: [createPersistedState()],
   state: {
-    isAdmin: false, // Set the initial value of isAdmin
+    isAdmin: false,
     token: null,
     userType: null,
     isCashier: false,
+    alertMessage: null,
   },
   mutations: {
     setIsAdmin(state, value) {
@@ -24,6 +25,12 @@ const store = createStore({
       state.isCashier = userType === 'Cashier';
       state.userType = userType;
       state.user = user;
+    },
+    setAlertMessage(state, message) {
+      state.alertMessage = message;
+    },
+    clearAlertMessage(state) {
+      state.alertMessage = null;
     },
   },
   actions: {
@@ -43,6 +50,7 @@ const store = createStore({
     isAdmin: state => state.isAdmin,
     isCashier: state => state.isCashier,
     isAuthenticated: (state) => state.token !== null,
+    getUserRole: state => state.userType,
   },
 });
 

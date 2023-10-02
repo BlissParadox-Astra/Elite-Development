@@ -1,6 +1,7 @@
 <template>
   <v-app id="inspire">
     <AdminSidebar v-model="drawer" v-if="isAdmin && showMainContent" />
+    <MessageAlert :message="alertMessage" v-if="alertMessage" />
     <v-app-bar v-if="showAppBar">
       <v-app-bar-nav-icon v-if="showNavIcon" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-app-bar-title>{{ route.meta.title }}</v-app-bar-title>
@@ -23,10 +24,12 @@ import { mapGetters } from 'vuex/dist/vuex.esm-browser.js';
 import { useRoute } from 'vue-router';
 import AdminSidebar from './components/common/AdminSidebar.vue';
 import Profile from './components/common/Profile.vue';
+import MessageAlert from './components/common/MessageAlert.vue';
 export default {
   components: {
     AdminSidebar,
-    Profile
+    Profile,
+    MessageAlert,
   },
   data: () => ({
     drawer: null,
@@ -48,7 +51,19 @@ export default {
     showNavIcon() {
       return this.isAdmin && this.$route.name !== 'login' && this.$store.state.userType !== 'cashier';
     },
-  }
+    alertMessage() {
+      return this.$store.state.alertMessage; // Replace with your actual state property
+    },
+  },
+  watch: {
+    alertMessage() {
+      if (this.alertMessage) {
+        setTimeout(() => {
+          this.$store.commit('clearAlertMessage');
+        }, 5000);
+      }
+    },
+  },
 }
 
 </script>

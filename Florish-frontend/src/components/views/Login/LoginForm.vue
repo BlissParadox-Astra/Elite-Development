@@ -3,7 +3,7 @@
     <v-row>
       <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
         <div class="logo">
-          <v-img src="../../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain></v-img>
+          <v-img src="../../../assets/assets/florish-logo(2).png" alt="storelogo" contain></v-img>
         </div>
       </v-col>
       <v-col cols="12" sm="6" md="6" xl="6" lg="6">
@@ -75,8 +75,6 @@ export default {
         const token = response.data.token;
         const userType = response.data.userType;
         const user = response.data.user;
-        
-        console.log('Received Token: ' + token);
 
         Cookies.set('token', token, { expires: 1 });
 
