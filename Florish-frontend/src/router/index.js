@@ -118,26 +118,26 @@ const routes = [
     path: '/cashierdashboard',
     name: 'Cashier Dashboard Page',
     component: CashierDashboard,
-    meta: { requiresAuth: true, role: 'cashier' },
+    meta: {title: 'Dashboard', requiresAuth: true, role: 'cashier' },
 
   },
   {
     path: '/transactionCart',
     name: 'Transaction Cart Page',
     component: TransactionCart,
-    meta: { requiresAuth: true, role: 'cashier' },
+    meta: {title: 'Transaction Cart', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/lowStock',
     name: 'Low Stock Page',
     component: LowStock,
-    meta: { requiresAuth: true, role: 'cashier' },
+    meta: {title: 'Low Stocks', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/soldPurchase',
-    name: 'Sold Purchase page',
+    name: 'Sold Purchase Page',
     component: SoldPurchase,
-    meta: { requiresAuth: true, role: 'cashier' },
+    meta: {title: 'Sold Or Purchased', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/login',
@@ -150,7 +150,7 @@ const routes = [
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFoundView,
-    meta: { title: 'Not Found' },
+    meta: { title: 'Not Found', requiresAuth: false  },
   }
 ];
 
@@ -178,9 +178,9 @@ router.beforeEach((to, from, next) => {
         const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.name}`;
         store.commit('setAlertMessage', errorMessage);
         if (userRole === 'Admin') {
-          next('/dashboard');
+          next(false);
         } else if (userRole === 'Cashier') {
-          next('/cashierdashboard');
+          next(false);
         }
         setTimeout(() => {
           store.commit('clearAlertMessage');

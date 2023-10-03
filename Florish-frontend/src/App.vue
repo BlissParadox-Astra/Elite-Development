@@ -43,7 +43,7 @@ export default {
       const routeName = this.$route.name;
       const userType = this.$store.state.userType;
 
-      return userType === 'Admin' || (userType === 'Cashier' && routeName !== 'Login Page') || routeName === 'Login Page';
+      return userType === 'Admin' || (userType === 'Cashier' && routeName !== 'Login Page') || routeName === 'Login Page' || routeName === 'NotFound';
     },
     showAppBar() {
       return this.showMainContent && this.$route.name !== 'Login Page' && this.$route.name !== 'NotFound';
