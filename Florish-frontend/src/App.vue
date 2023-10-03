@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <AdminSidebar v-model="drawer" v-if="isAdmin && showMainContent" />
+    <AdminSidebar v-model="drawer" v-if="showSidebar" />
     <v-app-bar v-if="showAppBar">
       <v-app-bar-nav-icon v-if="showNavIcon" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-app-bar-title>{{ route.meta.title }}</v-app-bar-title>
@@ -43,27 +43,19 @@ export default {
       const routeName = this.$route.name;
       const userType = this.$store.state.userType;
 
-      return userType === 'Admin' || (userType === 'Cashier' && routeName !== 'login') || routeName === 'login';
+      return userType === 'Admin' || (userType === 'Cashier' && routeName !== 'Login Page') || routeName === 'Login Page';
     },
     showAppBar() {
-      return this.showMainContent && this.$route.name !== 'login';
+      return this.showMainContent && this.$route.name !== 'Login Page' && this.$route.name !== 'NotFound';
     },
     showNavIcon() {
-      return this.isAdmin && this.$route.name !== 'login' && this.$store.state.userType !== 'cashier';
+      return this.isAdmin && this.$route.name !== 'Login Page' && this.$store.state.userType !== 'cashier';
+    },
+    showSidebar() {
+      return this.showMainContent && this.$route.name !== 'NotFound';
     },
     alertMessage() {
-      return this.$store.state.alertMessage; // Replace with your actual state property
-    },
-  },
-  watch: {
-    alertMessage() {
-      console.log('alertMessage changed:', this.alertMessage);
-      if (this.alertMessage) {
-        setTimeout(() => {
-          console.log('Clearing alertMessage');
-          this.$store.commit('clearAlertMessage');
-        }, 8000);
-      }
+      return this.$store.state.alertMessage;
     },
   },
 }

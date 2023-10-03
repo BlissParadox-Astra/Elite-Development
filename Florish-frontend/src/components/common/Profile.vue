@@ -41,7 +41,7 @@ export default {
       try {
         await axios.post('/logout');
         this.$store.dispatch('logout');
-        this.$router.push({ name: 'login' });
+        this.$router.push({ name: 'Login Page' });
       } catch (error) {
         console.error('Error logging out:', error);
       }

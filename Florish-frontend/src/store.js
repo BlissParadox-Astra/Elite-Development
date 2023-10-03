@@ -43,7 +43,7 @@ const store = createStore({
     logout({ commit }) {
       commit('setToken', { token: null, userType: null });
       Cookies.remove('token');
-      router.push({ name: 'login' });
+      router.push({ name: 'Login Page' });
     },
   },
   getters: {
