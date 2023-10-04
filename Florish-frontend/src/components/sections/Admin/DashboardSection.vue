@@ -3,7 +3,7 @@
         <v-container>
             <v-row class="d-flex justify-center">
                 <v-col cols="12">
-                    <h2 class="text-center">Welcome! Admin Name</h2>
+                    <h2 class="text-center" v-if="user">Welcome! {{ user.user.first_name }} {{ user.user.last_name }}</h2>
                 </v-col>
             </v-row>
             <v-row class="text-center">
@@ -62,12 +62,13 @@
   
 <script>
 import Chart from "chart.js/auto";
-
+import axios from "axios";  
 export default {
     name: "DashboardSection",
 
     data() {
         return {
+            user: null,
             dataByYear: [
                 { year: 2020, value: 30, color: "#ff6384" },
                 { year: 2021, value: 50, color: "#36a2eb" },
@@ -75,6 +76,13 @@ export default {
             ],
         };
     },
+
+    async created() {
+        const response = await axios.get("/user")
+
+        this.user = response.data;
+    },
+
 
     mounted() {
         this.createPieChart();
@@ -113,21 +121,25 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, color 0.3s;
 }
+
 .card-box:hover {
     background-color: #134e39;
     color: #fff;
 }
+
 .chart-legend {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 20px;
 }
+
 .chart-legend span {
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
+
 .chart-legend span:before {
     content: '';
     display: inline-block;
@@ -135,6 +147,5 @@ export default {
     height: 15px;
     margin-right: 5px;
     border-radius: 50%;
-}
-</style>
+}</style>
   

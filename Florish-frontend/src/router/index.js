@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Cookies from 'js-cookie';
+import store from '../store';
+import NotFoundView from '../components/common/NotFound.vue';
 import DashboardView from '../views/Admin/DashboardView.vue';
 import ProductListView from '../views/Admin/ProductListView.vue';
 import StockEntryView from '../views/Admin/StockEntryView.vue';
@@ -13,109 +16,187 @@ import CriticalStockView from '../views/Admin/CriticalStockView.vue';
 import CancelledOrderView from '../views/Admin/CancelOrderView.vue';
 import UsersView from '../views/Admin/UsersView.vue';
 import Login from '../components/views/Login/LoginForm.vue';
+//cashier part
+import CashierDashboard from '../components/sections/Cashier/CashierDashboard.vue';
+import TransactionCart from '../components/sections/Cashier/transactionCart.vue';
+import LowStock from '@/components/sections/Cashier/CriticalStock.vue';
+import SoldPurchase from '@/components/sections/Cashier/SoldPurchase.vue';
 
 const routes = [
   {
     path: '/dashboard',
-    name: 'Dashboard',
+    name: 'Admin Dashboard Page',
     component: DashboardView,
-    meta: { title: 'Dashboard' },
+    meta: { title: 'Admin Dashboard Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/product-list-view',
-    name: 'productListView',
+    name: 'Product List Page',
     component: ProductListView,
-    meta: { title: 'Product List' },
+    meta: { title: 'Product List Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/stock-entry',
-    name: 'stockEntry',
+    name: 'Stock Entry Page',
     component: StockEntryView,
-    meta: { title: 'Stock In' },
+    meta: { title: 'Stock In Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/stock-history',
-    name: 'stockHistory',
+    name: 'Stock History Page',
     component: StockHistoryView,
-    meta: { title: 'Stock In History' },
+    meta: { title: 'Stock In History Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/stock-adjustment',
     name: 'stockAdjustment',
     component: StockAdjustmentView,
-    meta: { title: 'Stock Adjustment' },
+    meta: { title: 'Stock Adjustment Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/stock-adjustment-history',
-    name: 'stockAdjustmentHistory',
+    name: 'Stock Adjustment History Page',
     component: StockAdjustmentHistoryView,
-    meta: { title: 'Stock Adjustment History' },
+    meta: { title: 'Stock Adjustment History Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/inventory-list',
-    name: 'inventoryList',
+    name: 'Inventory List Page',
     component: InventoryListView,
-    meta: { title: 'Inventory List' },
+    meta: { title: 'Inventory List Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/product-category',
-    name: 'productCategory',
+    name: 'Product Category Page',
     component: ProductCategoryView,
-    meta: { title: 'Categories' },
+    meta: { title: 'Categories Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/product-brand',
-    name: 'productBrand',
+    name: 'Product Brand Page',
     component: ProductBrandView,
-    meta: { title: 'Brands' },
+    meta: { title: 'Brands Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/sales-history',
-    name: 'salesHistory',
+    name: 'Sales History Page',
     component: SaleHistoryView,
-    meta: { title: 'Sales History' },
+    meta: { title: 'Sales History Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/critical-stocks',
-    name: 'criticalStocks',
+    name: 'Critical Stocks Page',
     component: CriticalStockView,
-    meta: { title: 'Critical Stock' },
+    meta: { title: 'Critical Stock Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/cancelled-order',
-    name: 'cancelledOrder',
+    name: 'Cancelled Order Page',
     component: CancelledOrderView,
-    meta: { title: 'Cancelled Order List' },
+    meta: { title: 'Cancelled Order List Page', requiresAuth: true, role: 'admin' },
   },
 
   {
     path: '/users',
-    name: 'users',
+    name: 'Users Page',
     component: UsersView,
-    meta: { title: 'User Details' },
+    meta: { title: 'User Details Page', requiresAuth: true, role: 'admin' },
   },
-  
+  //Cashier route
+  {
+    path: '/cashierdashboard',
+    name: 'Cashier Dashboard Page',
+    component: CashierDashboard,
+    meta: {title: 'Cashier Dashboard', requiresAuth: true, role: 'cashier' },
+
+  },
+  {
+    path: '/transactionCart',
+    name: 'Transaction Cart Page',
+    component: TransactionCart,
+    meta: {title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
+  },
+  {
+    path: '/lowStock',
+    name: 'Low Stock Page',
+    component: LowStock,
+    meta: {title: 'Low Stocks Page', requiresAuth: true, role: 'cashier' },
+  },
+  {
+    path: '/soldPurchase',
+    name: 'Sold Purchase Page',
+    component: SoldPurchase,
+    meta: {title: 'Sold Or Purchased Page', requiresAuth: true, role: 'cashier' },
+  },
   {
     path: '/login',
-    name: 'login',
+    alias: '/',
+    name: 'Login Page',
     component: Login,
-    meta: { title: ' Login' },
+    meta: { title: 'Login Page', requiresAuth: false, role: 'guest' },
   },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFoundView,
+    meta: { title: 'Not Found', requiresAuth: false  },
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  const token = Cookies.get('token');
+  const userRole = store.getters.getUserRole;
+
+  if (to.matched.some((route) => route.meta.requiresAuth)) {
+    if (!token) {
+      store.commit('setAlertMessage', `Please log in to access ${to.meta.title}.`);
+      setTimeout(() => {
+        store.commit('clearAlertMessage');
+      }, 5000);
+      next('/login');
+    } else if ((to.meta.role === 'admin' && userRole === 'Admin') || (to.meta.role === 'cashier' && userRole === 'Cashier')) {
+      // Allow access for the user's role
+      next();
+    } else {
+      const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.meta.title}`;
+      store.commit('setAlertMessage', errorMessage);
+      if (userRole === 'Admin') {
+        next('/dashboard'); // Redirect to admin dashboard
+      } else if (userRole === 'Cashier') {
+        next('/cashierdashboard'); // Redirect to cashier dashboard
+      }
+      setTimeout(() => {
+        store.commit('clearAlertMessage');
+      }, 5000);
+    }
+  } else if (to.name === 'Login Page' && store.getters.isAuthenticated) {
+    store.commit('setAlertMessage', `You are already logged in. Please log out to access ${to.meta.title}`);
+    setTimeout(() => {
+      store.commit('clearAlertMessage');
+    }, 5000);
+    if (store.getters.isAdmin) {
+      next('/dashboard'); // Redirect to admin dashboard
+    } else if (store.getters.isCashier) {
+      next('/cashierdashboard'); // Redirect to cashier dashboard
+    }
+  } else {
+    next();
+  }
+})
 export default router;
