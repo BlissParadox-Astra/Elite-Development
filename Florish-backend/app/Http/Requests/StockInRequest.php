@@ -22,8 +22,9 @@ class StockInRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => 'required|exists:products,id',
-            'quantity_added' => 'required|integer|min:1',
+            'stock_in_requests' => 'required|array',
+            'stock_in_requests.*.product_id' => 'required|exists:products,id',
+            'stock_in_requests.*.quantity_added' => 'required|integer|min:1',
         ];
     }
 }

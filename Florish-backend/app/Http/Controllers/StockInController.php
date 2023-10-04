@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StockInRequest;
-use Illuminate\Http\Request;
 use App\Managers\StockInManager;
+use Illuminate\Http\Request;
 
 class StockInController extends Controller
 {
@@ -47,17 +47,21 @@ class StockInController extends Controller
         try {
             $validatedData = $request->validated();
 
-            // Create the stock-in record using the manager
-            $this->stockInManager->createStockIn($validatedData);
 
-            return response()->json(['message' => 'Stock-In record created successfully']);
+
+
+            foreach ($validatedData['stock_in_requests'] as $stockInRequest) {
+                $this->stockInManager->createStockIn($stockInRequest);
+            }
+   
+            return response()->json(['message' => 'Stock-In records created successfully']);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-
+   
             return response()->json(['error' => $errorMessage], 500);
         }
     }
-
+   
     /**
      * Display the specified resource.
      */

@@ -18,20 +18,21 @@
         <td class="text-center" v-for="column in columns" :key="column.key">
           <template v-if="column.key === 'quantity' && isStockEntryPage">
             <span @click="openEditQuantityDialog(index)">{{ item[column.key] }}</span>
-          </template>
-          <template v-if="column.render">
-            <span v-html="column.render(item)"></span>
+            {{ console.log("Quantity in CustomTable component:", item[column.key]) }}
           </template>
           <template v-else>
-            {{ item[column.key] }}
+            <span v-if="column.key === 'user_type'">
+              {{ item[column.key].user_type }}
+            </span>
+            <span v-else-if="column.key === 'brand'">
+              {{ item[column.key].brand_name }}
+            </span>
+            <span v-else-if="column.key === 'category'">
+              {{ item[column.key].category_name }}
+            </span>
+            <span v-else-if="column.render" v-html="column.render(item)"></span>
+            <span v-else>{{ item[column.key] }}</span>
           </template>
-        </td>
-        <!-- cashier icons -->
-        <td v-if="showMinusIcon">
-          <v-icon @click="subtractProduct(item)">mdi-minus-circle</v-icon>
-        </td>
-        <td v-if="showPlusCartIcon">
-          <v-icon @click="addProduct(item)">mdi-plus-circle</v-icon>
         </td>
         <td v-if="showEditIcon" class="edit-icon-cell text-center">
           <v-icon @click="editData(item)">mdi-pencil</v-icon>
@@ -52,7 +53,7 @@
 
 <script>
 export default {
-  props: ['columns', 'items', 'showEditIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage', 'showMinusIcon', 'showPlusCartIcon', 'showDeleteIcon'],
+  props: ['columns', 'items', 'showEditIcon', 'showDeleteIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage', 'add-to-cart-method'],
   data() {
     return {
       search: '',
@@ -68,14 +69,6 @@ export default {
         },
         ...this.columns.map(column => ({ text: column.label, value: column.key })),
       ];
-      // cashier icons
-      if (this.showMinusIcon) {
-        headers.push({ text: 'subtractProduct', value: 'MinusIcon' });
-      }
-      if (this.showPlusCartIcon) {
-        headers.push({ text: 'addProduct', value: 'AdditionToCartIcon' });
-      }
-      // cashier icons
       if (this.showEditIcon) {
         headers.push({ text: 'Edit', value: 'editIcon' });
       }
@@ -104,13 +97,9 @@ export default {
     addToCartProduct(product) {
       this.$emit('add-to-cart-product', product);
     },
-    // startEditingQuantity(index) {
-    //   this.$emit('edit-quantity', index);
-    // },
     openEditQuantityDialog(index) {
       this.$emit('edit-quantity', index);
     },
-
   },
 };
 </script>
