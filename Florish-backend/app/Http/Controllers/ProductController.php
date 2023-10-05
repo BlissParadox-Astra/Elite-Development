@@ -23,10 +23,22 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = $this->productManager->getAllProducts();
+            $searchQuery = $request->input('search');
+            $query = Product::query();
+
+            if (!empty($searchQuery)) {
+                $query->where('description', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('product_code', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('barcode', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('stock_on_hand', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('price', 'LIKE', '%' . $searchQuery . '%');
+            }
+
+            $products = $query->with(['productType', 'category', 'brand'])->get();
 
             return response()->json(['products' => $products]);
         } catch (\Exception $e) {
@@ -35,6 +47,19 @@ class ProductController extends Controller
             return response()->json(['error' => $errorMessage], 500);
         }
     }
+
+    // public function index()
+    // {
+    //     try {
+    //         $products = $this->productManager->getAllProducts();
+
+    //         return response()->json(['products' => $products]);
+    //     } catch (\Exception $e) {
+    //         $errorMessage = $e->getMessage();
+
+    //         return response()->json(['error' => $errorMessage], 500);
+    //     }
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -132,4 +157,30 @@ class ProductController extends Controller
             return response()->json(['error' => $errorMessage], 500);
         }
     }
+
+    public function Search(Request $request)
+    {
+        try {
+            $searchQuery = $request->input('search');
+            $query = Product::query();
+
+            if (!empty($searchQuery)) {
+                $query->where('description', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('product_code', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('barcode', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('stock_on_hand', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('price', 'LIKE', '%' . $searchQuery . '%');
+            }
+
+            $products = $query->get();
+
+            return response()->json(['products' => $products]);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
 }

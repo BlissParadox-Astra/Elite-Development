@@ -12,7 +12,7 @@
       <v-row>
         <v-col cols="12">
           <CustomTable :columns="tableColumns" :items="paginatedBrands" :showEditIcon="true" :showDeleteIcon="true"
-            @edit-data="editBrandRow" @delete-data="showDeleteConfirmation" class="custom-table" />
+            @edit-data="editBrandRow" @delete-data="showDeleteConfirmation" />
             <v-pagination v-model="currentPage" :length="totalPages" />
           </v-col>
       </v-row>

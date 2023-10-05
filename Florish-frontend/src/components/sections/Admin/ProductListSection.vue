@@ -2,7 +2,7 @@
     <v-container class="mt-5 section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <SearchField />
+                <SearchField @search="updateSearchResults" />
             </v-col>
             <v-col cols="12" sm="3">
                 <v-btn color="success" block @click="showProductForm">Add New Product</v-btn>
@@ -175,17 +175,20 @@ export default {
         renderProductBrand(brand) {
             return brand.brand ? brand.brand.brand_name : 'Unknown';
         },
+        updateSearchResults(searchResults) {
+            this.products = searchResults; // Update the products data with the search results
+        },
     },
     computed: {
-    paginatedProducts() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      return this.products.slice(startIndex, endIndex);
+        paginatedProducts() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.products.slice(startIndex, endIndex);
+        },
+        totalPages() {
+            return Math.ceil(this.products.length / this.itemsPerPage);
+        },
     },
-    totalPages() {
-      return Math.ceil(this.products.length / this.itemsPerPage);
-    },
-  },
 };
 </script>
   
