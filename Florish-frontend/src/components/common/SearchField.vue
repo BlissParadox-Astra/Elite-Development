@@ -51,5 +51,28 @@ export default {
     //     });
     // },
   },
+  watch: {
+  searchQuery: function(newQuery) {
+    if (newQuery) {
+      this.loading = true;
+
+      // Make API request to your backend with the search query as a parameter
+      axios.get('/products', { params: { search: newQuery } })
+        .then(response => {
+          const searchResults = response.data.products ? response.data.products : response.data.users;
+          this.$emit('search', searchResults); // Emit the search results
+          this.loading = false;
+          this.loaded = true;
+        })
+        .catch(error => {
+          console.error(error);
+          this.loading = false;
+        });
+    } else {
+      // Clear search results if search query is empty
+      this.$emit('search', []);
+    }
+  }
+},
 };
 </script>
