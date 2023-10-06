@@ -35,7 +35,13 @@ class ProductController extends Controller
                     ->orWhere('barcode', 'LIKE', '%' . $searchQuery . '%')
                     ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%')
                     ->orWhere('stock_on_hand', 'LIKE', '%' . $searchQuery . '%')
-                    ->orWhere('price', 'LIKE', '%' . $searchQuery . '%');
+                    ->orWhere('price', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhereHas('category', function ($categoryQuery) use ($searchQuery) {
+                        $categoryQuery->where('category_name', 'LIKE', '%' . $searchQuery . '%');
+                    })
+                    ->orWhereHas('brand', function ($brandQuery) use ($searchQuery) {
+                        $brandQuery->where('brand_name', 'LIKE', '%' . $searchQuery . '%');
+                    });
             }
 
             $products = $query->with(['productType', 'category', 'brand'])->get();
