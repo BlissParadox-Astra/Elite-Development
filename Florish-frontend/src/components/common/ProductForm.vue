@@ -20,7 +20,7 @@
               <v-select v-model="category_name"
                 :items="existingCategories.length > 0 ? existingCategories.map(category => category.category_name) : []"
                 label="Categories" placeholder="Choose Category" :error-messages="selectedCategoryError"
-                @input="clearFieldErrors('categories')" :filter="true">
+                @input="clearFieldErrors('categories')">
                 <template #prepend-item>
                   <v-col>
                     <SearchField />
