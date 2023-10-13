@@ -31,6 +31,13 @@ class StockInController extends Controller
         }
     }
 
+    public function generateReferenceNumber()
+    {
+        $referenceNumber = $this->stockInManager->generateReferenceNumber();
+
+        return response()->json(['reference_number' => $referenceNumber]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -46,9 +53,6 @@ class StockInController extends Controller
     {
         try {
             $validatedData = $request->validated();
-
-
-
 
             foreach ($validatedData['stock_in_requests'] as $stockInRequest) {
                 $this->stockInManager->createStockIn($stockInRequest);

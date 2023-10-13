@@ -18,7 +18,6 @@
         <td class="text-center" v-for="column in columns" :key="column.key">
           <template v-if="column.key === 'quantity' && isStockEntryPage">
             <span @click="openEditQuantityDialog(index)">{{ item[column.key] }}</span>
-            {{ console.log("Quantity in CustomTable component:", item[column.key]) }}
           </template>
           <template v-else>
             <span v-if="column.key === 'user_type'">
@@ -53,7 +52,7 @@
 
 <script>
 export default {
-  props: ['columns', 'items', 'showEditIcon', 'showDeleteIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage', 'add-to-cart-method'],
+  props: ['columns', 'items', 'showEditIcon', 'showDeleteIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage', 'add-to-cart-method', 'referenceNo', 'stockInDate', 'stockInBy'],
   data() {
     return {
       search: '',

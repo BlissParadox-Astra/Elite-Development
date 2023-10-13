@@ -10,14 +10,14 @@ class StockInManager
 {
     public function createStockIn(array $stockInRequest)
     {
-        $referenceNumber = $this->generateReferenceNumber();
+        // $referenceNumber = $this->generateReferenceNumber();
         $stockInBy = Auth::id();
-        $stockInDate = now();
+        // $stockInDate = now();
 
         StockIn::create([
-            'reference_number' => $referenceNumber,
+            'reference_number' => $stockInRequest['reference_number'],
             'stock_in_by' => $stockInBy,
-            'stock_in_date' => $stockInDate,
+            'stock_in_date' => $stockInRequest['stock_in_date'],
             'product_id' => $stockInRequest['product_id'],
             'quantity_added' => $stockInRequest['quantity_added'],
         ]);
@@ -28,7 +28,7 @@ class StockInManager
         $product->save();
     }
 
-    protected function generateReferenceNumber(): string
+    public function generateReferenceNumber(): string
     {
         $timestamp = now()->format('YmdHis');
         $randomNumber = mt_rand(100, 999);

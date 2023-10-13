@@ -3,13 +3,13 @@
         <v-container>
             <v-row class="mt-3">
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
-                    <v-text-field label="Reference Number" placeholder="Enter Reference Number" readonly />
+                    <v-text-field label="Reference Number" v-model="referenceNo" readonly />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
-                    <v-btn color="success" block>Generate</v-btn>
+                    <v-btn color="success" block @click="generateAndFetchReferenceNumber">Generate</v-btn>
                 </v-col>
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
-                    <v-text-field label="Stock In Date" type="date" />
+                    <v-text-field label="Stock In Date" type="date" v-model="stockInDate" />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
                     <v-btn color="success" block @click="showBrowseProductForm">Browse Product</v-btn>
@@ -29,7 +29,8 @@
             </v-row>
             <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
                 @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog"
-                @add-to-cart-product="addToCartProduct" height="450px" />
+                @add-to-cart-product="addToCartProduct" :referenceNo="referenceNo" :stockInDate="stockInDate"
+                :stockInBy="stockInBy" height="450px" />
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
                     <v-btn color="success" @click="showConfirmation" style="width: 150px;">Save</v-btn>
@@ -60,7 +61,7 @@
                         <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
-                        <v-btn color="primary" @click="saveEditedQuantity">Save</v-btn>
+                        <v-btn color="primary" @click="saveEditedQuantity" :disabled="isSaveButtonDisabled">Save</v-btn>
                         <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -74,7 +75,7 @@ import CustomTable from '../../common/CustomTable.vue';
 import BrowseProduct from '../../common/BrowseProduct.vue';
 import { VIcon } from "vuetify/lib/components";
 import { mapState } from 'vuex';
-// import axios from 'axios';
+import axios from 'axios';
 export default {
     components: {
         CustomTable,
@@ -89,6 +90,8 @@ export default {
             products: [],
             editedQuantity: 0,
             editingIndex: -1,
+            referenceNo: '',
+            stockInDate: '',
             tableColumns: [
                 { key: "referenceNo", label: "Reference No." },
                 { key: 'product_code', label: 'Product Code' },
@@ -110,6 +113,9 @@ export default {
             }
             return '';
         },
+        isSaveButtonDisabled() {
+            return this.editedQuantity === '' || isNaN(this.editedQuantity);
+        },
     },
     methods: {
         showBrowseProductForm() {
@@ -119,17 +125,21 @@ export default {
             this.showBrowseProduct = false;
         },
         addToCartProduct(product) {
-            const existingProductIndex = this.products.findIndex(
-                (p) => p.product_code === product.product_code
-            );
-            if (existingProductIndex !== -1) {
-                this.products[existingProductIndex].quantity += 1;
+            const referenceNo = this.referenceNo;
+            const stockInDate = this.stockInDate;
+            const stockInBy = this.stockInBy;
+            const existingProduct = this.products.find(p => p.product_code === product.product_code);
+            if (existingProduct !== undefined) {
+                existingProduct.quantity++;
             } else {
                 const newProduct = {
                     product_code: product.product_code,
                     barcode: product.barcode,
                     quantity: 1,
                     description: product.description,
+                    referenceNo,
+                    stockInDate,
+                    stockInBy,
                 };
                 this.products.push(newProduct);
             }
@@ -168,12 +178,15 @@ export default {
         cancelSave() {
             this.showConfirmationDialog = false;
         },
-        // created() {
-        //     // Fetch the user data or set it as needed
-        //     if (this.user) {
-        //         this.stockInBy = `${this.user.first_name} ${this.user.last_name}`;
-        //     }
-        // },
+        generateAndFetchReferenceNumber() {
+            axios.get('/stockIn/generate-reference-number')
+                .then(response => {
+                    this.referenceNo = response.data.reference_number;
+                })
+                .catch(error => {
+                    console.error('Error fetching reference number', error);
+                });
+        },
     },
 };
 </script>
