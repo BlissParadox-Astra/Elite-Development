@@ -14,9 +14,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 const drawer = ref(null);
 const route = useRoute();
+
+const handleResize = () => {
+  if (window.innerWidth <= 960) { // Adjust the value according to your desired screen size
+    drawer.value = null;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 
 <script>

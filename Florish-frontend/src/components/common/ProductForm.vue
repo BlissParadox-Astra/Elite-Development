@@ -20,21 +20,32 @@
               <v-select v-model="category_name"
                 :items="existingCategories.length > 0 ? existingCategories.map(category => category.category_name) : []"
                 label="Categories" placeholder="Choose Category" :error-messages="selectedCategoryError"
-                @input="clearFieldErrors('categories')"></v-select>
+                @input="clearFieldErrors('categories')" :filter="true">
+                <template #prepend-item>
+                  <v-col>
+                    <SearchField />
+                  </v-col>
+                </template>
+              </v-select>
             </v-col>
             <v-col cols="12" md="6">
               <v-select v-model="brand_name" label="Brand"
                 :items="existingBrands.length > 0 ? existingBrands.map(brand => brand.brand_name) : []"
-                placeholder="Enter Brand Name" @input="clearFieldErrors('brands')"
-                :error-messages="brandError"></v-select>
+                placeholder="Enter Brand Name" @input="clearFieldErrors('brands')" :error-messages="brandError">
+                <template #prepend-item>                 
+                    <v-col cols="12">
+                      <SearchField />
+                    </v-col>
+                </template>
+              </v-select>
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
                 :error-messages="priceError"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level" @input="clearFieldErrors('reorderLevel')"
-                :error-messages="reorderLevelError"></v-text-field>
+              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level"
+                @input="clearFieldErrors('reorderLevel')" :error-messages="reorderLevelError"></v-text-field>
             </v-col>
           </v-row>
           <v-row class="mt-4">
@@ -56,16 +67,19 @@
 
 <script>
 import axios from 'axios';
-
+import SearchField from '../common/SearchField.vue';
 export default {
   name: 'ProductForm',
+  components: {
+    SearchField,
+  },
   props: { initialProduct: Object, existingCategories: Array, existingBrands: Array },
   data() {
     return {
       barcode: this.initialProduct ? this.initialProduct.barcode : "",
       description: this.initialProduct ? this.initialProduct.description : "",
-      category_name: this.initialProduct ? this.initialProduct.category_name : "",
-      brand_name: this.initialProduct ? this.initialProduct.brand_name : "",
+      category_name: this.initialProduct && this.initialProduct.category_name ? this.initialProduct.category_name : "",
+      brand_name: this.initialProduct && this.initialProduct.brand_name ? this.initialProduct.brand_name : "",
       price: this.initialProduct ? this.initialProduct.price : "",
       reorder_level: this.initialProduct ? this.initialProduct.reorder_level : "",
       stockOnHand: this.initialProduct ? this.initialProduct.stockOnHand : 0,

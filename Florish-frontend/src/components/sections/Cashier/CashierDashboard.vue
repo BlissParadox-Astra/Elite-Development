@@ -39,7 +39,6 @@ export default {
 
 
 .dashboard {
-    margin: 40px auto;
     text-align: center;
     background-color: #859766;
 }

@@ -1,7 +1,7 @@
 <template>
-  <v-container permanent class="content-container fill-height">
+  <v-container  class="content-container fill-height" fluid>
     <v-row>
-      <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
+      <v-col cols="12" sm="6" md="6" xl="6" lg="6">
         <div class="logo">
           <v-img src="../../../assets/assets/florish-logo(2).png" alt="storelogo" contain></v-img>
         </div>
