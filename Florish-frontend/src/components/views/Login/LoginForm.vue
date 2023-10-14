@@ -1,8 +1,8 @@
 <template>
-  <v-container permanent class="content-container fill-height">
+  <v-container class="content-container" fluid>
     <v-row>
-      <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
-        <div class="logo">
+      <v-col cols="12" sm="6" md="7" xl="6" lg="6">
+        <div class="logo" cols="12" sm="6" md="6" xl="6" lg="6">
           <v-img src="../../../assets/assets/florish-logo(2).png" alt="storelogo" contain></v-img>
         </div>
       </v-col>
@@ -117,15 +117,11 @@ export default {
 </script>
 
 <style scoped>
-.fill-height {
-  overflow: hidden;
-
-}
-
 .content-container {
   background-image: url("../../../assets/assets/vuejs.jpg");
   background-size: cover;
   background-position: center;
+  height: 100%;
 }
 
 .login-card {
@@ -134,5 +130,8 @@ export default {
   background-color: rgba(255, 255, 255, 0.8);
   padding: 20px;
   border-radius: 8px;
+}
+.logo{
+  width: 90%;
 }
 </style>
