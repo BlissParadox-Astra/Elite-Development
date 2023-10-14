@@ -3,19 +3,20 @@
         <v-container>
             <v-row class="mt-3">
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
-                    <v-text-field label="Reference Number" v-model="referenceNo" readonly />
+                    <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
                     <v-btn color="success" block @click="generateAndFetchReferenceNumber">Generate</v-btn>
                 </v-col>
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
-                    <v-text-field label="Stock In Date" type="date" v-model="stockInDate" />
+                    <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
-                    <v-btn color="success" block @click="showBrowseProductForm">Browse Product</v-btn>
+                    <v-btn color="success" block @click="showBrowseProductForm" :disabled="!canBrowseProduct">Browse
+                        Product</v-btn>
                 </v-col>
                 <v-col cols="12" sm="2" md="2" lg="2" xl="2">
-                    <v-text-field label="Stock In By" readonly :model-value="stockInBy" />
+                    <v-text-field label="Stock In By" readonly :model-value="stock_in_by" />
                 </v-col>
             </v-row>
             <v-row v-if="showBrowseProduct">
@@ -29,8 +30,8 @@
             </v-row>
             <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
                 @delete-data="deleteProductRow" @edit-quantity="openEditQuantityDialog"
-                @add-to-cart-product="addToCartProduct" :referenceNo="referenceNo" :stockInDate="stockInDate"
-                :stockInBy="stockInBy" height="450px" />
+                @add-to-cart-product="addToCartProduct" :reference_number="reference_number" :stock_in_date="stock_in_date"
+                :stock_in_by="stock_in_by" height="450px" />
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
                     <v-btn color="success" @click="showConfirmation" style="width: 150px;">Save</v-btn>
@@ -48,7 +49,7 @@
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="success" @click="saveStockIn" style="width: 150px;">Save</v-btn>
+                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Save</v-btn>
                             <v-btn @click="cancelSave">Cancel</v-btn>
                         </div>
                     </v-card-actions>
@@ -90,16 +91,16 @@ export default {
             products: [],
             editedQuantity: 0,
             editingIndex: -1,
-            referenceNo: '',
-            stockInDate: '',
+            reference_number: '',
+            stock_in_date: '',
             tableColumns: [
-                { key: "referenceNo", label: "Reference No." },
+                { key: "reference_number", label: "Reference No." },
                 { key: 'product_code', label: 'Product Code' },
                 { key: 'barcode', label: 'Bar Code' },
                 { key: "description", label: "Description" },
-                { key: "quantity", label: "Quantity" },
-                { key: "stockInDate", label: "Stock In Date" },
-                { key: "stockInBy", label: "Stock In By" },
+                { key: "quantity_added", label: "Quantity" },
+                { key: "stock_in_date", label: "Stock In Date" },
+                { key: "stock_in_by", label: "Stock In By" },
             ],
         };
     },
@@ -107,15 +108,24 @@ export default {
         ...mapState({
             user: state => state.user,
         }),
-        stockInBy() {
+        stock_in_by() {
             if (this.user && this.user.first_name && this.user.last_name) {
                 return `${this.user.first_name} ${this.user.last_name}`;
             }
             return '';
         },
+        canBrowseProduct() {
+            return this.reference_number && this.stock_in_date && this.stock_in_by;
+        },
         isSaveButtonDisabled() {
             return this.editedQuantity === '' || isNaN(this.editedQuantity);
         },
+    },
+    created() {
+        const queryDate = this.$route.query.date;
+        if (queryDate) {
+            this.stock_in_date = queryDate;
+        }
     },
     methods: {
         showBrowseProductForm() {
@@ -125,21 +135,25 @@ export default {
             this.showBrowseProduct = false;
         },
         addToCartProduct(product) {
-            const referenceNo = this.referenceNo;
-            const stockInDate = this.stockInDate;
-            const stockInBy = this.stockInBy;
+            const reference_number = this.reference_number;
+            const stock_in_date = this.stock_in_date;
+            const stock_in_by = this.stock_in_by;
+
+            const product_id = product.product_id;
+
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
             if (existingProduct !== undefined) {
-                existingProduct.quantity++;
+                existingProduct.quantity_added++;
             } else {
                 const newProduct = {
                     product_code: product.product_code,
                     barcode: product.barcode,
-                    quantity: 1,
+                    quantity_added: 1,
                     description: product.description,
-                    referenceNo,
-                    stockInDate,
-                    stockInBy,
+                    reference_number,
+                    stock_in_date,
+                    stock_in_by,
+                    product_id,
                 };
                 this.products.push(newProduct);
             }
@@ -152,12 +166,12 @@ export default {
         },
         openEditQuantityDialog(index) {
             this.editingIndex = index;
-            this.editedQuantity = this.products[index].quantity;
+            this.editedQuantity = this.products[index].quantity_added;
             this.showEditQuantityDialog = true;
         },
         saveEditedQuantity() {
             if (this.editingIndex !== -1) {
-                this.products[this.editingIndex].quantity = this.editedQuantity;
+                this.products[this.editingIndex].quantity_added = this.editedQuantity;
                 this.showEditQuantityDialog = false;
                 this.editingIndex = -1;
                 this.editedQuantity = 0;
@@ -174,6 +188,30 @@ export default {
         },
         saveRecord() {
             this.showConfirmationDialog = false;
+
+            const stockInRequests = this.products.map((product) => {
+                return {
+                    reference_number: this.reference_number,
+                    stock_in_date: this.stock_in_date,
+                    stock_in_by: this.stock_in_by,
+                    product_id: product.product_id,
+                    quantity_added: product.quantity_added,
+                };
+            });
+
+            const stockInData = {
+                stock_in_requests: stockInRequests,
+            };
+
+            axios
+                .post("/stockIn", stockInData)
+                .then(() => {
+                    console.log("Stock-In records saved successfully");
+                    this.resetData();
+                })
+                .catch((error) => {
+                    console.error("Error saving Stock-In records", error);
+                });
         },
         cancelSave() {
             this.showConfirmationDialog = false;
@@ -181,12 +219,16 @@ export default {
         generateAndFetchReferenceNumber() {
             axios.get('/stockIn/generate-reference-number')
                 .then(response => {
-                    this.referenceNo = response.data.reference_number;
+                    this.reference_number = response.data.reference_number;
                 })
                 .catch(error => {
                     console.error('Error fetching reference number', error);
                 });
         },
+        resetData() {
+            this.products = [];
+            this.reference_number = '';
+        }
     },
 };
 </script>

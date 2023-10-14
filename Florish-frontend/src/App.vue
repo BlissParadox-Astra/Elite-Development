@@ -33,9 +33,6 @@ export default {
   },
   data: () => ({
     drawer: null,
-    user: {
-      initials: 'JD',
-    },
   }),
   computed: {
     ...mapGetters(['isAdmin']),

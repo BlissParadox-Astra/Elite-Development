@@ -10,9 +10,7 @@ class StockInManager
 {
     public function createStockIn(array $stockInRequest)
     {
-        // $referenceNumber = $this->generateReferenceNumber();
         $stockInBy = Auth::id();
-        // $stockInDate = now();
 
         StockIn::create([
             'reference_number' => $stockInRequest['reference_number'],
@@ -27,7 +25,6 @@ class StockInManager
 
         $product->save();
     }
-
     public function generateReferenceNumber(): string
     {
         $timestamp = now()->format('YmdHis');

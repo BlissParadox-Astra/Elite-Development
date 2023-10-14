@@ -42,6 +42,11 @@ const routes = [
     name: 'Stock Entry Page',
     component: StockEntryView,
     meta: { title: 'Stock In Page', requiresAuth: true, role: 'admin' },
+    beforeEnter: (to, from, next) => {
+      const currentDate = new Date().toISOString().split('T')[0];
+      to.query.date = currentDate;
+      next();
+    }
   },
 
   {
@@ -118,26 +123,26 @@ const routes = [
     path: '/cashierdashboard',
     name: 'Cashier Dashboard Page',
     component: CashierDashboard,
-    meta: {title: 'Cashier Dashboard', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Cashier Dashboard', requiresAuth: true, role: 'cashier' },
 
   },
   {
     path: '/transactionCart',
     name: 'Transaction Cart Page',
     component: TransactionCart,
-    meta: {title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/lowStock',
     name: 'Low Stock Page',
     component: LowStock,
-    meta: {title: 'Low Stocks Page', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Low Stocks Page', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/soldPurchase',
     name: 'Sold Purchase Page',
     component: SoldPurchase,
-    meta: {title: 'Sold Or Purchased Page', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Sold Or Purchased Page', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/login',
@@ -150,7 +155,7 @@ const routes = [
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFoundView,
-    meta: { title: 'Not Found', requiresAuth: false  },
+    meta: { title: 'Not Found', requiresAuth: false },
   }
 ];
 
@@ -171,15 +176,14 @@ router.beforeEach((to, from, next) => {
       }, 5000);
       next('/login');
     } else if ((to.meta.role === 'admin' && userRole === 'Admin') || (to.meta.role === 'cashier' && userRole === 'Cashier')) {
-      // Allow access for the user's role
       next();
     } else {
       const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.meta.title}`;
       store.commit('setAlertMessage', errorMessage);
       if (userRole === 'Admin') {
-        next('/dashboard'); // Redirect to admin dashboard
+        next('/dashboard'); 
       } else if (userRole === 'Cashier') {
-        next('/cashierdashboard'); // Redirect to cashier dashboard
+        next('/cashierdashboard');
       }
       setTimeout(() => {
         store.commit('clearAlertMessage');
@@ -191,9 +195,9 @@ router.beforeEach((to, from, next) => {
       store.commit('clearAlertMessage');
     }, 5000);
     if (store.getters.isAdmin) {
-      next('/dashboard'); // Redirect to admin dashboard
+      next('/dashboard');
     } else if (store.getters.isCashier) {
-      next('/cashierdashboard'); // Redirect to cashier dashboard
+      next('/cashierdashboard');
     }
   } else {
     next();

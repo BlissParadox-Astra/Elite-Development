@@ -52,7 +52,7 @@ export default {
     methods: {
         async getCriticalStocks() {
             try {
-                const response = await axios.get('/products/critical-stocks');
+                const response = await axios.get('/critical-stocks');
                 this.products = response.data;
                 console.log('Products:', this.products);
             } catch (error) {

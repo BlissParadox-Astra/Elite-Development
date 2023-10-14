@@ -61,13 +61,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Group for product routes
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
         Route::put('/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::get('{id}', [ProductController::class, 'show'])->name('products.show');
-        //Route for critical-stock
-        Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     });
 
 

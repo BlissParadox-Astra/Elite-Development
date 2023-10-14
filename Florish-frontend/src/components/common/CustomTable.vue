@@ -16,7 +16,7 @@
       <tr v-for="(item, index) in items" :key="item.productCode">
         <td class="text-center">{{ index + 1 }}</td>
         <td class="text-center" v-for="column in columns" :key="column.key">
-          <template v-if="column.key === 'quantity' && isStockEntryPage">
+          <template v-if="column.key === 'quantity_added' && isStockEntryPage">
             <span @click="openEditQuantityDialog(index)">{{ item[column.key] }}</span>
           </template>
           <template v-else>
@@ -32,6 +32,7 @@
             <span v-else-if="column.render" v-html="column.render(item)"></span>
             <span v-else>{{ item[column.key] }}</span>
           </template>
+          <input type="hidden" v-model="item.id" />
         </td>
         <td v-if="showEditIcon" class="edit-icon-cell text-center">
           <v-icon @click="editData(item)">mdi-pencil</v-icon>
@@ -94,7 +95,10 @@ export default {
       this.$emit('fetch-data', data);
     },
     addToCartProduct(product) {
-      this.$emit('add-to-cart-product', product);
+      this.$emit('add-to-cart-product', {
+        ...product,
+        product_id: product.id,
+      });
     },
     openEditQuantityDialog(index) {
       this.$emit('edit-quantity', index);

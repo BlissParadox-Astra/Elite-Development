@@ -1,5 +1,4 @@
 <template>
-   
         <v-container class="dashboard" fluid>
             <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
             <v-row justify="center" class="cardbox-container">
@@ -39,7 +38,7 @@ export default {
 
 
 .dashboard {
-    margin: 40px auto;
+    height: 100%;
     text-align: center;
     background-color: #859766;
 }
