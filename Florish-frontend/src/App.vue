@@ -2,7 +2,7 @@
   <v-app id="inspire">
     <AdminSidebar v-model="drawer" v-if="showSidebar" />
     <v-app-bar v-if="showAppBar">
-      <v-app-bar-nav-icon v-if="showNavIcon" @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <!-- <v-app-bar-nav-icon v-if="showNavIcon" @click="drawer = !drawer"></v-app-bar-nav-icon> -->
       <v-app-bar-title>{{ route.meta.title }}</v-app-bar-title>
       <Profile></Profile>
     </v-app-bar>
