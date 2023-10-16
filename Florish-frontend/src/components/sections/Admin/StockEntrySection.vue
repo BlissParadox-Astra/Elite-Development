@@ -6,7 +6,7 @@
                     <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
-                    <v-btn color="success" block @click="generateAndFetchReferenceNumber">Generate</v-btn>
+                    <v-btn color="success" block @click="generateAndFetchReferenceNumber" :disabled="isGeneratingReferenceNumber">Generate</v-btn>
                 </v-col>
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
                     <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
@@ -34,7 +34,7 @@
                 :stock_in_by="stock_in_by" height="450px" />
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
-                    <v-btn color="success" @click="showConfirmation" style="width: 150px;">Save</v-btn>
+                    <v-btn color="success" @click="showConfirmation" style="width: 150px;" :disabled="isSaveButtonDisabled">Save</v-btn>
                 </v-col>
             </v-row>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
@@ -62,7 +62,7 @@
                         <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
-                        <v-btn color="primary" @click="saveEditedQuantity" :disabled="isSaveButtonDisabled">Save</v-btn>
+                        <v-btn color="primary" @click="saveEditedQuantity" :disabled="isEditQuantitySaveButtonDisabled">Save</v-btn>
                         <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -88,6 +88,7 @@ export default {
             showEditQuantityDialog: false,
             showConfirmationDialog: false,
             showBrowseProduct: false,
+            isGeneratingReferenceNumber: false,
             products: [],
             editedQuantity: 0,
             editingIndex: -1,
@@ -117,9 +118,12 @@ export default {
         canBrowseProduct() {
             return this.reference_number && this.stock_in_date && this.stock_in_by;
         },
-        isSaveButtonDisabled() {
+        isEditQuantitySaveButtonDisabled() {
             return this.editedQuantity === '' || isNaN(this.editedQuantity);
         },
+        isSaveButtonDisabled() {
+            return this.reference_number === '' || this.stock_in_date === '' || this.stock_in_by === '' || this.products.length === 0;
+        }
     },
     created() {
         const queryDate = this.$route.query.date;
@@ -180,15 +184,13 @@ export default {
         closeEditQuantityDialog() {
             this.showEditQuantityDialog = false;
             this.editingIndex = -1;
-            this.editedQuantity = 0
-                ;
+            this.editedQuantity = 0;
         },
         showConfirmation() {
             this.showConfirmationDialog = true;
         },
         saveRecord() {
             this.showConfirmationDialog = false;
-
             const stockInRequests = this.products.map((product) => {
                 return {
                     reference_number: this.reference_number,
@@ -208,15 +210,18 @@ export default {
                 .then(() => {
                     console.log("Stock-In records saved successfully");
                     this.resetData();
+                    this.isGeneratingReferenceNumber = false;
                 })
                 .catch((error) => {
                     console.error("Error saving Stock-In records", error);
+                    this.isGeneratingReferenceNumber = true;
                 });
         },
         cancelSave() {
             this.showConfirmationDialog = false;
         },
         generateAndFetchReferenceNumber() {
+            this.isGeneratingReferenceNumber = true;
             axios.get('/stockIn/generate-reference-number')
                 .then(response => {
                     this.reference_number = response.data.reference_number;
