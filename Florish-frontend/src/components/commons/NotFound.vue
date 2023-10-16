@@ -15,7 +15,7 @@ export default {
         ...mapGetters(['isAuthenticated', 'getUserRole']),
         dashboardRoute() {
             const userRole = this.getUserRole;
-            return userRole === 'Admin' ? '/dashboard' : userRole === 'Cashier' ? '/cashierdashboard' : '/dashboard';
+            return userRole === 'Admin' ? '/admin-dashboard' : userRole === 'Cashier' ? '/cashier-dashboard' : '/admin-dashboard';
         },
     },
 };

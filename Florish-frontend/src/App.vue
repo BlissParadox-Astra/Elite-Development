@@ -22,9 +22,9 @@ const route = useRoute();
 <script>
 import { mapGetters } from 'vuex/dist/vuex.esm-browser.js';
 import { useRoute } from 'vue-router';
-import AdminSidebar from './components/common/AdminSidebar.vue';
-import Profile from './components/common/Profile.vue';
-import MessageAlert from './components/common/MessageAlert.vue';
+import AdminSidebar from './components/commons/AdminSidebar.vue';
+import Profile from './components/commons/Profile.vue';
+import MessageAlert from './components/commons/MessageAlert.vue';
 export default {
   components: {
     AdminSidebar,

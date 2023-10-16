@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import SearchField from "@/components/common/SearchField.vue";
+import SearchField from "../commons/SearchField.vue";
 import CustomTable from "./CustomTable.vue";
 import axios from 'axios';
 

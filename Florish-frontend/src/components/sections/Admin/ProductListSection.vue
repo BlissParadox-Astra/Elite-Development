@@ -30,10 +30,10 @@
 </template>
   
 <script>
-import SearchField from '../../common/SearchField.vue';
-import ProductForm from '../../common/ProductForm.vue';
-import CustomTable from '../../common/CustomTable.vue';
-import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
+import SearchField from '../../commons/SearchField.vue';
+import ProductForm from '../../forms/ProductForm.vue';
+import CustomTable from '../../commons/CustomTable.vue';
+import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 export default {

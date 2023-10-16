@@ -76,7 +76,7 @@
         </v-dialog>
         <v-row class="d-flex justify-space-between">
             <v-col cols="12" sm="6" lg="3" class="text-start">
-                <v-btn to="/cashierdashboard" color="success" block>BACK</v-btn>
+                <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
             </v-col>
             <v-col cols="12" sm="6" lg="3" class="text-end">
                 <v-btn color="success" block>SOLD</v-btn>
@@ -85,11 +85,11 @@
     </v-container>
 </template>
 <script>
-import CustomTable from "../../common/CustomTable.vue";
-import BrowseProduct from '../../common/BrowseProduct.vue';
-import SearchField from '../../common/SearchField.vue';
+import CustomTable from "../../commons/CustomTable.vue";
+import BrowseProduct from '../../commons/BrowseProduct.vue';
+import SearchField from '../../commons/SearchField.vue';
 export default {
-    name: 'transactionCart',
+    name: 'TransactionCart',
     components: {
         CustomTable,
         BrowseProduct,
