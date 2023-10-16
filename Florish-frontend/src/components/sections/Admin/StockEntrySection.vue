@@ -76,8 +76,8 @@
 
   
 <script>
-import CustomTable from '../../common/CustomTable.vue';
-import BrowseProduct from '../../common/BrowseProduct.vue';
+import CustomTable from '../../commons/CustomTable.vue';
+import BrowseProduct from '../../commons/BrowseProduct.vue';
 import { VIcon } from "vuetify/lib/components";
 export default {
     components: {

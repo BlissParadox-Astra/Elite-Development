@@ -9,9 +9,9 @@
 </template>
   
 <script>
-import CashierDashboard from '@/component/section/Cashier/CashierDashbord.vue';
+import CashierDashboard from '@/components/sections/Cashier/CashierDashboardSection.vue';
 export default {
-  name: 'cashierDashboard',
+  name: 'CashierDashboardView',
   components: {
     CashierDashboard,
   },

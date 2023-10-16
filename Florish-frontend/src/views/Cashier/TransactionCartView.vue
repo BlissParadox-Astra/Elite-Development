@@ -1,17 +1,17 @@
 <template>
     <div>
       <v-app>
-          <transactionCart />   
+          <TransactionCart />
       </v-app>
     </div>
   </template>
   
   <script>
-  import transactionCart from '@/component/section/Cashier/transactionCart.vue';
+  import TransactionCart from '@/components/sections/Cashier/TransactionCartSection.vue';
   export default {
-    name: 'transactionCart',
+    name: 'TransactionCartView',
     components: {
-        transactionCart,
+      TransactionCart,
     },
   };
   </script>

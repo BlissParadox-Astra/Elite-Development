@@ -4,7 +4,7 @@
             <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
             <v-row justify="center" class="cardbox-container">
                 <v-col cols="12" sm="6" md="4">
-                    <v-card class="mx-auto cardbox pa-4" max-width="200" to='transactionCart'>
+                    <v-card class="mx-auto cardbox pa-4" max-width="200" to='/transaction-cart'>
                         <v-img class="align-end text-white" height="fit-content"
                             src="../../../assets/assets/shopping-cart-xxl.png" cover>
                         </v-img>
@@ -12,7 +12,7 @@
                     </v-card>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-                    <v-card class="mx-auto cardbox pa-4" max-width="200" to="/lowStock">
+                    <v-card class="mx-auto cardbox pa-4" max-width="200" to="/low-stock">
                         <v-img src="../../../assets/assets/negative-dynamic-xxl.png" alt="cart" class="icon"></v-img>
                         <v-card-text class="text-center">LOW STOCKS</v-card-text>
                     </v-card>
@@ -20,7 +20,7 @@
             </v-row>
             <v-row justify="center">
                 <v-col cols="12" sm="6" md="4">
-                    <v-card class="mx-auto cardbox pa-4" max-width="200" to="/soldPurchase">
+                    <v-card class="mx-auto cardbox pa-4" max-width="200" to="/sold-purchase">
                         <v-img src="../../../assets/assets/border-color-xxl.png" alt="cart" class="icon"></v-img>
                         <v-card-text class="text-center"> SOLD PURCHASE</v-card-text>
                     </v-card>

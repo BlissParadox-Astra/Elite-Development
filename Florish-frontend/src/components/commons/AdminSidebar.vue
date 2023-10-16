@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       menuItems: [
-        { text: "Dashboard", route: "/dashboard", icon: "mdi-view-dashboard" },
+        { text: "Dashboard", route: "/admin-dashboard", icon: "mdi-view-dashboard" },
         { text: "Product", route: "/product-list-view", icon: "mdi-package-variant-closed", },
         {
           text: "Stock Entry",
