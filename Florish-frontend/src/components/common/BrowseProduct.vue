@@ -61,14 +61,14 @@ export default {
       });
     },
 
-    closeForm() {
-      this.showProductForm = false;
-      this.$emit("close");
-    },
-
     addToCartProduct(product) {
       window.alert("Product added to cart!");
       this.addToCart(product);
+    },
+
+    closeForm() {
+      this.showProductForm = false;
+      this.$emit("close");
     },
   },
 };

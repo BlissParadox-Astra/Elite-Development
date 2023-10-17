@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StockInRequest;
 use App\Managers\StockInManager;
-use Illuminate\Http\Request;
 
 class StockInController extends Controller
 {
@@ -31,13 +30,6 @@ class StockInController extends Controller
         }
     }
 
-    public function generateReferenceNumber()
-    {
-        $referenceNumber = $this->stockInManager->generateReferenceNumber();
-
-        return response()->json(['reference_number' => $referenceNumber]);
-    }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -57,15 +49,15 @@ class StockInController extends Controller
             foreach ($validatedData['stock_in_requests'] as $stockInRequest) {
                 $this->stockInManager->createStockIn($stockInRequest);
             }
-   
+
             return response()->json(['message' => 'Stock-In records created successfully']);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-   
+
             return response()->json(['error' => $errorMessage], 500);
         }
     }
-   
+
     /**
      * Display the specified resource.
      */
@@ -85,7 +77,7 @@ class StockInController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StockInRequest $request, string $id)
     {
         //
     }
@@ -96,5 +88,15 @@ class StockInController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Generate reference number.
+     */
+    public function generateReferenceNumber()
+    {
+        $referenceNumber = $this->stockInManager->generateReferenceNumber();
+
+        return response()->json(['reference_number' => $referenceNumber]);
     }
 }

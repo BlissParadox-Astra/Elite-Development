@@ -71,10 +71,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // Group for stock in routes
-    Route::get('/stockIns', [StockInController::class, 'index'])->name('stockIns.index');
-    Route::prefix('/stockIn')->group(function () {
-        Route::post('/', [StockInController::class, 'store'])->name('stockIns.store');
-        Route::get('/generate-reference-number', [StockInController::class, 'generateReferenceNumber'])->name('stockIns.generate_reference_number');
+    Route::get('/stock-ins', [StockInController::class, 'index'])->name('stock-ins.index');
+    Route::prefix('/stock-in')->group(function () {
+        Route::post('/', [StockInController::class, 'store'])->name('stock-ins.store');
+        Route::get('/generate-reference-number', [StockInController::class, 'generateReferenceNumber'])->name('stock-ins.generate_reference_number');
     });
 
 
