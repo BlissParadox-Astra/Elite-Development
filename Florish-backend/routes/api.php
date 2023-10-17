@@ -61,26 +61,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Group for product routes
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
         Route::put('/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
-        //Route for critical-stock
         Route::get('{id}', [ProductController::class, 'show'])->name('products.show');
     });
 
 
     // Group for stock in routes
-    Route::get('/stockIns', [StockInController::class, 'index'])->name('stockIns.index');
-    Route::get('/products/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
-    Route::prefix('/stockIn')->group(function () {
-        Route::post('/', [StockInController::class, 'store'])->name('stockIns.store');
+    Route::get('/stock-ins', [StockInController::class, 'index'])->name('stock-ins.index');
+    Route::prefix('/stock-in')->group(function () {
+        Route::post('/', [StockInController::class, 'store'])->name('stock-ins.store');
+        Route::get('/generate-reference-number', [StockInController::class, 'generateReferenceNumber'])->name('stock-ins.generate_reference_number');
     });
 
 
     // Group for stock adjustment routes
+    Route::get('/stockAdjustments', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
     Route::prefix('/stockAdjustment')->group(function () {
-        Route::get('/', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
         Route::post('/', [StockAdjustmentController::class, 'store'])->name('stockAdjustments.store');
     });
 

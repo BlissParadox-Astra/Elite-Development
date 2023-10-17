@@ -16,15 +16,23 @@
       <tr v-for="(item, index) in items" :key="item.productCode">
         <td class="text-center">{{ index + 1 }}</td>
         <td class="text-center" v-for="column in columns" :key="column.key">
-          <template v-if="column.key === 'quantity' && isStockEntryPage">
+          <template v-if="column.key === 'quantity_added' && isStockEntryPage">
             <span @click="openEditQuantityDialog(index)">{{ item[column.key] }}</span>
           </template>
-          <template v-if="column.render">
-            <span v-html="column.render(item)"></span>
-          </template>
           <template v-else>
-            {{ item[column.key] }}
+            <span v-if="column.key === 'user_type'">
+              {{ item[column.key].user_type }}
+            </span>
+            <span v-else-if="column.key === 'brand'">
+              {{ item[column.key].brand_name }}
+            </span>
+            <span v-else-if="column.key === 'category'">
+              {{ item[column.key].category_name }}
+            </span>
+            <span v-else-if="column.render" v-html="column.render(item)"></span>
+            <span v-else>{{ item[column.key] }}</span>
           </template>
+          <input type="hidden" v-model="item.id" />
         </td>
         <!-- cashier icons -->
         <td v-if="showMinusIcon">
@@ -52,7 +60,7 @@
 
 <script>
 export default {
-  props: ['columns', 'items', 'showEditIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage', 'showMinusIcon', 'showPlusCartIcon', 'showDeleteIcon'],
+  props: ['columns', 'items', 'showEditIcon', 'showFetchIcon', 'showAddToCartIcon', 'isStockEntryPage', 'add-to-cart-method', 'referenceNo', 'stockInDate', 'stockInBy', 'showMinusIcon', 'showPlusCartIcon', 'showDeleteIcon'],
   data() {
     return {
       search: '',
@@ -74,8 +82,7 @@ export default {
       }
       if (this.showPlusCartIcon) {
         headers.push({ text: 'addProduct', value: 'AdditionToCartIcon' });
-      }
-      // cashier icons
+      } 
       if (this.showEditIcon) {
         headers.push({ text: 'Edit', value: 'editIcon' });
       }
@@ -95,22 +102,25 @@ export default {
     editData(data) {
       this.$emit('edit-data', data);
     },
+
     deleteData(data) {
       this.$emit('delete-data', data);
     },
+
     fetchData(data) {
       this.$emit('fetch-data', data);
     },
+
     addToCartProduct(product) {
-      this.$emit('add-to-cart-product', product);
+      this.$emit('add-to-cart-product', {
+        ...product,
+        product_id: product.id,
+      });
     },
-    // startEditingQuantity(index) {
-    //   this.$emit('edit-quantity', index);
-    // },
+
     openEditQuantityDialog(index) {
       this.$emit('edit-quantity', index);
     },
-
   },
 };
 </script>

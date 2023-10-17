@@ -45,6 +45,11 @@ const routes = [
     name: 'Stock Entry Page',
     component: StockEntryView,
     meta: { title: 'Stock In Page', requiresAuth: true, role: 'admin' },
+    beforeEnter: (to, from, next) => {
+      const currentDate = new Date().toISOString().split('T')[0];
+      to.query.date = currentDate;
+      next();
+    }
   },
 
   {
@@ -153,7 +158,7 @@ const routes = [
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFoundView,
-    meta: { title: 'Not Found', requiresAuth: false  },
+    meta: { title: 'Not Found', requiresAuth: false },
   }
 ];
 
@@ -174,7 +179,6 @@ router.beforeEach((to, from, next) => {
       }, 5000);
       next('/login');
     } else if ((to.meta.role === 'admin' && userRole === 'Admin') || (to.meta.role === 'cashier' && userRole === 'Cashier')) {
-      // Allow access for the user's role
       next();
     } else {
       const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.meta.title}`;

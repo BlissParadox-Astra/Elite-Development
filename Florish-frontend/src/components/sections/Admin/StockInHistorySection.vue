@@ -50,7 +50,7 @@ export default {
   methods: {
     async getStockIns() {
       try {
-        const response = await axios.get('/stockIns');
+        const response = await axios.get('/stock-ins');
         this.stockIns = response.data.stock_ins; // Make sure to access the correct property
         console.log('Records:', this.stockIns);
       } catch (error) {
