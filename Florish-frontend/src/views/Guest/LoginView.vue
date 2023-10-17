@@ -7,7 +7,7 @@
 </template>
   
 <script>
-import LoginSection from './components/views/Login/LoginForm.vue';
+import LoginSection from '@/components/sections/Guest/LoginForm.vue';
 
 export default {
   name: 'LoginView',

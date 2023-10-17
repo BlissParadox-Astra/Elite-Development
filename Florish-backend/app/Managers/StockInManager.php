@@ -5,29 +5,33 @@ namespace App\Managers;
 use App\Models\Product;
 use App\Models\StockIn;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class StockInManager
 {
-    public function createStockIn(array $stockInData)
+    public function createStockIn(array $stockInRequest)
     {
-        $stockInData['reference_number'] = $this->generateReferenceNumber();
-        $stockInData['stock_in_by'] = Auth::id(); // Set the current user's ID
-        $stockInData['stock_in_date'] = now(); // Set the current date and time
+        $stockInBy = Auth::id();
+        $stockInDate = Carbon::parse($stockInRequest['stock_in_date'])->format('Y-m-d');
 
-        StockIn::create($stockInData);
+        StockIn::create([
+            'reference_number' => $stockInRequest['reference_number'],
+            'stock_in_by' => $stockInBy,
+            'stock_in_date' => $stockInDate,
+            'product_id' => $stockInRequest['product_id'],
+            'quantity_added' => $stockInRequest['quantity_added'],
+        ]);
 
-        // Update the stock_on_hand of the related product
-        $product = Product::findOrFail($stockInData['product_id']);
-        $product->incrementStockOnHand($stockInData['quantity_added']);
+        $product = Product::findOrFail($stockInRequest['product_id']);
+        $product->incrementStockOnHand($stockInRequest['quantity_added']);
 
-        // Save the changes
         $product->save();
     }
-
-    protected function generateReferenceNumber(): string
+    
+    public function generateReferenceNumber(): string
     {
-        $timestamp = now()->format('YmdHis'); // Current date and time in YmdHis format
-        $randomNumber = mt_rand(1000, 9999); // Generate a random 4-digit number
+        $timestamp = now()->format('YmdHis');
+        $randomNumber = mt_rand(100, 999);
         return "{$timestamp}{$randomNumber}";
     }
 

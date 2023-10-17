@@ -2,19 +2,19 @@
   <div>
     <v-app>
       <v-main>
-        <DashboardSection />
+        <AdminDashboardSection />
       </v-main>
     </v-app>
   </div>
 </template>
 
 <script>
-import DashboardSection from '@/components/sections/Admin/DashboardSection.vue';
+import AdminDashboardSection from '@/components/sections/Admin/AdminDashboardSection.vue';
 
 export default {
   name: 'DashboardView',
   components: {
-    DashboardSection,
+    AdminDashboardSection,
   },
 };
 </script>

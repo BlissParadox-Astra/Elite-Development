@@ -18,8 +18,8 @@
 </template>
   
 <script>
-import CustomTable from '../../common/CustomTable.vue';
-import FilterByDate from '../../common/FilterByDate.vue';
+import CustomTable from '../../commons/CustomTable.vue';
+import FilterByDate from '../../commons/FilterByDate.vue';
 import axios from 'axios';
 
 export default {
@@ -50,7 +50,7 @@ export default {
   methods: {
     async getStockIns() {
       try {
-        const response = await axios.get('/stockIns');
+        const response = await axios.get('/stock-ins');
         this.stockIns = response.data.stock_ins; // Make sure to access the correct property
         console.log('Records:', this.stockIns);
       } catch (error) {

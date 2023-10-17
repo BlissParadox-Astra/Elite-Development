@@ -7,11 +7,11 @@
   </template>
   
   <script>
-  import CriticalStock from '@/component/section/Cashier/CriticalStock.vue';
+  import CriticalStock from '@/components/sections/Cashier/CriticalStockSection.vue';
   export default {
-    name: 'CriticalStock',
+    name: 'CriticalStockView',
     components: {
-        transactionCart,
+        CriticalStock,
     },
   };
   </script>a

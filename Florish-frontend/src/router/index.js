@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Cookies from 'js-cookie';
 import store from '../store';
-import NotFoundView from '../components/common/NotFound.vue';
-import DashboardView from '../views/Admin/DashboardView.vue';
+//admin
+import AdminDashboardView from '../views/Admin/AdminDashboardView.vue';
 import ProductListView from '../views/Admin/ProductListView.vue';
 import StockEntryView from '../views/Admin/StockEntryView.vue';
 import StockHistoryView from '../views/Admin/StockInHistoryView.vue';
@@ -13,20 +13,23 @@ import ProductCategoryView from '../views/Admin/ProductCategoryView.vue';
 import ProductBrandView from '../views/Admin/ProductBrandView.vue';
 import SaleHistoryView from '../views/Admin/SaleHistoryView.vue';
 import CriticalStockView from '../views/Admin/CriticalStockView.vue';
-import CancelledOrderView from '../views/Admin/CancelOrderView.vue';
+import CancelledOrderView from '../views/Admin/CancelledOrderView.vue';
 import UsersView from '../views/Admin/UsersView.vue';
-import Login from '../components/views/Login/LoginForm.vue';
-//cashier part
-import CashierDashboard from '../components/sections/Cashier/CashierDashboard.vue';
-import TransactionCart from '../components/sections/Cashier/transactionCart.vue';
-import LowStock from '@/components/sections/Cashier/CriticalStock.vue';
-import SoldPurchase from '@/components/sections/Cashier/SoldPurchase.vue';
+//cashier
+import CashierDashboardView from '../views/Cashier/CashierDashboardView.vue';
+import TransactionCartView from '../views/Cashier/TransactionCartView.vue';
+import LowStockView from '../views/Cashier/CriticalStockView.vue';
+import SoldPurchaseView from '../views/Cashier/SoldPurchaseView.vue';
+//guest
+import LoginView from '../views/Guest/LoginView.vue';
+//common
+import NotFoundView from '../components/commons/NotFound.vue';
 
 const routes = [
   {
-    path: '/dashboard',
+    path: '/admin-dashboard',
     name: 'Admin Dashboard Page',
-    component: DashboardView,
+    component: AdminDashboardView,
     meta: { title: 'Admin Dashboard Page', requiresAuth: true, role: 'admin' },
   },
 
@@ -42,6 +45,11 @@ const routes = [
     name: 'Stock Entry Page',
     component: StockEntryView,
     meta: { title: 'Stock In Page', requiresAuth: true, role: 'admin' },
+    beforeEnter: (to, from, next) => {
+      const currentDate = new Date().toISOString().split('T')[0];
+      to.query.date = currentDate;
+      next();
+    }
   },
 
   {
@@ -115,42 +123,42 @@ const routes = [
   },
   //Cashier route
   {
-    path: '/cashierdashboard',
+    path: '/cashier-dashboard',
     name: 'Cashier Dashboard Page',
-    component: CashierDashboard,
+    component: CashierDashboardView,
     meta: {title: 'Cashier Dashboard', requiresAuth: true, role: 'cashier' },
 
   },
   {
-    path: '/transactionCart',
+    path: '/transaction-cart',
     name: 'Transaction Cart Page',
-    component: TransactionCart,
+    component: TransactionCartView,
     meta: {title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
   },
   {
-    path: '/lowStock',
+    path: '/low-stock',
     name: 'Low Stock Page',
-    component: LowStock,
+    component: LowStockView,
     meta: {title: 'Low Stocks Page', requiresAuth: true, role: 'cashier' },
   },
   {
-    path: '/soldPurchase',
+    path: '/sold-purchase',
     name: 'Sold Purchase Page',
-    component: SoldPurchase,
+    component: SoldPurchaseView,
     meta: {title: 'Sold Or Purchased Page', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/login',
     alias: '/',
     name: 'Login Page',
-    component: Login,
+    component: LoginView,
     meta: { title: 'Login Page', requiresAuth: false, role: 'guest' },
   },
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFoundView,
-    meta: { title: 'Not Found', requiresAuth: false  },
+    meta: { title: 'Not Found', requiresAuth: false },
   }
 ];
 
@@ -171,15 +179,14 @@ router.beforeEach((to, from, next) => {
       }, 5000);
       next('/login');
     } else if ((to.meta.role === 'admin' && userRole === 'Admin') || (to.meta.role === 'cashier' && userRole === 'Cashier')) {
-      // Allow access for the user's role
       next();
     } else {
       const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.meta.title}`;
       store.commit('setAlertMessage', errorMessage);
       if (userRole === 'Admin') {
-        next('/dashboard'); // Redirect to admin dashboard
+        next('/admin-dashboard'); // Redirect to admin dashboard
       } else if (userRole === 'Cashier') {
-        next('/cashierdashboard'); // Redirect to cashier dashboard
+        next('/cashier-dashboard'); // Redirect to cashier dashboard
       }
       setTimeout(() => {
         store.commit('clearAlertMessage');
@@ -191,9 +198,9 @@ router.beforeEach((to, from, next) => {
       store.commit('clearAlertMessage');
     }, 5000);
     if (store.getters.isAdmin) {
-      next('/dashboard'); // Redirect to admin dashboard
+      next('/admin-dashboard'); // Redirect to admin dashboard
     } else if (store.getters.isCashier) {
-      next('/cashierdashboard'); // Redirect to cashier dashboard
+      next('/cashier-dashboard'); // Redirect to cashier dashboard
     }
   } else {
     next();

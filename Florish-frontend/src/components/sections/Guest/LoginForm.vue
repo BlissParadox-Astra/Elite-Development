@@ -1,5 +1,5 @@
 <template>
-  <v-container permanent class="content-container fill-height">
+  <v-container fluid class="content-container fill-height">
     <v-row>
       <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
         <div class="logo">
@@ -82,10 +82,10 @@ export default {
           this.$store.commit('setToken', { token, userType, user });
           if (userType === 'Admin') {
             this.$store.dispatch('setAdminStatus', true);
-            this.$router.push('/dashboard');
+            this.$router.push('/admin-dashboard');
           } else if (userType === 'Cashier') {
             this.$store.dispatch('setCashierStatus', true);
-            this.$router.push('/cashierdashboard');
+            this.$router.push('/cashier-dashboard');
           } else {
             console.error('Invalid user type:', userType);
             this.errorMessage = 'Invalid user type';
@@ -119,7 +119,6 @@ export default {
 <style scoped>
 .fill-height {
   overflow: hidden;
-
 }
 
 .content-container {

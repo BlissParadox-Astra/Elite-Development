@@ -4,7 +4,6 @@
       <v-avatar v-bind="props" size="40" class="text-center">
         <v-img src="../../assets/assets/profileIcon.png" alt="Profile" contain></v-img>
       </v-avatar>
-      <div class="text-center mt-2" v-if="user">{{ user.first_name }} {{ user.last_name }}</div>
     </template>
     <v-card class="mx-auto" max-width="300">
       <v-avatar size="120" class="elevation-1" style="left: 70px; top: 5px;">

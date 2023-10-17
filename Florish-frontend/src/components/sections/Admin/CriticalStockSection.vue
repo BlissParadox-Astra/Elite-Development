@@ -15,8 +15,8 @@
 </template>
   
 <script>
-import SearchField from '../../common/SearchField.vue';
-import CustomTable from '../../common/CustomTable.vue';
+import SearchField from '../../commons/SearchField.vue';
+import CustomTable from '../../commons/CustomTable.vue';
 import axios from 'axios';
 
 export default {
@@ -52,7 +52,7 @@ export default {
     methods: {
         async getCriticalStocks() {
             try {
-                const response = await axios.get('/products/critical-stocks');
+                const response = await axios.get('/critical-stocks');
                 this.products = response.data;
                 console.log('Products:', this.products);
             } catch (error) {
