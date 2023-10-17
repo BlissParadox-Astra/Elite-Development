@@ -41,15 +41,15 @@
 
         <v-row class="d-flex justify-space-between">
             <v-col cols="12" sm="6" lg="3" class="text-start">
-                <v-btn to="/cashierdashboard" color="success" block>BACK</v-btn>
+                <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
             </v-col>
         </v-row>
     </v-container>
 </template>
 <script>
-import CustomTable from "../../common/CustomTable.vue";
-import FilterByDate from "@/components/common/FilterByDate.vue";
-import CancelOrderDetails from "@/components/common/CancelOrderForm.vue"
+import CustomTable from "../../commons/CustomTable.vue";
+import FilterByDate from "../../commons/FilterByDate.vue";
+import CancelOrderDetails from "../../forms/CancelOrderForm.vue"
 export default {
     name: 'transactionCart',
     components: {

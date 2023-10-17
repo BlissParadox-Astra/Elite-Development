@@ -82,10 +82,10 @@ export default {
           this.$store.commit('setToken', { token, userType, user });
           if (userType === 'Admin') {
             this.$store.dispatch('setAdminStatus', true);
-            this.$router.push('/dashboard');
+            this.$router.push('/admin-dashboard');
           } else if (userType === 'Cashier') {
             this.$store.dispatch('setCashierStatus', true);
-            this.$router.push('/cashierdashboard');
+            this.$router.push('/cashier-dashboard');
           } else {
             console.error('Invalid user type:', userType);
             this.errorMessage = 'Invalid user type';

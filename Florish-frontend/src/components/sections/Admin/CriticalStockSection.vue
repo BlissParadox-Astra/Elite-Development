@@ -15,8 +15,8 @@
 </template>
   
 <script>
-import SearchField from '../../common/SearchField.vue';
-import CustomTable from '../../common/CustomTable.vue';
+import SearchField from '../../commons/SearchField.vue';
+import CustomTable from '../../commons/CustomTable.vue';
 import axios from 'axios';
 
 export default {

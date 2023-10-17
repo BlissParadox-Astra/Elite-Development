@@ -81,6 +81,8 @@
 import CustomTable from '../../common/CustomTable.vue';
 import BrowseProduct from '../../common/BrowseProduct.vue';
 import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
+import CustomTable from '../../commons/CustomTable.vue';
+import BrowseProduct from '../../commons/BrowseProduct.vue';
 import { VIcon } from "vuetify/lib/components";
 import { mapState } from 'vuex';
 import axios from 'axios';

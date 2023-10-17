@@ -7,9 +7,9 @@
   </template>
   
   <script>
-  import SoldPurchase from '@/components/sections/Cashier/SoldPurchase.vue';
+  import SoldPurchase from '@/components/sections/Cashier/SoldPurchaseSection.vue';
   export default {
-    name: 'SoldPurchase',
+    name: 'SoldPurchaseView',
     components: {
         SoldPurchase,
     },

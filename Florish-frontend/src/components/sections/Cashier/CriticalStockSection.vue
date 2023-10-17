@@ -16,7 +16,7 @@
                 </v-card>
             </v-col>
         </v-row>
-        <v-btn to="/cashierDashboard" class="link px-5 rounded-lg" success>BACK TO DASHBOARD</v-btn>
+        <v-btn to="/cashier-dashboard" class="link px-5 rounded-lg" success>BACK TO DASHBOARD</v-btn>
     </v-container>
 </template>
 <style scoped>

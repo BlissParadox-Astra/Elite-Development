@@ -31,10 +31,10 @@
 </template>
 
 <script>
-import CustomTable from "../../common/CustomTable.vue";
-import SearchField from "../../common/SearchField.vue";
-import BrandForm from "../../common/BrandForm.vue";
-import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
+import CustomTable from "../../commons/CustomTable.vue";
+import SearchField from "../../commons/SearchField.vue";
+import BrandForm from "../../forms/BrandForm.vue";
+import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 export default {

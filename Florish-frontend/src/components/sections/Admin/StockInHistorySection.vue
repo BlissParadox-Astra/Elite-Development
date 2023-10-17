@@ -18,8 +18,8 @@
 </template>
   
 <script>
-import CustomTable from '../../common/CustomTable.vue';
-import FilterByDate from '../../common/FilterByDate.vue';
+import CustomTable from '../../commons/CustomTable.vue';
+import FilterByDate from '../../commons/FilterByDate.vue';
 import axios from 'axios';
 
 export default {

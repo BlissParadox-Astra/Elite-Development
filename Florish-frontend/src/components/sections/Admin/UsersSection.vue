@@ -28,9 +28,9 @@
 </template>
  
 <script>
-import CustomTable from '../../common/CustomTable.vue';
-import UserForm from '../../common/UserForm.vue';
-import DeleteConfirmationDialog from '../../common/DeleteConfirmationDialog.vue';
+import CustomTable from '../../commons/CustomTable.vue';
+import UserForm from '../../forms/UserForm.vue';
+import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 
