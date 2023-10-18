@@ -30,7 +30,7 @@ class AuthManager
 
         $userType = $user->userType->user_type;
 
-        $cookie = cookie('jwt', $token, 60 * 24);
+        $cookie = cookie('token', $token, 60 * 24);
 
         return response([
             'message' => 'Logged in successfully',
@@ -42,7 +42,11 @@ class AuthManager
 
     public function logout()
     {
-        $cookie = Cookie::forget('jwt');
+        $user = auth()->user();
+        $user->tokens->each(function ($token, $key) {
+            $token->delete();
+        });
+        $cookie = Cookie::forget('token');
 
         return response([
             'message' => 'Logged out successfully',

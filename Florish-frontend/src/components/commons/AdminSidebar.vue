@@ -96,8 +96,8 @@ a {
 .v-navigation-drawer.custom-bg-color {
   background-image: url("../../assets/assets/vuejs.jpg");
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
+  background-repeat: no-repeat; 
 }
 
 .expanded .v-list-item {

@@ -172,7 +172,7 @@ router.beforeEach((to, from, next) => {
   const userRole = store.getters.getUserRole;
 
   if (to.matched.some((route) => route.meta.requiresAuth)) {
-    if (!token) {
+    if (!token || !store.getters.isAuthenticated){
       store.commit('setAlertMessage', `Please log in to access ${to.meta.title}.`);
       setTimeout(() => {
         store.commit('clearAlertMessage');

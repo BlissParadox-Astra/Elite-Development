@@ -1,12 +1,12 @@
 <template>
-  <v-container fluid class="content-container fill-height">
+  <v-container class="content-container fill-height">
     <v-row>
-      <v-col cols="12" sm="6" md="6" lg="4" xl="3">
+      <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
         <div class="logo">
           <v-img src="../../../assets/assets/florish-logo.png" alt="storelogo" contain></v-img>
         </div>
       </v-col>
-      <v-col cols="12" sm="6" md="6" lg="4" xl="3">
+      <v-col cols="12" sm="6" md="6" xl="6" lg="6">
         <v-card class="login-card">
           <v-card-title class="title text-center">LOGIN</v-card-title>
           <v-form ref="loginForm" @submit.prevent="login">
@@ -18,10 +18,17 @@
                 </v-btn>
               </template>
             </v-alert>
-            <v-label class="text-subtitle-1 font-weight-bold">Username</v-label>
+            <v-label class="text-subtitle-1 font-weight-bold">User Name</v-label>
             <v-text-field density="compact" v-model="username" label="Username" prepend-inner-icon="mdi-account-outline"
               variant="outlined" :rules="[v => !!v || 'Username is required']"></v-text-field>
-            <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">Password</v-label>
+
+            <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
+              Password
+              <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
+                Forgot password?
+              </a>
+            </v-label>
+
             <v-text-field v-model="password" label="Password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
               :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
               prepend-inner-icon="mdi-lock-outline" variant="outlined" @click:append-inner="visible = !visible"
@@ -112,32 +119,19 @@ export default {
 <style scoped>
 .fill-height {
   overflow: hidden;
-  height: 100vh;
 }
 
 .content-container {
   background-image: url("../../../assets/assets/vuejs.jpg");
   background-size: cover;
   background-position: center;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .login-card {
-  max-width: 100%;
-  /* Allow the card to take the full width on smaller screens */
-  padding: 20px;
+  margin: 0 auto;
+  margin-top: 20%;
   background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Style for login error message */
-.login-error {
-  color: #ff0000;
-  text-align: center;
-  margin-top: 10px;
 }
 </style>
