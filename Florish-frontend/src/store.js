@@ -11,6 +11,7 @@ const store = createStore({
     userType: null,
     isCashier: false,
     alertMessage: null,
+    isSidebarCollapsed: false,
   },
   mutations: {
     setIsAdmin(state, value) {
@@ -31,6 +32,9 @@ const store = createStore({
     },
     clearAlertMessage(state) {
       state.alertMessage = null;
+    },
+    setIsSidebarCollapsed(state, value) {
+      state.isSidebarCollapsed = value;
     },
   },
   actions: {
