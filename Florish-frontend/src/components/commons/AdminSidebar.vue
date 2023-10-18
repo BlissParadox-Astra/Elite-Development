@@ -1,11 +1,10 @@
 <template>
-  <v-navigation-drawer app v-if="showSidebar"
-    class="custom-bg-color"
-    floating permanent>
+  <v-navigation-drawer :class="['admin-sidebar', 'custom-bg-color', { 'collapsed': sidebarCollapsed }]"
+    :width="sidebarCollapsed ? 70 : 250" floating permanent>
     <v-img src="../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain
-     ></v-img>
-    <v-list dense class="v-scrollbar">
-      <v-list-item v-for="item in menuItems" :key="item.text">
+      @click="toggleSidebar"></v-img>
+    <v-list dense class="v-scrollbar icon-pointer" @click="expandSidebar">
+      <v-list-item v-for="item in menuItems" :key="item.text" @click="handleItemClick(item)" >
         <v-hover>
           <v-row align="center">
             <v-col cols="2">
@@ -13,16 +12,16 @@
             </v-col>
             <v-col cols="10">
               <v-list-item-title>
-                <v-menu v-if="item.items" offset-y>
-                  <template v-slot:activator="{ props }" >
-                    <span v-bind="props">{{ item.text }}</span>
+                <!-- Move v-list-group outside v-list-item-title -->
+                <v-list-group v-if="item.items">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" tabindex="0">{{ item.text }}</v-list-item>
                   </template>
-                  <v-list>
-                    <v-list-item v-for="subItem in item.items" :key="subItem.text" :to="subItem.route">
-                      <v-list-item-title>{{ subItem.text }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                  <v-list-item v-for="subItem in item.items" :key="subItem.text" :to="subItem.route" tabindex="0"
+                    class="subitems">
+                    <v-list-item-title>{{ subItem.text }}</v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
                 <router-link v-else :to="item.route">{{ item.text }}</router-link>
               </v-list-item-title>
             </v-col>
@@ -32,6 +31,7 @@
     </v-list>
   </v-navigation-drawer>
 </template>
+
 
 <script>
 import { mapGetters } from 'vuex';
@@ -48,6 +48,7 @@ export default {
 
   data() {
     return {
+      open: [{ text: "Stock Entry" }],
       menuItems: [
         { text: "Dashboard", route: "/admin-dashboard", icon: "mdi-view-dashboard" },
         { text: "Product", route: "/product-list-view", icon: "mdi-package-variant-closed", },
@@ -81,16 +82,54 @@ export default {
         { text: "Sales History", route: "/sales-history", icon: "mdi-currency-usd" },
         { text: "Users", route: "/users", icon: "mdi-account-group" },
       ],
-     
+      sidebarCollapsed: false,
+      showMenuItems: true,
     };
   },
+  methods: {
+    toggleSidebar() {
+      this.sidebarCollapsed = !this.sidebarCollapsed;
+      this.$store.commit('setIsSidebarCollapsed', this.sidebarCollapsed);
+      localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
+      if (this.sidebarCollapsed) {
+        this.showMenuItems = false; // Hide menu items when collapsing
+      } else {
+        this.showMenuItems = true; // show menu items when expand
+      }
+    },
+    expandSidebar() {
+      this.sidebarCollapsed = false;
+      this.showMenuItems = true; // Show menu items when expanding
+    },
+    handleItemClick(item) {
+      if (!item.items) {
+        if (this.sidebarCollapsed) {
+          // Sidebar is collapsed, expand and redirect to the route
+          this.expandSidebar();
+          // this.$nextTick(() => {
+          //   this.$router.push(item.route);
+          // });
+        } else {
+          // Sidebar is not collapsed, redirect to the route
+          this.$router.push(item.route);
+        }
+      }
+    },
+    // Handle click event on sub-item
+    handleSubItemClick(subItem, event) {
+      event.stopPropagation();
+      this.toggleSidebar();
+    }
+  },
+
 };
 </script>
 
 <style scoped>
 a {
-  color: inherit;
+  color: #ffff;
   text-decoration: none;
+
 }
 
 .v-navigation-drawer.custom-bg-color {
@@ -100,11 +139,47 @@ a {
   background-repeat: no-repeat;
 }
 
-.expanded .v-list-item {
-  background-color: rgba(0, 0, 0, 0.1);
+.subitems {
+  background-color: #068863;
 }
 
 .v-list-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.v-navigation-drawer.collapsed {
+  width: 70px !important;
+}
+
+.v-navigation-drawer.collapsed .logo {
+  margin-top: 10px;
+}
+
+.v-navigation-drawer.collapsed .v-scrollbar {
+  margin-top: 10px;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Add styles to hide text when sidebar is collapsed */
+.v-navigation-drawer.collapsed .v-list-item-title {
+  display: none;
+}
+
+.v-navigation-drawer.collapsed .v-list-item-title i {
+  margin-left: 0 !important;
+}
+
+.v-navigation-drawer .v-icon {
+  color: #fff;
+}
+
+/* Set the color of the text to white */
+.v-navigation-drawer .v-list-item-title {
+  color: #fff;
+}
+
+.icon-pointer {
+  cursor: pointer;
 }
 </style>
