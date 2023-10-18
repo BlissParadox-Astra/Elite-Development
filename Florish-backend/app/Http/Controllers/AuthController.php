@@ -3,49 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserCredential;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-
+use App\Http\Requests\LoginRequest;
+use App\Managers\AuthManager;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    protected $authManager;
+
+    public function __construct(AuthManager $authManager)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $this->authManager = $authManager;
+    }
 
+    public function login(LoginRequest $request)
+    {
+        try {
+            $response = $this->authManager->login($request);
 
-        $credentials = $request->only('username', 'password');
+            return $response;
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
 
-        $userCredential = UserCredential::where('username', $credentials['username'])->first();
-
-        if (!$userCredential || !Hash::check($credentials['password'], $userCredential->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return response()->json(['error' => $errorMessage], 500);
         }
+    }
 
-        $user = $userCredential->user;
+    public function logout()
+    {
+        try {
+            $response = $this->authManager->logout();
 
-        $token = $user->createToken('token')->plainTextToken;
+            return $response;
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
 
-        Log::info('Generated Token: ' . $token);
-
-        $userType = $user->userType->user_type;
-
-
-        $cookie = cookie('token', $token, 60 * 24); // 1 day
-
-
-        return response([
-            'message' => 'Logged in successfully',
-            'user' => $user,
-            'userType' => $userType,
-            'token' => $token,
-        ])->withCookie($cookie);
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
 
     public function user()
@@ -53,15 +46,5 @@ class AuthController extends Controller
         $user = auth()->user();
 
         return response()->json(['user' => $user]);
-    }
-
-    public function logout(Request $request)
-    {
-        $cookie = Cookie::forget('token');
-
-
-        return response([
-            'message' => 'Logged out successfully',
-        ])->withCookie($cookie);
     }
 }

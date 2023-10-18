@@ -7,6 +7,8 @@ import store from './store';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
+
 axios.interceptors.request.use(config => {
   const token = Cookies.get('token'); 
   if (token) {
@@ -24,5 +26,3 @@ app.use(vuetify);
 app.use(store);
 
 app.mount('#app');
-
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api';

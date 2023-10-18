@@ -172,7 +172,7 @@ router.beforeEach((to, from, next) => {
   const userRole = store.getters.getUserRole;
 
   if (to.matched.some((route) => route.meta.requiresAuth)) {
-    if (!token) {
+    if (!token || !store.getters.isAuthenticated){
       store.commit('setAlertMessage', `Please log in to access ${to.meta.title}.`);
       setTimeout(() => {
         store.commit('clearAlertMessage');
@@ -184,9 +184,9 @@ router.beforeEach((to, from, next) => {
       const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.meta.title}`;
       store.commit('setAlertMessage', errorMessage);
       if (userRole === 'Admin') {
-        next('/admin-dashboard'); // Redirect to admin dashboard
+        next('/admin-dashboard');
       } else if (userRole === 'Cashier') {
-        next('/cashier-dashboard'); // Redirect to cashier dashboard
+        next('/cashier-dashboard');
       }
       setTimeout(() => {
         store.commit('clearAlertMessage');
@@ -198,9 +198,9 @@ router.beforeEach((to, from, next) => {
       store.commit('clearAlertMessage');
     }, 5000);
     if (store.getters.isAdmin) {
-      next('/admin-dashboard'); // Redirect to admin dashboard
+      next('/admin-dashboard');
     } else if (store.getters.isCashier) {
-      next('/cashier-dashboard'); // Redirect to cashier dashboard
+      next('/cashier-dashboard');
     }
   } else {
     next();

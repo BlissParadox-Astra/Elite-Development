@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer :class="['admin-sidebar', 'custom-bg-color', { 'collapsed': sidebarCollapsed }]"
     :width="sidebarCollapsed ? 70 : 250" floating permanent>
-    <v-img src="../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain
+    <v-img src="../../assets/assets/florish-logo.png" alt="storelogo" class="logo" contain
       @click="toggleSidebar"></v-img>
     <v-list dense class="v-scrollbar icon-pointer" @click="expandSidebar">
       <v-list-item v-for="item in menuItems" :key="item.text" @click="handleItemClick(item)" >
@@ -135,8 +135,8 @@ a {
 .v-navigation-drawer.custom-bg-color {
   background-image: url("../../assets/assets/vuejs.jpg");
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
+  background-repeat: no-repeat; 
 }
 
 .subitems {
