@@ -1,25 +1,24 @@
 <template>
-  <v-navigation-drawer  
-    :class="['admin-sidebar', 'custom-bg-color', { 'collapsed': sidebarCollapsed }]" :width="sidebarCollapsed ? 70 : 250"
-    floating permanent>
+  <v-navigation-drawer :class="['admin-sidebar', 'custom-bg-color', { 'collapsed': sidebarCollapsed }]"
+    :width="sidebarCollapsed ? 70 : 250" floating permanent>
     <v-img src="../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain
       @click="toggleSidebar"></v-img>
-    <v-list dense class="v-scrollbar">
-      <v-list-item v-for="item in menuItems" :key="item.text" @click="handleItemClick(item)">
+    <v-list dense class="v-scrollbar icon-pointer" @click="expandSidebar">
+      <v-list-item v-for="item in menuItems" :key="item.text" @click="handleItemClick(item)" >
         <v-hover>
           <v-row align="center">
-            <v-col cols="2" >
-              <v-icon @click="expandSidebar">{{ item.icon }}</v-icon>
+            <v-col cols="2">
+              <v-icon>{{ item.icon }}</v-icon>
             </v-col>
             <v-col cols="10">
               <v-list-item-title>
                 <!-- Move v-list-group outside v-list-item-title -->
                 <v-list-group v-if="item.items">
                   <template v-slot:activator="{ props }">
-                    <v-list-item v-bind="props" tabindex="0" >{{ item.text }}</v-list-item>
+                    <v-list-item v-bind="props" tabindex="0">{{ item.text }}</v-list-item>
                   </template>
-                  <v-list-item v-for="subItem in item.items" :key="subItem.text" :to="subItem.route"
-                    @click="handleSubItemClick(subItem, $event)" tabindex="0" class="subitems">
+                  <v-list-item v-for="subItem in item.items" :key="subItem.text" :to="subItem.route" tabindex="0"
+                    class="subitems">
                     <v-list-item-title>{{ subItem.text }}</v-list-item-title>
                   </v-list-item>
                 </v-list-group>
@@ -104,14 +103,22 @@ export default {
     },
     handleItemClick(item) {
       if (!item.items) {
-        // Toggle the sidebar if the item does not have sub-items
-        this.toggleSidebar();
+        if (this.sidebarCollapsed) {
+          // Sidebar is collapsed, expand and redirect to the route
+          this.expandSidebar();
+          // this.$nextTick(() => {
+          //   this.$router.push(item.route);
+          // });
+        } else {
+          // Sidebar is not collapsed, redirect to the route
+          this.$router.push(item.route);
+        }
       }
     },
     // Handle click event on sub-item
     handleSubItemClick(subItem, event) {
       event.stopPropagation();
-      this.toggleSidebar(); 
+      this.toggleSidebar();
     }
   },
 
@@ -136,7 +143,7 @@ a {
   background-color: #068863;
 }
 
-.v-list-item-title .v-list-item:hover {
+.v-list-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -162,6 +169,7 @@ a {
 .v-navigation-drawer.collapsed .v-list-item-title i {
   margin-left: 0 !important;
 }
+
 .v-navigation-drawer .v-icon {
   color: #fff;
 }
@@ -169,5 +177,9 @@ a {
 /* Set the color of the text to white */
 .v-navigation-drawer .v-list-item-title {
   color: #fff;
+}
+
+.icon-pointer {
+  cursor: pointer;
 }
 </style>
