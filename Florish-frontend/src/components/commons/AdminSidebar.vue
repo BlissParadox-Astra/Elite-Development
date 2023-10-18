@@ -2,7 +2,7 @@
   <v-navigation-drawer app v-if="showSidebar"
     class="custom-bg-color"
     floating permanent>
-    <v-img src="../../assets/assets/florish-logo(2).png" alt="storelogo" class="logo" contain
+    <v-img src="../../assets/assets/florish-logo.png" alt="storelogo" class="logo" contain
      ></v-img>
     <v-list dense class="v-scrollbar">
       <v-list-item v-for="item in menuItems" :key="item.text">

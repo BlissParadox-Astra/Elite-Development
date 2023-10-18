@@ -1,13 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockAdjustmentController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\StockInController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,13 +18,15 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "api" middleware group. Make something great!
 |
-*/
-
+ */
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Group for user management routes
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/user-types', [UserController::class, 'getUserTypes'])->name('user-types.get');
@@ -37,7 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-
     // Group for category management routes
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/get-categories', [BrandController::class, 'getCategories'])->name('get-categories.get');
@@ -48,7 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     });
 
-
     // Group for brand management routes
     Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
     Route::prefix('/brand')->group(function () {
@@ -57,7 +56,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{brand}', [BrandController::class, 'update'])->name('brands.update');
         Route::delete('/{id}', [BrandController::class, 'destroy'])->name('brands.destroy');
     });
-
 
     // Group for product routes
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -69,7 +67,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{id}', [ProductController::class, 'show'])->name('products.show');
     });
 
-
     // Group for stock in routes
     Route::get('/stock-ins', [StockInController::class, 'index'])->name('stock-ins.index');
     Route::prefix('/stock-in')->group(function () {
@@ -77,14 +74,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/generate-reference-number', [StockInController::class, 'generateReferenceNumber'])->name('stock-ins.generate_reference_number');
     });
 
-
     // Group for stock adjustment routes
     Route::get('/stockAdjustments', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
     Route::prefix('/stockAdjustment')->group(function () {
         Route::post('/', [StockAdjustmentController::class, 'store'])->name('stockAdjustments.store');
     });
 
-
     // Logout route
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+// Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
+//     // Logout route
+//     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// });
