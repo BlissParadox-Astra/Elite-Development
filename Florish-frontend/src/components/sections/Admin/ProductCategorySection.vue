@@ -11,8 +11,28 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="categories" :showEditIcon="true" :showDeleteIcon="true"
-            @edit-data="editCategoryRow" @delete-data="showDeleteConfirmation" class="custom-table" />
+          <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
+            :items-length="totalItems" :items="categories" :loading="loading" item-value="id" class="elevation-1"
+            @update:options="getCategories">
+            <template v-slot:custom-sort="{ header }">
+              <span v-if="header.key === 'actions'">Actions</span>
+            </template>
+            <template v-slot:item="{ item }">
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.category_name }}</td>
+                <td>
+                  <span>
+                    <v-icon @click="editCategoryRow(item)" color="primary">mdi-pencil</v-icon>
+                  </span>
+                  <span style="margin-left: 15px;">
+                    <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                  </span>
+                </td>
+              </tr>
+            </template>
+          </v-data-table-server>
+          <!-- <p>Current Page: {{ page }}</p> -->
         </v-col>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteCategory" ref="deleteConfirmationDialog" />
@@ -31,7 +51,6 @@
 </template>
  
 <script>
-import CustomTable from "../../commons/CustomTable.vue";
 import SearchField from "../../commons/SearchField.vue";
 import CategoryForm from "../../forms/CategoryForm.vue";
 import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
@@ -41,23 +60,28 @@ import axios from 'axios';
 export default {
   name: "ProductCategorySection",
   components: {
-    CustomTable,
     SearchField,
     CategoryForm,
     DeleteConfirmationDialog,
   },
   data() {
     return {
+      itemsPerPage: 10,
+      page: 1,
       showForm: false,
       categories: [],
+      totalItems: 0,
       editingCategory: null,
       editingCategoryIndex: -1,
-      tableColumns: [
-        { key: 'category_name', label: 'Category Name' },
+      loading: true,
+      id: 1,
+      headers: [
+        { title: '#', key: 'id' },
+        { title: 'Category Name', key: 'category_name' },
+        { title: 'Actions', key: 'actions', sortable: false }
       ],
     };
   },
-
 
   mounted() {
     this.getCategories();
@@ -65,15 +89,32 @@ export default {
 
   methods: {
     getCategories() {
-      axios.get('/categories').then(res => {
-        this.categories = res.data.categories
-      });
+      this.loading = true;
+      axios
+        .get('/categories', {
+          params: {
+            page: this.page,
+            itemsPerPage: this.itemsPerPage,
+          }
+        })
+        .then((res) => {
+          // console.log("API Response - Current Page:", this.page);
+          this.categories = res.data.categories;
+          this.totalItems = res.data.totalItems;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error('Error fetching categories:', error);
+        });
+        // console.log("After API Request - Current Page:", this.page);
     },
 
     addCategory(categoryData) {
       if (!categoryData.category_name) {
         return;
       }
+      categoryData.id = this.id;
+      this.id++;
       this.categories.push(categoryData);
       this.hideCategoryForm();
     },
@@ -144,7 +185,8 @@ export default {
   max-height: 100%;
   overflow-y: auto;
 }
-.custom-table {
+
+/* .custom-table {
   height: 500px;
-}
+} */
 </style>

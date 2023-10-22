@@ -19,13 +19,18 @@ class CategoryController extends Controller
     }
     /**
      * Display a listing of the resource.
-     */
-    public function index()
+     */ public function index(Request $request)
     {
         try {
-            $categories = $this->categoryManager->getAllCategories();
+            $page = $request->input('page', 1); // Get the requested page number from the request
+            $itemsPerPage = $request->input('itemsPerPage', 10); // Get the number of items per page from the request
 
-            return response()->json(['categories' => $categories], Response::HTTP_OK);
+            $categories = $this->categoryManager->getAllCategories($page, $itemsPerPage);
+
+            return response()->json([
+                'categories' => $categories->items(),  // Ensure 'categories' property
+                'totalItems' => $categories->total(),  // Get the total count
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 

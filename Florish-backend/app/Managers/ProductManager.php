@@ -19,9 +19,9 @@ class ProductManager
         return Product::create($productData);
     }
 
-    public function getAllProducts()
+    public function getAllProducts($page = 1, $itemsPerPage = 10)
     {
-        return Product::with(['productType', 'category', 'brand'])->get();
+        return Product::with(['productType', 'category', 'brand'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getProductByIdWithRelations($id)
@@ -51,8 +51,8 @@ class ProductManager
         return $newProductCode;
     }
 
-    public function getCriticalStock()
+    public function getCriticalStock($page = 1, $itemsPerPage = 10)
     {
-        return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->get();
+        return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 }

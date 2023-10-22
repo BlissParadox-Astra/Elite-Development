@@ -122,7 +122,7 @@ export default {
 }
 
 .content-container {
-  background-image: url("../../../assets/assets/vuejs.jpg");
+  background-image: url("../../../assets/assets/mekus (3).png");
   background-size: cover;
   background-position: center;
 }

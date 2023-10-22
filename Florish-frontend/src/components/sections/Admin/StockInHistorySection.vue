@@ -10,52 +10,79 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
-        <CustomTable v-if="stockIns.length > 0" :columns="tableColumns" :items="stockIns" height="450px" />
-        <div v-else>No stock in records available.</div>
+        <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
+          :items-length="totalItems" :items="stockIns" :loading="loading" item-value="id" class="elevation-1"
+          @update:options="getStockIns">
+          <template v-slot:item="{ item }">
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.reference_number }}</td>
+              <td>{{ item.adjusted_product.product_code }}</td>
+              <td>{{ item.adjusted_product.barcode }}</td>
+              <td>{{ item.adjusted_product.description }}</td>
+              <td>{{ item.quantity_added }}</td>
+              <td>{{ item.stock_in_date }}</td>
+              <td>{{ item.stock_in_by_user.first_name}}</td>
+            </tr>
+          </template>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </v-container>
 </template>
   
 <script>
-import CustomTable from '../../commons/CustomTable.vue';
 import FilterByDate from '../../commons/FilterByDate.vue';
 import axios from 'axios';
 
 export default {
   name: "StockHistory",
   components: {
-    CustomTable,
     FilterByDate,
   },
   data() {
     return {
+      itemsPerPage: 10,
+      totalItems: 0,
+      loading: true,
+      page: 1,
+      id: 1,
       stockIns: [],
-      tableColumns: [
-        { key: "reference_number", label: "Reference No." },
-        { key: "product_code", label: "Product Code", render: this.renderProductCode },
-        { key: "barcode", label: "Barcode", render: this.renderProductBarcode },
-        { key: "description", label: "Description", render: this.renderProductDescription },
-        { key: "quantity_added", label: "Quantity Added" },
-        { key: "stock_in_date", label: "Stock In Date" },
-        { key: "stock_in_by", label: "Stock In By", render: this.renderStockInBy },
+      headers: [
+        { title: '#', key: 'id' },
+        { title: 'Reference No.', key: 'reference_number' },
+        { title: 'Product Code', key: 'adjusted_product.product_code' },
+        { title: 'Barcode', key: 'adjusted_product.barcode' },
+        { title: 'Description', key: 'adjusted_product.description' },
+        { title: 'Quantity Added', key: 'quantity_added' },
+        { title: 'Stock In Date', key: 'stock_in_date' },
+        { title: 'Stock In By', key: 'stock_in_by_user.first_name' },
       ],
     };
   },
 
-  mounted() {
-    this.getStockIns();
+  async mounted() {
+    await this.getStockIns();
   },
 
   methods: {
-    async getStockIns() {
-      try {
-        const response = await axios.get('/stock-ins');
-        this.stockIns = response.data.stock_ins; // Make sure to access the correct property
-        console.log('Records:', this.stockIns);
-      } catch (error) {
-        console.error('Error fetching stock in records:', error);
-      }
+    getStockIns() {
+      this.loading = true;
+      axios
+        .get('/stock-ins', {
+          params: {
+            page: this.page,
+            itemsPerPage: this.itemsPerPage,
+          }
+        })
+        .then((res) => {
+          this.stockIns = res.data.stockIns;
+          this.totalItems = res.data.totalItems;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error('Error fetching stock in records:', error);
+        });
     },
 
     renderProductCode(adjusted_product) {
@@ -71,9 +98,8 @@ export default {
     },
 
     renderStockInBy(stock_in_by_user) {
-      if (stock_in_by_user.stock_in_by_user) {
-        const { first_name, last_name } = stock_in_by_user.stock_in_by_user;
-        return `${first_name} ${last_name}`;
+      if (stock_in_by_user.first_name) {
+        return `${stock_in_by_user.first_name} ${stock_in_by_user.last_name}`;
       } else {
         return 'Unknown';
       }

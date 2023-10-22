@@ -39,11 +39,10 @@ class CategoryManager
     }
 
 
-    public function getAllCategories()
+    public function getAllCategories($page = 1, $itemsPerPage = 10)
     {
-        return Category::all();
+        return Category::paginate($itemsPerPage, ['*'], 'page', $page);
     }
-
 
     public function getCategoryById(string $id)
     {

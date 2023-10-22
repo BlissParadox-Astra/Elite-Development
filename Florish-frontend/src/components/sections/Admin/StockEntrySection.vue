@@ -29,10 +29,40 @@
                     </v-row>
                 </v-col>
             </v-row>
-            <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
+            <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
+                :items-length="totalItems" :items="products" :loading="loading" :reference_number="reference_number"
+                :stock_in_date="stock_in_date" :stock_in_by="stock_in_by" @click="addToCartProduct" item-value="id" class="elevation-1">
+                <template v-slot:custom-sort="{ header }">
+                    <span v-if="header.key === 'actions'">Actions</span>
+                </template>
+                <template v-slot:item="{ item }">
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.reference_number }}</td>
+                        <td>{{ item.product_code }}</td>
+                        <td>{{ item.barcode }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>
+                            <span v-if="isStockEntryPage">
+                                <!-- <span @click="openEditQuantityDialog(index)">{{ item.quantity_added }}</span> -->
+                                <span @click="openEditQuantityDialog(item)">{{ item.quantity_added }}</span>
+                            </span>
+                            <span v-else>{{ item.quantity_added }}</span>
+                        </td>
+                        <td>{{ item.stock_in_date }}</td>
+                        <td>{{ item.stock_in_by }}</td>
+                        <td>
+                            <span style="margin-left: 2px;">
+                                <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                            </span>
+                        </td>
+                    </tr>
+                </template>
+            </v-data-table-server>
+            <!-- <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
                 @delete-data="showDeleteConfirmation" @edit-quantity="openEditQuantityDialog"
                 @add-to-cart-product="addToCartProduct" :reference_number="reference_number" :stock_in_date="stock_in_date"
-                :stock_in_by="stock_in_by" height="450px" />
+                :stock_in_by="stock_in_by" height="450px" /> -->
             <DeleteConfirmationDialog @confirm-delete="deleteProductRow" ref="deleteConfirmationDialog" />
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
@@ -79,37 +109,43 @@
 
 <script>
 import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
-import CustomTable from '../../commons/CustomTable.vue';
 import BrowseProduct from '../../commons/BrowseProduct.vue';
 import { VIcon } from "vuetify/lib/components";
 import { mapState } from 'vuex';
 import axios from 'axios';
 export default {
     components: {
-        CustomTable,
         BrowseProduct,
         DeleteConfirmationDialog,
         VIcon,
     },
     data() {
         return {
+            itemsPerPage: 10,
+            page: 1,
+            id: 1,
+            totalItems: 0,
             showEditQuantityDialog: false,
             showConfirmationDialog: false,
             showBrowseProduct: false,
             isGeneratingReferenceNumber: false,
             products: [],
+            loading: false,
             editedQuantity: 0,
             editingIndex: -1,
             reference_number: '',
             stock_in_date: '',
-            tableColumns: [
-                { key: "reference_number", label: "Reference No." },
-                { key: 'product_code', label: 'Product Code' },
-                { key: 'barcode', label: 'Bar Code' },
-                { key: "description", label: "Description" },
-                { key: "quantity_added", label: "Quantity" },
-                { key: "stock_in_date", label: "Stock In Date" },
-                { key: "stock_in_by", label: "Stock In By" },
+            isStockEntryPage: true,
+            headers: [
+                { title: '#', key: 'id' },
+                { title: 'Reference No.', key: 'reference_number' },
+                { title: 'Product Code', key: 'product_code' },
+                { title: 'Bar Code', key: 'barcode' },
+                { title: 'Description', key: 'description' },
+                { title: 'Quantity', key: 'quantity_added' },
+                { title: 'Stock In Date', key: 'stock_in_date' },
+                { title: 'Stock In By', key: 'stock_in_by' },
+                { title: 'Actions', key: 'actions', sortable: false }
             ],
         };
     },
@@ -170,29 +206,29 @@ export default {
             const stock_in_date = this.stock_in_date;
             const stock_in_by = this.stock_in_by;
 
-            const product_id = product.product_id;
-
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
             if (existingProduct !== undefined) {
                 existingProduct.quantity_added++;
             } else {
                 const newProduct = {
+                    id: product.id,
                     product_code: product.product_code,
                     barcode: product.barcode,
-                    quantity_added: 1,
                     description: product.description,
                     reference_number,
+                    quantity_added: 1,
                     stock_in_date,
                     stock_in_by,
-                    product_id,
                 };
                 this.products.push(newProduct);
+                this.loading = false;
             }
         },
 
-        openEditQuantityDialog(index) {
-            this.editingIndex = index;
-            this.editedQuantity = this.products[index].quantity_added;
+        openEditQuantityDialog(item) {
+            // Use item here
+            this.editingIndex = this.products.indexOf(item);
+            this.editedQuantity = item.quantity_added;
             this.showEditQuantityDialog = true;
         },
 
@@ -216,7 +252,7 @@ export default {
         deleteProductRow(product_code) {
             const index = this.products.find(p => p.product_code === product_code);
             if (index !== -1) {
-                this.products.splice(index, 1); 
+                this.products.splice(index, 1);
             } else {
                 console.error(`Product with product code "${product_code}" not found.`);
             }
@@ -234,7 +270,7 @@ export default {
                     reference_number: this.reference_number,
                     stock_in_date: this.stock_in_date,
                     stock_in_by: this.stock_in_by,
-                    product_id: product.product_id,
+                    product_id: product.id,
                     quantity_added: product.quantity_added,
                 };
             });

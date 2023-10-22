@@ -15,8 +15,27 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
-        <CustomTable :columns="tableColumns" :items="products" :showAddToCartIcon="true"
-          @add-to-cart-product="addToCartProduct" class="custom-table" />
+        <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
+          :items-length="totalItems" :items="products" :loading="loading" item-value="id" class="elevation-1"
+          @update:options="getProducts">
+          <template v-slot:custom-sort="{ header }">
+            <span v-if="header.key === 'actions'">Actions</span>
+          </template>
+          <template v-slot:item="{ item }">
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.product_code }}</td>
+              <td>{{ item.barcode }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.stock_on_hand }}</td>
+              <td>
+                <span>
+                  <v-icon @click="addToCartProduct(item)">mdi-cart-plus</v-icon>
+                </span>
+              </td>
+            </tr>
+          </template>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </v-container>
@@ -24,30 +43,35 @@
 
 <script>
 import SearchField from "../commons/SearchField.vue";
-import CustomTable from "./CustomTable.vue";
 import axios from 'axios';
 
 export default {
   components: {
     SearchField,
-    CustomTable,
   },
 
   data() {
     return {
+      loading: true,
+      itemsPerPage: 10,
+      page: 1,
+      id: 1,
       products: [],
-      tableColumns: [
-        { key: "product_code", label: "Product Code" },
-        { key: "barcode", label: "Barcode" },
-        { key: "description", label: "Description" },
-        { key: "stock_on_hand", label: "Stock On Hand" },
+      totalItems: 0,
+      headers: [
+        { title: '#', key: 'id' },
+        { title: 'Product Code', key: 'product_code' },
+        { title: 'Barcode', key: 'barcode' },
+        { title: 'Description', key: 'description' },
+        { title: 'Stock On Hand', key: "stock_on_hand" },
+        { title: 'Actions', key: 'actions', sortable: false }
       ],
       showProductForm: false,
     };
   },
 
-  mounted() {
-    this.getProducts();
+  async mounted() {
+    await this.getProducts();
   },
 
   props: {
@@ -56,21 +80,32 @@ export default {
 
   methods: {
     getProducts() {
-      axios.get('/products').then(res => {
-        this.products = res.data.products
-      });
-    },
-
-    addToCartProduct(product) {
-      window.alert("Product added to cart!");
-      this.addToCart(product);
-    },
-
-    closeForm() {
-      this.showProductForm = false;
-      this.$emit("close");
-    },
+      axios
+        .get('/products', {
+          params: {
+            page: this.page,
+            itemsPerPage: this.itemsPerPage,
+          }
+        }).then((res) => {
+          this.products = [...res.data.products.data];
+          this.totalItems = res.data.totalItems;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error('Error fetching products:', error);
+        });
   },
+
+  addToCartProduct(product) {
+    window.alert("Product added to cart!");
+    this.addToCart(product);
+  },
+
+  closeForm() {
+    this.showProductForm = false;
+    this.$emit("close");
+  },
+},
 };
 </script>
 

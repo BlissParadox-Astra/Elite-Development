@@ -10,8 +10,33 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable :columns="tableColumns" :items="products" :showEditIcon="true" :showDeleteIcon="true"
-                    @edit-data="editProductRow" @delete-data="showDeleteConfirmation" class="custom-table" />
+                <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
+                    :items-length="totalItems" :items="products" :loading="loading" item-value="id" class="elevation-1"
+                    @update:options="getProducts">
+                    <template v-slot:custom-sort="{ header }">
+                        <span v-if="header.key === 'actions'">Actions</span>
+                    </template>
+                    <template v-slot:item="{ item }">
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.product_code }}</td>
+                            <td>{{ item.barcode }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.brand.brand_name }}</td>
+                            <td>{{ item.category.category_name }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.reorder_level }}</td>
+                            <td>
+                                <span>
+                                    <v-icon @click="editProductRow(item)" color="primary">mdi-pencil</v-icon>
+                                </span>
+                                <span style="margin-left: 2px;">
+                                    <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                                </span>
+                            </td>
+                        </tr>
+                    </template>
+                </v-data-table-server>
             </v-col>
         </v-row>
         <DeleteConfirmationDialog @confirm-delete="deleteProduct" ref="deleteConfirmationDialog" />
@@ -32,37 +57,41 @@
 <script>
 import SearchField from '../../commons/SearchField.vue';
 import ProductForm from '../../forms/ProductForm.vue';
-import CustomTable from '../../commons/CustomTable.vue';
 import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import axios from 'axios';
 
 export default {
-    mixins: [CustomTable],
     name: 'InventorySection',
 
     components: {
         SearchField,
         ProductForm,
-        CustomTable,
         DeleteConfirmationDialog,
     },
 
     data() {
         return {
+            itemsPerPage: 10,
+            page: 1,
+            id: 1,
             showForm: false,
             editingProduct: null,
             editingProductIndex: -1,
             products: [],
+            totalItems: 0,
+            loading: true,
             loadingCategories: false,
             loadingBrands: false,
-            tableColumns: [
-                { key: 'product_code', label: 'Product Code' },
-                { key: 'barcode', label: 'Barcode' },
-                { key: 'description', label: 'Description' },
-                { key: 'brand', label: 'Brand', render: this.renderProductBrand },
-                { key: 'category', label: 'Category', render: this.renderProductCategory },
-                { key: 'price', label: 'Price' },
-                { key: 'reorder_level', label: 'Reorder Level' },
+            headers: [
+                { title: '#', key: 'id' },
+                { title: 'Product Code', key: 'product_code' },
+                { title: 'Barcode', key: 'barcode' },
+                { title: 'Description', key: 'description' },
+                { title: 'Brand', key: 'brand.brand_name' },
+                { title: 'Category', key: 'category.category_name' },
+                { title: 'Price', key: 'price' },
+                { title: 'Reorder Level', key: 'reorder_level' },
+                { title: 'Actions', key: 'actions', sortable: false }
             ],
         };
     },
@@ -79,10 +108,22 @@ export default {
 
     methods: {
         getProducts() {
-            axios.get('/products').then(res => {
-                this.products = res.data.products
-                console.log(this.products)
-            });
+            this.loading = true;
+            axios
+                .get('/products', {
+                    params: {
+                        page: this.page,
+                        itemsPerPage: this.itemsPerPage,
+                    }
+                })
+                .then((res) => {
+                    this.products = [...res.data.products.data];
+                    this.totalItems = res.data.totalItems;
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    console.error('Error fetching products:', error);
+                });
         },
 
         async fetchCategories() {
@@ -186,8 +227,9 @@ export default {
     max-height: 100%;
     overflow-y: auto;
 }
+
 .custom-table {
-  height: 445px;
+    height: 445px;
 }
 </style>
   

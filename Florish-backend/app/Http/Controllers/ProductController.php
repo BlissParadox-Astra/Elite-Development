@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
@@ -23,12 +24,17 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = $this->productManager->getAllProducts();
+            $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            return response()->json(['products' => $products]);
+            $products = $this->productManager->getAllProducts($page, $itemsPerPage);
+            return response()->json([
+                'products' => $products,
+                'totalItems' => $products->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
@@ -120,12 +126,17 @@ class ProductController extends Controller
         }
     }
 
-    public function getCriticalStock()
+    public function getCriticalStock(Request $request)
     {
         try {
-            $criticalProducts = $this->productManager->getCriticalStock();
+            $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            return response()->json($criticalProducts);
+            $criticalStocks = $this->productManager->getCriticalStock($page, $itemsPerPage);
+            return response()->json([
+                'criticalStocks' => $criticalStocks,
+                'totalItems' => $criticalStocks->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 

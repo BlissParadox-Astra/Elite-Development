@@ -7,6 +7,8 @@ use App\Http\Requests\UserRequest;
 use App\Managers\UserManager;
 use App\Models\User;
 use App\Models\UserType;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -20,12 +22,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $users = $this->userManager->getAllUsers();
+            $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            return response()->json(['users' => $users]);
+            $users = $this->userManager->getAllUsers($page, $itemsPerPage);
+            return response()->json([
+                'users' => $users->items(),
+                'totalItems' => $users->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 

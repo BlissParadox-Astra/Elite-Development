@@ -17,9 +17,9 @@ class BrandManager
         return Brand::with(['category'])->findOrFail($id);
     }
 
-    public function getAllBrands()
+    public function getAllBrands($page = 1, $itemsPerPage = 10)
     {
-        return Brand::with(['category'])->get();
+        return Brand::with(['category'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getBrandById(string $id)
