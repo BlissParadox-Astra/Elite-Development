@@ -7,6 +7,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\CanceledOrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -84,7 +86,18 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
-//     // Logout route
-//     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-// });
+Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
+    // Group for transaction routes
+    Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::prefix('/transaction')->group(function () {
+        Route::post('/', [TransactionController::class, 'store'])->name('transactions.store');
+        // Route::get('/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+        // Route::put('/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+        // Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+    });
+
+    Route::get('canceled-orders', [CanceledOrderController::class, 'index'])->name('cancel-order.index');
+    Route::prefix('cancel-order')->group(function () {
+        Route::post('/', [CanceledOrderController::class, 'store'])->name('cancel-order.store');
+    });
+});

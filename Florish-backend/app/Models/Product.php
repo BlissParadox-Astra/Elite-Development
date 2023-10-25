@@ -45,4 +45,9 @@ class Product extends Model
     {
         $this->stock_on_hand += $quantity;
     }
+
+    public function decrementStockOnHand($quantity)
+    {
+        $this->stock_on_hand -= $quantity;
+    }
 }
