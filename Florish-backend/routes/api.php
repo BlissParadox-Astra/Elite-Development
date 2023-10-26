@@ -60,7 +60,6 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     });
 
     // Group for product routes
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
@@ -87,6 +86,8 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
+
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     // Group for transaction routes
     Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::prefix('/transaction')->group(function () {

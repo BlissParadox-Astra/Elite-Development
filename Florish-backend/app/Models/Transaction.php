@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
       'invoice_number',
@@ -31,6 +32,6 @@ class Transaction extends Model
 
     public function canceledOrders()
     {
-        return $this->hasMany(CanceledOrder::class, 'transaction_id', 'id');
+        return $this->hasOne(CanceledOrder::class, 'transaction_id', 'id');
     }
 }
