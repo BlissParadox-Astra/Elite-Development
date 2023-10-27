@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number');
             $table->unsignedBigInteger('product_id');
-            $table->decimal('price', 10, 2);
+            $table->float('price', 10, 2);
             $table->integer('quantity');
             $table->decimal('total', 10, 2);
             $table->date('transaction_date');

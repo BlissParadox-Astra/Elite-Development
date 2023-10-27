@@ -44,10 +44,12 @@ class Product extends Model
     public function incrementStockOnHand($quantity)
     {
         $this->stock_on_hand += $quantity;
+        $this->save();
     }
 
     public function decrementStockOnHand($quantity)
     {
         $this->stock_on_hand -= $quantity;
+        $this->save();
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('transaction_id');
             $table->integer('quantity');
-            $table->decimal('total', 10, 2)->default(0);
+            $table->float('total', 10, 2);
             $table->date('canceled_date');
             $table->unsignedBigInteger('user_id');
             $table->string('reason');
