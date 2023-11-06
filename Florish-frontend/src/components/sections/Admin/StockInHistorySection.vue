@@ -10,22 +10,22 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
-        <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
-          :items-length="totalItems" :items="stockIns" :loading="loading" item-value="id" class="elevation-1"
-          @update:options="getStockIns">
-          <template v-slot:item="{ item }">
+        <v-data-table :headers="headers" :items="stockIns" :loading="loading" :page="currentPage"
+          :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+          @update:options="getStockIns" fixed-header height="400">
+          <template v-slot:item="{ item, index }">
             <tr>
-              <td>{{ item.id }}</td>
+              <td>{{ displayedIndex + index }}</td>
               <td>{{ item.reference_number }}</td>
               <td>{{ item.adjusted_product.product_code }}</td>
               <td>{{ item.adjusted_product.barcode }}</td>
               <td>{{ item.adjusted_product.description }}</td>
               <td>{{ item.quantity_added }}</td>
               <td>{{ item.stock_in_date }}</td>
-              <td>{{ item.stock_in_by_user.first_name}}</td>
+              <td>{{ item.stock_in_by_user.first_name }}</td>
             </tr>
           </template>
-        </v-data-table-server>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
@@ -45,11 +45,11 @@ export default {
       itemsPerPage: 10,
       totalItems: 0,
       loading: true,
-      page: 1,
+      currentPage: 1,
       id: 1,
       stockIns: [],
       headers: [
-        { title: '#', key: 'id' },
+        { title: '#', value: 'index' },
         { title: 'Reference No.', key: 'reference_number' },
         { title: 'Product Code', key: 'adjusted_product.product_code' },
         { title: 'Barcode', key: 'adjusted_product.barcode' },
@@ -59,6 +59,12 @@ export default {
         { title: 'Stock In By', key: 'stock_in_by_user.first_name' },
       ],
     };
+  },
+
+  computed: {
+    displayedIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage + 1;
+    },
   },
 
   async mounted() {
@@ -71,7 +77,7 @@ export default {
       axios
         .get('/stock-ins', {
           params: {
-            page: this.page,
+            page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
           }
         })

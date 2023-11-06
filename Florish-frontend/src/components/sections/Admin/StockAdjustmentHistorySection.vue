@@ -8,15 +8,15 @@
             </v-row>
             <v-row justify="center">
                 <v-col cols="12">
-                    <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
-                        :items-length="totalItems" :items="adjustments" :loading="loading" item-value="id"
-                        class="elevation-1" @update:options="getStockAdjustments">
+                    <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
+                        :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+                        @update:options="getStockAdjustments" fixed-header height="400">
                         <template v-slot:custom-sort="{ header }">
                             <span v-if="header.key === 'actions'">Actions</span>
                         </template>
-                        <template v-slot:item="{ item }">
+                        <template v-slot:item="{ item, index }">
                             <tr>
-                                <td>{{ item.id }}</td>
+                                <td>{{ displayedIndex + index }}</td>
                                 <td>{{ item.reference_number }}</td>
                                 <td>{{ item.action }}</td>
                                 <td>{{ item.adjusted_product.product_code }}</td>
@@ -27,7 +27,7 @@
                                 <td>{{ item.stock_adjustment_by_user.first_name }}</td>
                             </tr>
                         </template>
-                    </v-data-table-server>
+                    </v-data-table>
                 </v-col>
             </v-row>
         </v-container>
@@ -46,13 +46,13 @@ export default {
     data() {
         return {
             itemsPerPage: 10,
-            page: 1,
+            currentPage: 1,
             id: 1,
             totalItems: 0,
             loading: true,
             adjustments: [],
             headers: [
-                { title: '#', key: 'id' },
+                { title: '#', value: 'index' },
                 { title: "Reference No.", key: "reference_number" },
                 { title: "Action", key: "action" },
                 { title: "Product Code", key: "adjusted_product.product_code" },
@@ -62,8 +62,13 @@ export default {
                 { title: 'Quantity', key: 'quantity' },
                 { title: 'User', key: 'stock_adjustment_by_user.first_name' },
             ],
-
         };
+    },
+
+    computed: {
+        displayedIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage + 1;
+        },
     },
 
     async mounted() {
@@ -72,10 +77,11 @@ export default {
 
     methods: {
         getStockAdjustments() {
+            this.loading = true;
             axios
-                .get('/stockAdjustments', {
+                .get('/stock-adjustments', {
                     params: {
-                        page: this.page,
+                        page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
                     }
                 })
@@ -84,28 +90,30 @@ export default {
                     this.totalItems = res.data.totalItems;
                     this.loading = false;
                 })
-        }
-    },
+                .catch((error) => {
+                    console.error('Error fetching stock adjustment records:', error);
+                });
+        },
+        renderProductCode(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
+        },
 
-    renderProductCode(adjusted_product) {
-        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
-    },
+        renderProductBarcode(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
+        },
 
-    renderProductBarcode(adjusted_product) {
-        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
-    },
+        renderProductDescription(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
+        },
 
-    renderProductDescription(adjusted_product) {
-        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
-    },
-
-    renderUser(stock_adjustment_by_user) {
-        if (stock_adjustment_by_user.stock_adjustment_by_user) {
-            const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
-            return `${first_name} ${last_name}`;
-        } else {
-            return 'Unknown';
-        }
+        renderUser(stock_adjustment_by_user) {
+            if (stock_adjustment_by_user.stock_adjustment_by_user) {
+                const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
+                return `${first_name} ${last_name}`;
+            } else {
+                return 'Unknown';
+            }
+        },
     },
 };
 </script>

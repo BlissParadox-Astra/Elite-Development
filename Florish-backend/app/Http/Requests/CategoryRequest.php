@@ -30,9 +30,9 @@ class CategoryRequest extends FormRequest
         ];
 
         if ($this->isMethod('PUT')) {
-            $rules = [
+            $rules = array_merge($rules = [
                 'category_name' => 'required'
-            ];
+            ]);
         }
         return $rules;
     }

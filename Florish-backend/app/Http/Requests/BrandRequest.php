@@ -27,10 +27,9 @@ class BrandRequest extends FormRequest
         ];
 
         if ($this->isMethod('PUT')) {
-            $rules = [
+            $rules = array_merge($rules, [
                 'brand_name' => 'required',
-                'category_id' => 'required|exists:categories,id',
-            ];
+            ]);
         }
         return $rules;
     }

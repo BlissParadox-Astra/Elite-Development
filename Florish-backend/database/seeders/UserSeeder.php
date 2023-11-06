@@ -13,7 +13,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Define the data for the users
         $usersData = [
             [
                 'user_type_id' => 1,
@@ -33,22 +32,8 @@ class UserSeeder extends Seeder
                 'address' => '456 Elm St',
                 'contact_number' => '09876890643',
             ],
-
+            // Add more user data as needed
         ];
-
-        for ($i = 0; $i < 20; $i++) {
-            $user = [
-                'user_type_id' => rand(1, 2), // Random user type (1, 2, or 3)
-                'first_name' => 'First' . ($i + 1),
-                'last_name' => 'Last' . ($i + 1),
-                'gender' => $i % 2 === 0 ? 'male' : 'female', // Alternating gender
-                'age' => rand(18, 60), // Random age between 18 and 60
-                'address' => 'Address' . ($i + 1),
-                'contact_number' => '09' . rand(10000000, 99999999), // Random contact number
-            ];
-
-            User::create($user);
-        }
 
         // Insert the data into the users table
         foreach ($usersData as $userData) {

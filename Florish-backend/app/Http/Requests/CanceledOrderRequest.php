@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StockAdjustmentRequest extends FormRequest
+class CanceledOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,11 @@ class StockAdjustmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reference_number' => 'required',
-            'action' => 'required',
-            'product_id' => 'required|exists:products,id',
-            'remarks' => 'required',
+            'transaction_id' => 'required|exists:transactions,id',
             'quantity' => 'required|integer|min:1',
+            'canceled_date' => 'required|date',
+            'reason' => 'required',
+            'action_taken' => 'required',
         ];
     }
 }

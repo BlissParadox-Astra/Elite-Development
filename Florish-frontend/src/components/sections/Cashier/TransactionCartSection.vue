@@ -10,7 +10,7 @@
 
                 <v-row>
                     <v-col cols="12" sm="6" lg="2" class="d-flex align-center">
-                        <v-label class="mr-3">TRANSACTION ID:</v-label> <!-- Added margin-right -->
+                        <v-label class="mr-3">TRANSACTION ID:</v-label>
                     </v-col>
                     <v-col cols="12" sm="6" lg="3">
                         <v-text-field class="ml-n6" label="Transaction ID" variant="plain"></v-text-field>

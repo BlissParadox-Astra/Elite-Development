@@ -7,15 +7,15 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
-                    :items-length="totalItems" :items="products" :loading="loading" item-value="id" class="elevation-1"
-                    @update:options="getCriticalStocks">
+                <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
+                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+                    @update:options="getCriticalStocks" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
-                    <template v-slot:item="{ item }">
+                    <template v-slot:item="{ item, index }">
                         <tr>
-                            <td>{{ item.id }}</td>
+                            <td>{{ displayedIndex + index }}</td>
                             <td>{{ item.product_code }}</td>
                             <td>{{ item.barcode }}</td>
                             <td>{{ item.description }}</td>
@@ -26,7 +26,7 @@
                             <td>{{ item.stock_on_hand }}</td>
                         </tr>
                     </template>
-                </v-data-table-server>
+                </v-data-table>
             </v-col>
         </v-row>
     </v-container>
@@ -46,7 +46,7 @@ export default {
     data() {
         return {
             itemsPerPage: 10,
-            page: 1,
+            currentPage: 1,
             id: 1,
             totalItems: 0,
             loading: true,
@@ -67,6 +67,12 @@ export default {
         };
     },
 
+    computed: {
+        displayedIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage + 1;
+        },
+    },
+
     async mounted() {
         await this.getCriticalStocks();
     },
@@ -77,12 +83,12 @@ export default {
             axios
                 .get('/critical-stocks', {
                     params: {
-                        page: this.page,
+                        page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
                     }
                 })
                 .then((res) => {
-                    this.products = [...res.data.criticalStocks.data];
+                    this.products = res.data.criticalStocks;
                     this.totalItems = res.data.totalItems;
                     this.loading = false;
                 })

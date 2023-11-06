@@ -11,15 +11,15 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <v-data-table-server v-model:items-per-page="itemsPerPage" :page="page" :headers="headers"
-            :items-length="totalItems" :items="categories" :loading="loading" item-value="id" class="elevation-1"
-            @update:options="getCategories">
+          <v-data-table :headers="headers" :items="categories" :loading="loading" :page="currentPage"
+            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
+            @update:options="getCategories" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
-            <template v-slot:item="{ item }">
+            <template v-slot:item="{ item, index }">
               <tr>
-                <td>{{ item.id }}</td>
+                <td>{{ displayedIndex + index }}</td>
                 <td>{{ item.category_name }}</td>
                 <td>
                   <span>
@@ -31,21 +31,40 @@
                 </td>
               </tr>
             </template>
-          </v-data-table-server>
-          <!-- <p>Current Page: {{ page }}</p> -->
+          </v-data-table>
         </v-col>
+        <div>
+          <div class="pagination">
+            <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+              :class="{ active: pageNumber === currentPage }">
+              {{ pageNumber }}
+            </button>
+
+            <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+          </div>
+        </div>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteCategory" ref="deleteConfirmationDialog" />
       <v-row>
         <v-col cols="12">
           <v-row class="d-flex justify-center">
             <v-col cols="12" sm="5" xl="5" lg="5" md="5 " class="form-container">
-              <CategoryForm v-if="showForm" @add="addCategory" @update="updateCategory(editingCategoryIndex, $event)"
+              <CategoryForm v-if="showForm" @add-category="addCategory" @update-category="updateCategory"
                 @cancel="hideCategoryForm" :initialCategory="editingCategory" />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
+      <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+        {{ snackbarText }}
+        <template v-slot:actions>
+          <v-btn color="pink" variant="text" @click="snackbar = false">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-container>
   </v-main>
 </template>
@@ -54,8 +73,8 @@
 import SearchField from "../../commons/SearchField.vue";
 import CategoryForm from "../../forms/CategoryForm.vue";
 import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
-import axios from 'axios';
 
+import axios from 'axios';
 
 export default {
   name: "ProductCategorySection",
@@ -67,7 +86,7 @@ export default {
   data() {
     return {
       itemsPerPage: 10,
-      page: 1,
+      currentPage: 1,
       showForm: false,
       categories: [],
       totalItems: 0,
@@ -75,16 +94,27 @@ export default {
       editingCategoryIndex: -1,
       loading: true,
       id: 1,
+      snackbar: false,
+      snackbarColor: '',
       headers: [
-        { title: '#', key: 'id' },
+        { title: '#', value: 'index' },
         { title: 'Category Name', key: 'category_name' },
         { title: 'Actions', key: 'actions', sortable: false }
       ],
     };
   },
 
-  mounted() {
-    this.getCategories();
+  computed: {
+    displayedIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage + 1;
+    },
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+  },
+
+  async mounted() {
+    await this.getCategories();
   },
 
   methods: {
@@ -93,12 +123,11 @@ export default {
       axios
         .get('/categories', {
           params: {
-            page: this.page,
+            page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
           }
         })
         .then((res) => {
-          // console.log("API Response - Current Page:", this.page);
           this.categories = res.data.categories;
           this.totalItems = res.data.totalItems;
           this.loading = false;
@@ -106,21 +135,49 @@ export default {
         .catch((error) => {
           console.error('Error fetching categories:', error);
         });
-        // console.log("After API Request - Current Page:", this.page);
+    },
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getCategories();
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getCategories();
+      }
+    },
+    gotoPage(pageNumber) {
+      this.currentPage = pageNumber;
+      this.getCategories();
     },
 
-    addCategory(categoryData) {
-      if (!categoryData.category_name) {
-        return;
+    async addCategory(categoryData) {
+      try {
+        const response = await axios.post('/category', categoryData);
+        if (response.status === 201) {
+          this.categories.push(response.data);
+          this.hideCategoryForm();
+          this.snackbarColor = 'success';
+          this.showSnackbar(response.data.message, 'success');
+          this.getCategories();
+        } else {
+          this.snackbarColor = 'error';
+          this.showSnackbar(response.data.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error adding category:', error);
+        this.snackbarColor = 'error';
+        this.showSnackbar(error.response.data.message, 'error');
       }
-      categoryData.id = this.id;
-      this.id++;
-      this.categories.push(categoryData);
-      this.hideCategoryForm();
     },
 
     editCategoryRow(category) {
-      this.editingCategory = { ...category };
+      this.editingCategory = {
+        ...category,
+        id: category.id,
+      };
       const index = this.categories.findIndex(
         p => p.categoryCode === category.category
       );
@@ -128,26 +185,59 @@ export default {
       this.showForm = true;
     },
 
-    updateCategory(index, updatedCategory) {
-      this.categories[index] = updatedCategory;
-      this.editingCategory = null;
-      this.hideCategoryForm();
+    async updateCategory(categoryData) {
+      try {
+        const response = await axios.put(`/category/${categoryData.id}`, categoryData);
+        if (response.status === 200) {
+          this.categories[this.index] = response.data;
+          this.hideCategoryForm();
+          this.snackbarColor = 'success';
+          this.showSnackbar(response.data.message, 'success');
+          this.editingCategory = null;
+          this.editingCategoryIndex = -1;
+          this.getCategories();
+        } else {
+          this.snackbarColor = 'error';
+          this.showSnackbar(response.data.message, 'error');
+        }
+      } catch (error) {
+        console.error(error);
+        if (error.response && error.response.status === 422) {
+          const validationErrors = error.response.data.errors;
+          this.showSnackbar(
+            validationErrors.category_name
+              ? validationErrors.category_name[0]
+              : 'An error occurred',
+            'error'
+          );
+        } else {
+          this.snackbarText = error.response.data.error;
+          this.snackbarColor = 'error';
+          this.showSnackbar(this.snackbarText, 'error');
+        }
+      }
     },
 
-    deleteCategory() {
+    async deleteCategory() {
       if (this.itemToDelete) {
         axios.delete(`/category/${this.itemToDelete.id}`)
-          .then(() => {
+          .then((response) => {
             const index = this.categories.findIndex(category => category.id === this.itemToDelete.id);
             if (index !== -1) {
               this.categories.splice(index, 1);
             }
             this.$refs.deleteConfirmationDialog.closeDialog();
+            this.showSnackbar(response.data.message, 'success');
           })
-          .catch(error => {
-            console.error('Error deleting item:', error);
+          .catch((error) => {
+            if (error.response.data.error === 'Cannot delete category. In use by other records.') {
+              this.showSnackbar('Cannot delete category. In use by other records.', 'error');
+            } else {
+              this.showSnackbar(error.response.data.message, 'error');
+            }
           });
       }
+      this.getCategories();
     },
 
     showDeleteConfirmation(item) {
@@ -163,19 +253,33 @@ export default {
       this.showForm = false;
       this.editingCategory = null;
       this.editingCategoryIndex = -1;
+      this.getCategories();
     },
-
 
     cancelCategoryAdd() {
       this.showForm = false;
       this.editingProduct = null;
       this.editingProductIndex = -1;
     },
+
+    showSnackbar(text, color, timeout = 3000) {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
+
+      setTimeout(() => {
+        this.hideSnackbar();
+      }, timeout);
+    },
+
+    hideSnackbar() {
+      this.snackbar = false;
+    },
   },
 };
 </script>
 
-<style scooped>
+<style scoped>
 .form-container {
   position: absolute;
   top: 0;

@@ -9,10 +9,11 @@
                     <h2 class="text-center mb-4">{{ editingBrand ? 'Edit Brand' : 'Brand Module' }}</h2>
                     <v-col cols="12" lg="12">
                         <v-text-field v-model="brand_name" label="Brand Name" placeholder="Enter Brand Name" required
-                            :error-messages="brandError" @input="clearFieldErrors('brandName')"></v-text-field>
+                            :error-messages="brandError" @input="clearFieldErrors('brandName')"
+                            :rules="[v => !!v || 'Brand Name is required']"></v-text-field>
                         <v-select v-model="category_name"
-                            :items="existingCategories.length > 0 ? existingCategories.map(category => category.category_name) : []"
-                            label="Categories" placeholder="Choose Category" :error-messages="selectedCategoryError"
+                            :items="existingCategories.map(category => category.category_name)" label="Categories"
+                            placeholder="Choose Category" :error-messages="selectedCategoryError"
                             @input="clearFieldErrors"></v-select>
                     </v-col>
                     <v-row justify="center">
@@ -32,13 +33,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 export default {
     name: "BrandForm",
-    props: {
-        initialBrand: Object,
-        existingCategories: Array,
-    },
+    props: ['initialBrand', 'existingCategories'],
     data() {
         return {
             brand_name: this.initialBrand ? this.initialBrand.brand_name : '',
@@ -56,60 +53,63 @@ export default {
             if (!categoryId) {
                 this.selectedCategoryError = 'Category is required'
             } else {
-                this.selectedCategoryError = ''; // Clear the error
+                this.selectedCategoryError = '';
             }
             const brandData = {
+                id: this.initialBrand ? this.initialBrand.id : null,
                 brand_name: this.brand_name,
                 category_id: categoryId,
             };
             if (this.editingBrand) {
-                axios
-                    .put(`/brand/${this.initialBrand.id}`, brandData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            this.$emit('update', response.data);
-                            alert(response.data.message);
-                            this.resetFormFields();
-                            this.clearErrors();
-                            this.reloadPage();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        if (error.response && error.response.status === 422) {
-                            const validationErrors = error.response.data.errors;
-                            this.brandError = validationErrors.brand_name ? validationErrors.brand_name[0] : '';
-                            this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
-                        } else {
-                            console.error(error);
-                        }
-                    })
+                this.$emit('update-brand', brandData);
             } else {
-                axios
-                    .post('/brand', brandData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            this.$emit('add', response.data);
-                            alert(response.data.message);
-                            this.resetFormFields();
-                            this.clearErrors();
-                            this.reloadPage();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.response && error.response.status === 422) {
-                            const validationErrors = error.response.data.errors;
-                            this.brandError = validationErrors.brand_name ? validationErrors.brand_name[0] : '';
-                            this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
-                        } else {
-                            console.error(error);
-                        }
-                    });
+                this.$emit('add-brand', brandData);
             }
+            //     axios
+            //         .put(`/brand/${this.initialBrand.id}`, brandData)
+            //         .then((response) => {
+            //             if (response.status === 200) {
+            //                 this.$emit('update', response.data);
+            //                 alert(response.data.message);
+            //                 this.resetFormFields();
+            //                 this.clearErrors();
+            //             } else {
+            //                 alert(response.data.message);
+            //             }
+            //         })
+            //         .catch((error) => {
+            //             console.error(error);
+            //             if (error.response && error.response.status === 422) {
+            //                 const validationErrors = error.response.data.errors;
+            //                 this.brandError = validationErrors.brand_name ? validationErrors.brand_name[0] : '';
+            //                 this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
+            //             } else {
+            //                 console.error(error);
+            //             }
+            //         })
+            // } else {
+            //     axios
+            //             .post('/brand', brandData)
+            //         .then((response) => {
+            //             if (response.status === 200) {
+            //                 this.$emit('add', response.data);
+            //                 alert(response.data.message);
+            //                 this.resetFormFields();
+            //                 this.clearErrors();
+            //             } else {
+            //                 alert(response.data.message);
+            //             }
+            //         })
+            //         .catch((error) => {
+            //             if (error.response && error.response.status === 422) {
+            //                 const validationErrors = error.response.data.errors;
+            //                 this.brandError = validationErrors.brand_name ? validationErrors.brand_name[0] : '';
+            //                 this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
+            //             } else {
+            //                 console.error(error);
+            //             }
+            //         });
+            // }
         },
         findCategoryIdByName(categoryName) {
             const category = this.existingCategories.find(category => category.category_name === categoryName);
@@ -130,9 +130,6 @@ export default {
         },
         clearFieldErrors(fieldName) {
             this[fieldName + 'Error'] = '';
-        },
-        reloadPage() {
-            window.location.reload();
         },
     }
 }

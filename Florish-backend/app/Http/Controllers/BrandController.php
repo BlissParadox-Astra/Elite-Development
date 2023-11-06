@@ -25,11 +25,10 @@ class BrandController extends Controller
     {
         try {
             $page = $request->input('page', 1);
-            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $brands = $this->brandManager->getAllBrands($page, $itemsPerPage);
+            $brands = $this->brandManager->getAllBrands($page);
             return response()->json([
-                'brands' => $brands,
+                'brands' => $brands->items(),
                 'totalItems' => $brands->total(),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {

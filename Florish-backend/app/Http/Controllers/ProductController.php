@@ -27,17 +27,32 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
-            $page = $request->input('page', 1);
-            $itemsPerPage = $request->input('itemsPerPage', 10);
-
-            $products = $this->productManager->getAllProducts($page, $itemsPerPage);
+            $page = $request->input('page');
+            $products = $this->productManager->getAllProducts($page);
             return response()->json([
-                'products' => $products,
+                'products' => $products->items(),
                 'totalItems' => $products->total(),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    /**
+     * Display total stock on hand.
+     */
+
+    public function getTotalStockOnHand()
+    {
+        try {
+            $totalStock = $this->productManager->getTotalStockOnHand();
+            return response()->json([
+                'totalStockOnHand' => $totalStock,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
             return response()->json(['error' => $errorMessage], 500);
         }
     }
@@ -103,7 +118,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product updated successfully']);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-
+            
             return response()->json(['error' => $errorMessage], 500);
         }
     }
@@ -129,17 +144,29 @@ class ProductController extends Controller
     public function getCriticalStock(Request $request)
     {
         try {
-            $page = $request->input('page', 1);
-            $itemsPerPage = $request->input('itemsPerPage', 10);
+            $page = $request->input('page');
 
-            $criticalStocks = $this->productManager->getCriticalStock($page, $itemsPerPage);
+            $criticalStocks = $this->productManager->getCriticalStock($page);
             return response()->json([
-                'criticalStocks' => $criticalStocks,
+                'criticalStocks' => $criticalStocks->items(),
                 'totalItems' => $criticalStocks->total(),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    public function getCriticalStockCount()
+    {
+        try {
+            $criticalStockCount = $this->productManager->getCriticalStockCount();
+            return response()->json([
+                'criticalStockCount' => $criticalStockCount,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
             return response()->json(['error' => $errorMessage], 500);
         }
     }

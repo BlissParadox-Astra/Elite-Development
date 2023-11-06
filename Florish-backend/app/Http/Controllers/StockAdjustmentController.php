@@ -24,10 +24,9 @@ class StockAdjustmentController extends Controller
     public function index(Request $request)
     {
         try {
-            $page = $request->input('page', 1);
-            $itemsPerPage = $request->input('itemsPerPage', 10);
+            $page = $request->input('page');
 
-            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page, $itemsPerPage);
+            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page);
             return response()->json([
                 'stockAdjustments' => $stockAdjustments->items(),
                 'totalItems' => $stockAdjustments->total(),
@@ -94,5 +93,12 @@ class StockAdjustmentController extends Controller
     public function destroy(StockAdjustment $stockAdjustment)
     {
         //
+    }
+
+    public function generateReferenceNumber()
+    {
+        $referenceNumber = $this->stockAdjustmentManager->generateReferenceNumber();
+
+        return response()->json(['reference_number' => $referenceNumber]);
     }
 }

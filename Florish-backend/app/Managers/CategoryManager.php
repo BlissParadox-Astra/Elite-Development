@@ -5,6 +5,7 @@ namespace App\Managers;
 
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Validator;
 
 
 class CategoryManager
@@ -38,8 +39,7 @@ class CategoryManager
         return $this->generateUniqueCategoryCode($newCode, $attempt + 1);
     }
 
-
-    public function getAllCategories($page = 1, $itemsPerPage = 10)
+    public function getAllCategories($page, $itemsPerPage)
     {
         return Category::paginate($itemsPerPage, ['*'], 'page', $page);
     }
@@ -49,15 +49,26 @@ class CategoryManager
         return Category::find($id);
     }
 
+    public function getCategoryCount()
+    {
+        return Category::count();
+    }
 
     public function updateCategory(Category $category, array $data)
     {
-        $category->update($data);
+        if ($data['category_name'] !== $category->category_name) {
+            $validator = Validator::make($data, [
+                'category_name' => 'required|unique:categories',
+            ]);
+
+            if ($validator->fails()) {
+                throw new \Exception('Category name already exists.');
+            }
+        }
 
         $newCategoryCode = strtoupper(substr($category->category_name, 0, 2));
-
+        $category->update($data);
         $uniqueCategoryCode = $this->generateUniqueCategoryCode($newCategoryCode);
-
         $category->category_code = $uniqueCategoryCode;
         $category->save();
 
@@ -65,8 +76,15 @@ class CategoryManager
     }
 
 
-    public function deleteCategory(Category $category): void
+
+    public function deleteCategory(Category $category)
     {
-        $category->delete();
+        try {
+            $category->delete();
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] === 1451) {
+                throw new \Exception('Cannot delete category. In use by other records.');
+            }
+        }
     }
 }

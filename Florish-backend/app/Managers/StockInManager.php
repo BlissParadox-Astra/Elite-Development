@@ -35,8 +35,8 @@ class StockInManager
         return "{$timestamp}{$randomNumber}";
     }
 
-    public function getAllStockIns($page = 1, $itemsPerPage = 10)
+    public function getAllStockIns($page = 1)
     {
-        return StockIn::with(['adjustedProduct', 'stockInByUser'])->paginate($itemsPerPage, ['*'], 'page', $page);
+        return StockIn::with(['adjustedProduct.stockIns', 'stockInByUser'])->paginate(2000, ['*'], 'page', $page);
     }
 }

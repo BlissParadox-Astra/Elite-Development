@@ -9,8 +9,8 @@
                     <h2 class="text-center mb-4">{{ editingCategory ? 'Edit Category' : 'Category Module' }}</h2>
                     <v-col cols="12" lg="12">
                         <v-text-field v-model="category_name" label="Category Name" placeholder="Enter Category Name"
-                            required :error-messages="categoryError"
-                            @input="clearFieldErrors('categoryName')"></v-text-field>
+                            required :error-messages="categoryError" @input="clearFieldErrors('categoryName')"
+                            :rules="[v => !!v || 'Category Name is required']"></v-text-field>
                     </v-col>
                     <v-row justify="center">
                         <v-col cols="12" md="6" lg="5">
@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 export default {
     name: "CategoryForm",
     props: ['initialCategory'],
@@ -37,7 +36,6 @@ export default {
         return {
             category_name: this.initialCategory ? this.initialCategory.category_name : '',
             editingCategory: !!this.initialCategory,
-
             categoryError: '',
         }
     },
@@ -49,53 +47,13 @@ export default {
                 return;
             }
             const categoryData = {
+                id: this.initialCategory ? this.initialCategory.id : null,
                 category_name: this.category_name,
             };
             if (this.editingCategory) {
-                axios
-                    .put(`/category/${this.initialCategory.id}`, categoryData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            this.$emit('update', response.data);
-                            alert(response.data.message);
-                            this.resetFormFields();
-                            this.clearErrors();
-                            this.reloadPage();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        if (error.response && error.response.status === 422) {
-                            const validationErrors = error.response.data.errors;
-                            this.categoryError = validationErrors.category_name ? validationErrors.category_name[0] : '';
-                        } else {
-                            console.error(error);
-                        }
-                    })
+                this.$emit('update-category', categoryData);
             } else {
-                axios
-                    .post('/category', categoryData)
-                    .then((response) => {
-                        if (response.status === 201) {
-                            this.$emit('add', response.data);
-                            alert(response.data.message);
-                            this.resetFormFields();
-                            this.clearErrors();
-                            this.reloadPage();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.response && error.response.status === 422) {
-                            const validationErrors = error.response.data.errors;
-                            this.categoryError = validationErrors.category_name ? validationErrors.category_name[0] : '';
-                        } else {
-                            console.error(error);
-                        }
-                    });
+                this.$emit('add-category', categoryData);
             }
         },
         resetFormFields() {
@@ -111,9 +69,6 @@ export default {
         },
         clearFieldErrors(fieldName) {
             this[fieldName + 'Error'] = '';
-        },
-        reloadPage() {
-            window.location.reload();
         },
     }
 };
