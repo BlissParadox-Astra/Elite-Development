@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BrandRequest;
 use App\Managers\BrandManager;
+use Illuminate\Http\Request;
 use App\Models\Brand;
 use App\Models\Category;
 use Illuminate\Http\Response;
@@ -20,12 +21,16 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $brands = $this->brandManager->getAllBrands();
+            $page = $request->input('page', 1);
 
-            return response()->json(['brands' => $brands], Response::HTTP_OK);
+            $brands = $this->brandManager->getAllBrands($page);
+            return response()->json([
+                'brands' => $brands->items(),
+                'totalItems' => $brands->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 

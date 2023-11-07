@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StockInRequest;
 use App\Managers\StockInManager;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class StockInController extends Controller
 {
@@ -17,12 +19,16 @@ class StockInController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $stockIns = $this->stockInManager->getAllStockIns();
+            $page = $request->input('page');
 
-            return response()->json(['stock_ins' => $stockIns]);
+            $stockIns = $this->stockInManager->getAllStockIns($page);
+            return response()->json([
+                'stockIns' => $stockIns->items(),
+                'totalItems' => $stockIns->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 

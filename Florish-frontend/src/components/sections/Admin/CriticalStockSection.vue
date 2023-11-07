@@ -7,8 +7,26 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable v-if="products.length > 0" :columns="tableColumns" :items="products" height="500px" />
-                <div v-else>No critical products available.</div>
+                <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
+                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+                    @update:options="getCriticalStocks" fixed-header height="400">
+                    <template v-slot:custom-sort="{ header }">
+                        <span v-if="header.key === 'actions'">Actions</span>
+                    </template>
+                    <template v-slot:item="{ item, index }">
+                        <tr>
+                            <td>{{ displayedIndex + index }}</td>
+                            <td>{{ item.product_code }}</td>
+                            <td>{{ item.barcode }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.brand.brand_name }}</td>
+                            <td>{{ item.category.category_name }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.reorder_level }}</td>
+                            <td>{{ item.stock_on_hand }}</td>
+                        </tr>
+                    </template>
+                </v-data-table>
             </v-col>
         </v-row>
     </v-container>
@@ -16,7 +34,6 @@
   
 <script>
 import SearchField from '../../commons/SearchField.vue';
-import CustomTable from '../../commons/CustomTable.vue';
 import axios from 'axios';
 
 export default {
@@ -24,51 +41,71 @@ export default {
 
     components: {
         SearchField,
-        CustomTable,
     },
 
     data() {
         return {
+            itemsPerPage: 10,
+            currentPage: 1,
+            id: 1,
+            totalItems: 0,
+            loading: true,
             showForm: false,
             editingProductIndex: -1,
             products: [],
-            tableColumns: [
-                { key: 'product_code', label: 'Product Code' },
-                { key: 'barcode', label: 'Barcode' },
-                { key: 'description', label: 'Description' },
-                { key: 'brand', label: 'Brand', render: this.renderProductBrand },
-                { key: 'category', label: 'Category', render: this.renderProductCategory },
-                { key: 'price', label: 'Price' },
-                { key: 'reorder_level', label: 'Reorder Level' },
-                { key: 'stock_on_hand', label: 'Stock On Hand' },
+            headers: [
+                { title: '#', key: 'id' },
+                { title: 'Product Code', key: 'product_code' },
+                { title: 'Barcode', key: 'barcode' },
+                { title: 'Description', key: 'description' },
+                { title: 'Brand', key: 'brand.brand_name' },
+                { title: 'Category', key: 'category.category_name' },
+                { title: 'Price', key: 'price' },
+                { title: 'Reorder Level', key: 'reorder_level' },
+                { title: 'Stock On Hand', key: 'stock_on_hand' },
             ],
         };
     },
 
-    mounted() {
-        this.getCriticalStocks();
+    computed: {
+        displayedIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage + 1;
+        },
+    },
+
+    async mounted() {
+        await this.getCriticalStocks();
     },
 
     methods: {
-        async getCriticalStocks() {
-            try {
-                const response = await axios.get('/critical-stocks');
-                this.products = response.data;
-                console.log('Products:', this.products);
-            } catch (error) {
-                console.error('Error fetching critical stocks:', error);
-            }
-        },
+        getCriticalStocks() {
+            this.loading = true;
+            axios
+                .get('/critical-stocks', {
+                    params: {
+                        page: this.currentPage,
+                        itemsPerPage: this.itemsPerPage,
+                    }
+                })
+                .then((res) => {
+                    this.products = res.data.criticalStocks;
+                    this.totalItems = res.data.totalItems;
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    console.error('Error fetching products:', error);
+                });
+        }
+    },
 
-        renderProductCategory(category) {
-            return category.category ? category.category.category_name : 'Unknown';
-        },
+    renderProductCategory(category) {
+        return category.category ? category.category.category_name : 'Unknown';
+    },
 
-        renderProductBrand(brand) {
-            return brand.brand ? brand.brand.brand_name : 'Unknown';
-        },
+    renderProductBrand(brand) {
+        return brand.brand ? brand.brand.brand_name : 'Unknown';
+    },
 
-    }
 };
 </script>
   

@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
@@ -23,15 +24,35 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = $this->productManager->getAllProducts();
-
-            return response()->json(['products' => $products]);
+            $page = $request->input('page');
+            $products = $this->productManager->getAllProducts($page);
+            return response()->json([
+                'products' => $products->items(),
+                'totalItems' => $products->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    /**
+     * Display total stock on hand.
+     */
+
+    public function getTotalStockOnHand()
+    {
+        try {
+            $totalStock = $this->productManager->getTotalStockOnHand();
+            return response()->json([
+                'totalStockOnHand' => $totalStock,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
             return response()->json(['error' => $errorMessage], 500);
         }
     }
@@ -97,7 +118,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product updated successfully']);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-
+            
             return response()->json(['error' => $errorMessage], 500);
         }
     }
@@ -120,15 +141,32 @@ class ProductController extends Controller
         }
     }
 
-    public function getCriticalStock()
+    public function getCriticalStock(Request $request)
     {
         try {
-            $criticalProducts = $this->productManager->getCriticalStock();
+            $page = $request->input('page');
 
-            return response()->json($criticalProducts);
+            $criticalStocks = $this->productManager->getCriticalStock($page);
+            return response()->json([
+                'criticalStocks' => $criticalStocks->items(),
+                'totalItems' => $criticalStocks->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    public function getCriticalStockCount()
+    {
+        try {
+            $criticalStockCount = $this->productManager->getCriticalStockCount();
+            return response()->json([
+                'criticalStockCount' => $criticalStockCount,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
             return response()->json(['error' => $errorMessage], 500);
         }
     }

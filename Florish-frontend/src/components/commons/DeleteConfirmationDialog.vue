@@ -28,9 +28,8 @@ export default {
       this.dialog = false;
     },
     deleteItem() {
-      // Emit an event to inform the parent component about the deletion confirmation.
       this.$emit('confirm-delete');
-      this.dialog = false; // Close the dialog
+      this.dialog = false;
     },
   },
 };

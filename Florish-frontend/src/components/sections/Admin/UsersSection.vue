@@ -8,8 +8,33 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
-          <CustomTable :columns="tableColumns" :items="users" :showEditIcon="true" :showDeleteIcon="true"
-            class="custom-table" @edit-data="editUserRow" @delete-data="showDeleteConfirmation" />
+          <v-data-table :headers="headers" :items="users" :loading="loading" :page="currentPage"
+            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+            @update:options="getUsers" fixed-header height="400">
+            <template v-slot:custom-sort="{ header }">
+              <span v-if="header.key === 'actions'">Actions</span>
+            </template>
+            <template v-slot:item="{ item, index }">
+              <tr>
+                <td>{{ displayedIndex + index }}</td>
+                <td>{{ item.user_type.user_type }}</td>
+                <td>{{ item.user_credential.username }}</td>
+                <td>{{ item.first_name }}</td>
+                <td>{{ item.last_name }}</td>
+                <td>{{ item.gender }}</td>
+                <td>{{ item.address }}</td>
+                <td>{{ item.contact_number }}</td>
+                <td>
+                  <span>
+                    <v-icon @click="editUserRow(item)" color="primary">mdi-pencil</v-icon>
+                  </span>
+                  <span style="margin-left: 15px;">
+                    <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                  </span>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
         </v-col>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteUser" ref="deleteConfirmationDialog" />
@@ -17,18 +42,25 @@
         <v-col cols="12">
           <v-row class="d-flex justify-center">
             <v-col cols="12" sm="10" xl="10" lg="10" md="10" class="form-container">
-              <UserForm v-if="showForm" @add="addUser" @update="updateUser(editingUserIndex, $event)"
+              <UserForm v-if="showForm" @add-user="addUser" @update-user="updateUser"
                 @cancel="hideUserForm" :initialUser="editingUser" :userTypes="userTypes" />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
+      <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+        {{ snackbarText }}
+        <template v-slot:actions>
+          <v-btn color="pink" variant="text" @click="snackbar = false">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-container>
   </v-main>
 </template>
  
 <script>
-import CustomTable from '../../commons/CustomTable.vue';
 import UserForm from '../../forms/UserForm.vue';
 import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import axios from 'axios';
@@ -37,81 +69,181 @@ import axios from 'axios';
 export default {
   name: 'UsersDetails',
   components: {
-    CustomTable,
     UserForm,
     DeleteConfirmationDialog,
   },
 
   data() {
     return {
+      loading: true,
       showForm: false,
+      itemsPerPage: 10,
+      totalItems: 0,
+      currentPage: 1,
+      id: 1,
       users: [],
       editingUser: null,
       editingUserIndex: -1,
-      tableColumns: [
-        { key: 'user_type', label: 'User Type', render: this.renderUserType },
-        { key: 'username', label: 'User Name', render: this.renderUserName },
-        { key: 'first_name', label: 'First Name' },
-        { key: 'last_name', label: 'Last Name' },
-        { key: 'gender', label: 'Gender' },
-        { key: 'age', label: 'Age' },
-        { key: 'address', label: 'Address' },
-        { key: 'contact_number', label: 'Contact Number' },
+      snackbar: false,
+      snackbarColor: '',
+      headers: [
+        { title: '#', value: 'index' },
+        { title: 'User Type', key: 'user_type.user_type' },
+        { title: 'User Name', key: 'user_credential.username' },
+        { title: 'First Name', key: 'first_name' },
+        { title: 'Last Name', key: 'last_name' },
+        { title: 'Gender', key: 'gender' },
+        { title: 'Address', key: 'address' },
+        { title: 'Contact Number', key: 'contact_number' },
+        { title: 'Actions', key: 'actions', sortable: false }
       ],
-
       userTypes: [],
     };
   },
 
-  mounted() {
-    this.getUsers();
-    this.fetchUserTypes();
+  computed: {
+    displayedIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage + 1;
+    },
+  },
+
+  async mounted() {
+    await this.getUsers();
+    await this.fetchUserTypes();
   },
 
   methods: {
     getUsers() {
-      axios.get('/users').then(res => {
-        this.users = res.data.users
-      });
+      this.loading = true;
+      axios
+        .get('/users', {
+          params: {
+            page: this.currentPage,
+            itemsPerPage: this.itemsPerPage,
+          }
+        })
+        .then((res) => {
+          this.users = res.data.users
+          this.totalItems = res.data.totalItems;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error('Error fetching users:', error);
+        });
     },
 
-    addUser(userData) {
-      if (!userData.userType || !userData.userName || !userData.firstName ||
-        !userData.lastName || !userData.gender || !userData.age || !userData.address) {
-        return;
+    async fetchUserTypes() {
+      try {
+        const response = await axios.get('/user-types');
+        this.userTypes = response.data;
+      } catch (error) {
+        console.error(error);
       }
-      this.users.push(userData);
-      this.hideUserForm();
+    },
+
+    async addUser(userData) {
+      try {
+        const response = await axios.post('/user', userData);
+        if (response.status === 200) {
+          this.users.push(response.data);
+          this.hideUserForm();
+          this.snackbarColor = 'success';
+          this.showSnackbar(response.data.message, 'success');
+          this.getUsers();
+        } else {
+          this.snackbarColor = 'error';
+          this.showSnackbar(response.data.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error adding user:', error);
+        this.snackbarColor = 'error';
+        this.showSnackbar(error.response.data.message, 'error');
+      }
+      // this.users.push(userData);
+      // this.hideUserForm();
+      // this.getUsers();
     },
 
     editUserRow(user) {
+      console.log(user);
       const userType = this.userTypes.find(userType => userType.user_type === user.user_type.user_type);
       const username = user.user_credential ? user.user_credential.username : '';
 
-      this.editingUser = { ...user, user_type: userType ? userType.user_type : null, username: username };
-      const index = this.users.findIndex(p => p.userCode === user.userCode);
-      this.editingUserIndex = index;
-      this.showForm = true;
+      if (userType && username) {
+        this.editingUser = {
+          ...user, user_type: userType ? userType.user_type : null,
+          username: username,
+          id: user.id,
+        };
+        const index = this.users.findIndex(p => p.userCode === user.userCode);
+        this.editingUserIndex = index;
+        this.showForm = true;
+      } else {
+        this.editingUser = {
+          ...user, user_type: '',
+          username: '',
+          id: user.id
+        };
+        const index = this.users.findIndex(p => p.userCode === user.userCode);
+        this.editingUserIndex = index;
+        this.showForm = true;
+        console.error(`User Type "${user.UserType.user_type}" or username "${user.username.username}" not found.`);
+      }
     },
 
-    updateUser(index, updatedUser) {
-      this.users[index] = updatedUser;
-      this.editingUser = null;
-      this.hideUserForm();
+    async updateUser(userData) {
+      try {
+        console.log(userData.id);
+        const response = await axios.put(`/user/${userData.id}`, userData);
+        if (response.status === 200) {
+          this.users[this.index] = userData;
+          this.hideUserForm();
+          this.snackbarColor = 'success';
+          this.showSnackbar(response.data.message, 'success');
+          this.editingUser = null;
+          this.getUsers();
+        } else {
+          this.snackbarColor = 'error';
+          this.showSnackbar(response.data.message, 'error');
+        }
+      } catch (error) {
+        console.error(error);
+        if (error.response && error.response.status === 422) {
+          const validationErrors = error.response.data.errors;
+          const errorMessage = Object.values(validationErrors).flat()[0] || 'An error occurred';
+          this.snackbarColor = 'error';
+          this.showSnackbar(errorMessage, 'error');
+        } else {
+          this.snackbarText = error.response.data.error;
+          this.snackbarColor = 'error';
+          this.showSnackbar(this.snackbarText, 'error');
+        }
+      }
+      // this.users[index] = updatedUser;
+      // this.editingUser = null;
+      // this.hideUserForm();
+      // this.getUsers();
     },
-    
-    deleteUser() {
+
+    async deleteUser() {
       if (this.itemToDelete) {
         axios.delete(`/user/${this.itemToDelete.id}`)
-          .then(() => {
+          .then((response) => {
             const index = this.users.findIndex(user => user.id === this.itemToDelete.id);
             if (index !== -1) {
               this.users.splice(index, 1);
+              this.showSnackbar(response.data.message, 'success');
+            } else {
+              this.showSnackbar('User not found in the list', 'error');
             }
-            this.$refs.deleteConfirmationDialog.closeDialog();
           })
           .catch(error => {
             console.error('Error deleting item:', error);
+            this.showSnackbar(error.response.data.message, 'error');
+          })
+          .finally(() => {
+            this.$refs.deleteConfirmationDialog.closeDialog();
+            this.getUsers();
           });
       }
     },
@@ -125,6 +257,7 @@ export default {
       this.showForm = false;
       this.editingUser = null;
       this.editingUserIndex = -1;
+      this.getUsers();
     },
 
     showUserForm() {
@@ -145,14 +278,19 @@ export default {
     renderUserName(user) {
       return user.user_credential ? user.user_credential.username : 'Unknown';
     },
-    
-    async fetchUserTypes() {
-      try {
-        const response = await axios.get('/user-types');
-        this.userTypes = response.data;
-      } catch (error) {
-        console.error(error);
-      }
+
+    showSnackbar(text, color, timeout = 3000) {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
+
+      setTimeout(() => {
+        this.hideSnackbar();
+      }, timeout);
+    },
+
+    hideSnackbar() {
+      this.snackbar = false;
     },
   },
 };

@@ -17,21 +17,44 @@ class CategoryController extends Controller
     {
         $this->categoryManager = $categoryManager;
     }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $categories = $this->categoryManager->getAllCategories();
+            $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            return response()->json(['categories' => $categories], Response::HTTP_OK);
+            $categories = $this->categoryManager->getAllCategories($page, $itemsPerPage);
+
+            return response()->json([
+                'categories' => $categories->items(),
+                'totalItems' => $categories->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
             return response()->json(['error' => $errorMessage], 500);
         }
     }
+    /**
+     * Display the count of category have.
+     */
+    public function getProductLineCount()
+    {
+        try {
+            $categoryCount = $this->categoryManager->getCategoryCount();
+            return response()->json([
+                'productLineCount' => $categoryCount,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.

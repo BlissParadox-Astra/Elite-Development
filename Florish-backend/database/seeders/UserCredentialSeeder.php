@@ -27,7 +27,6 @@ class UserCredentialSeeder extends Seeder
             ],
             // Add more credential data as needed
         ];
-
         // Insert the data into the user_credentials table
         foreach ($credentialsData as $credentialData) {
             UserCredential::create($credentialData);

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -41,8 +43,20 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function stockIns()
+    {
+        return $this->hasMany(StockIn::class, 'product_id', 'id');
+    }
+
     public function incrementStockOnHand($quantity)
     {
         $this->stock_on_hand += $quantity;
+        $this->save();
+    }
+
+    public function decrementStockOnHand($quantity)
+    {
+        $this->stock_on_hand -= $quantity;
+        $this->save();
     }
 }

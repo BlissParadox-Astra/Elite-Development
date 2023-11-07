@@ -7,6 +7,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\CanceledOrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,6 +45,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/get-categories', [BrandController::class, 'getCategories'])->name('get-categories.get');
     Route::prefix('/category')->group(function () {
         Route::post('/', [CategoryController::class, 'store'])->name('categories.store');
+        Route::get('/product-line-count', [CategoryController::class, 'getProductLineCount'])->name('product-line-count.getCategoryCount');
         Route::get('/{id}', [CategoryController::class, 'show'])->name('categories.show');
         Route::put('/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
@@ -58,10 +61,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     });
 
     // Group for product routes
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
+    Route::get('/critical-stock-count', [ProductController::class, 'getCriticalStockCount'])->name('critical-stock-count.getCriticalStockCount');
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/total-stock', [ProductController::class,'getTotalStockOnHand'])->name('total-stock.getTotalStockOnHand');
         Route::put('/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::get('{id}', [ProductController::class, 'show'])->name('products.show');
@@ -75,16 +80,28 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     });
 
     // Group for stock adjustment routes
-    Route::get('/stockAdjustments', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
-    Route::prefix('/stockAdjustment')->group(function () {
+    Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index'])->name('stockAdjustments.index');
+    Route::prefix('/stock-adjustment')->group(function () {
         Route::post('/', [StockAdjustmentController::class, 'store'])->name('stockAdjustments.store');
     });
 
-    // Logout route
-    // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transaction-years-earnings', [TransactionController::class, 'getTransactionYearsAndEarnings']);
+    Route::get('/monthly-earnings', [TransactionController::class,'getMonthlyEarningsForYear']);
+    Route::get('/daily-transactions', [TransactionController::class, 'dailyTransactions'])->name('daily-transactions.dailyTransactions');
+    Route::get('/canceled-orders', [CanceledOrderController::class, 'index'])->name('cancel-order.index');
 });
 
-// Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
-//     // Logout route
-//     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-// });
+Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
+    // Group for transaction routes
+    Route::prefix('/transaction')->group(function () {
+        Route::post('/', [TransactionController::class, 'store'])->name('transactions.store');
+        // Route::get('/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+        // Route::put('/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+        // Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+    });
+
+    Route::prefix('cancel-order')->group(function () {
+        Route::post('/', [CanceledOrderController::class, 'store'])->name('cancel-order.store');
+    });
+});
