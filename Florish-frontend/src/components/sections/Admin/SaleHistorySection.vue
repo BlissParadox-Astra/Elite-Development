@@ -30,10 +30,10 @@
               <tr>
                 <td>{{ displayedIndex + index }}</td>
                 <td>{{ item.invoice_number }}</td>
-                <td>{{ item.transacted_product.product_code }}</td>
-                <td>{{ item.transacted_product.barcode }}</td>
-                <td>{{ item.transacted_product.description }}</td>
-                <td>{{ item.transacted_product.category.category_name }}</td>
+                <td>{{ item.product_code ? item.transacted_product.product_code: 'Unknown product code' }}</td>
+                <td>{{ item.barcode ? item.transacted_product.barcode: 'Unknown barcode' }}</td>
+                <td>{{ item.description ? item.transacted_product.description: 'Unknown description' }}</td>
+                <td>{{ item.category_name ? item.transacted_product.category.category_name: 'Unknown description' }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.total }}</td>

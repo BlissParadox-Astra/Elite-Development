@@ -31,20 +31,20 @@
                 </td>
               </tr>
             </template>
+            <template v-slot:bottom>
+              <div class="text-center pt-2">
+                <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                  :class="{ active: pageNumber === currentPage }">
+                  {{ pageNumber }}
+                </button>
+
+                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+              </div>
+            </template>
           </v-data-table>
         </v-col>
-        <div>
-          <div class="pagination">
-            <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
-
-            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
-              :class="{ active: pageNumber === currentPage }">
-              {{ pageNumber }}
-            </button>
-
-            <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-          </div>
-        </div>
       </v-row>
       <DeleteConfirmationDialog @confirm-delete="deleteCategory" ref="deleteConfirmationDialog" />
       <v-row>
@@ -174,6 +174,7 @@ export default {
     },
 
     editCategoryRow(category) {
+      console.log(category);
       this.editingCategory = {
         ...category,
         id: category.id,
@@ -187,9 +188,10 @@ export default {
 
     async updateCategory(categoryData) {
       try {
+        console.log(categoryData.id);
         const response = await axios.put(`/category/${categoryData.id}`, categoryData);
         if (response.status === 200) {
-          this.categories[this.index] = response.data;
+          this.categories[this.index] = categoryData;
           this.hideCategoryForm();
           this.snackbarColor = 'success';
           this.showSnackbar(response.data.message, 'success');
