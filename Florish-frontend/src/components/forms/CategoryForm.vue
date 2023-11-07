@@ -2,9 +2,9 @@
     <v-container class="mt-2 showCategoryForm">
         <v-row class="justify-center">
             <v-col cols="12">
-                <v-btn icon @click="cancelForm" class="close-button" color="transparent">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
+                <div @click="closeForm" class="close-button">
+                    <v-icon color="black">mdi-close</v-icon>
+                </div>
                 <v-form @submit.prevent="submitForm">
                     <h2 class="text-center mb-4">{{ editingCategory ? 'Edit Category' : 'Category Module' }}</h2>
                     <v-col cols="12" lg="12">
@@ -14,7 +14,7 @@
                     </v-col>
                     <v-row justify="center">
                         <v-col cols="12" md="6" lg="5">
-                            <v-btn type="submit" color="primary" block>
+                            <v-btn type="submit" color="#4caf50" block>
                                 {{ editingCategory ? 'Save' : 'Submit' }}
                             </v-btn>
                         </v-col>
@@ -126,10 +126,11 @@ export default {
 }
 
 .close-button {
-    position: absolute;
-    top: 25px;
-    right: 20px;
-    z-index: 999;
+  position: absolute;
+  top: 35px;
+  right: 30px;
+  z-index: 999;
+  font-size: larger;
 }
 
 .error-messages {

@@ -4,9 +4,9 @@
       <v-col>
         <h2 class="text-center mb-1">Product Module</h2>
       </v-col>
-      <v-btn icon @click="closeForm" class="close-button" color="transparent">
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
+      <div @click="closeForm" class="close-button">
+        <v-icon color="black">mdi-close</v-icon>
+      </div>
     </v-row>
     <v-row>
       <v-col cols="12" sm="9">
@@ -88,8 +88,9 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 25px;
-  right: 20px;
+  top: 35px;
+  right: 30px;
   z-index: 999;
+  font-size: larger;
 }
 </style>

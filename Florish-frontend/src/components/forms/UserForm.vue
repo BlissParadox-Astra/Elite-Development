@@ -2,9 +2,9 @@
     <v-container class="mt-2 showUserForm">
         <v-row justify="center">
             <v-col cols="12">
-                <v-btn icon @click="cancelForm" class="close-button" color="transparent">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
+                <div @click="cancelForm" class="close-button">
+                    <v-icon color="black">mdi-close</v-icon>
+                </div>
                 <v-form @submit.prevent="submitForm">
                     <h2 class="text-center mb-4">{{ editingUser ? 'Edit User' : 'User Module' }}</h2>
                     <v-row justify="center">
@@ -54,12 +54,12 @@
                         </v-col>
                     </v-row>
                     <v-row justify="center">
-                        <v-col cols="12" md="6" lg="5">
-                            <v-btn type="submit" color="primary" block>
+                        <v-col cols="12" md="6" lg="4">
+                            <v-btn type="submit" color="#4caf50" block>
                                 {{ editingUser ? 'Save' : 'Submit' }}
                             </v-btn>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="4">
                             <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
                         </v-col>
                     </v-row>
@@ -271,15 +271,17 @@ export default {
  
 <style scoped>
 .showUserForm {
-    background-image: url("../../assets/assets/vuejs.jpg");
+    /* background-image: url("../../assets/assets/vuejs.jpg"); */
+    background-color: #23b78d;
     z-index: 999;
 }
 
 .close-button {
-    position: absolute;
-    top: 25px;
-    right: 20px;
-    z-index: 999;
+  position: absolute;
+  top: 35px;
+  right: 30px;
+  z-index: 999;
+  font-size: larger;
 }
 
 .error-messages {

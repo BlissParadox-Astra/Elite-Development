@@ -16,7 +16,7 @@ import CriticalStockView from '../views/Admin/CriticalStockView.vue';
 import CancelledOrderView from '../views/Admin/CancelledOrderView.vue';
 import UsersView from '../views/Admin/UsersView.vue';
 //cashier
-import CashierDashboardView from '../views/Cashier/CashierDashboardView.vue';
+import CashierDashboardView from '../views/Cashier/cashierDashboardView.vue';
 import TransactionCartView from '../views/Cashier/TransactionCartView.vue';
 import LowStockView from '../views/Cashier/CriticalStockView.vue';
 import SoldPurchaseView from '../views/Cashier/SoldPurchaseView.vue';

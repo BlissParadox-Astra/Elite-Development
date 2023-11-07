@@ -96,11 +96,6 @@ export default {
 </script>
 
 <style>
-.align-center {
-  display: flex;
-  align-items: center;
-}
-
 .app-bar-title {
   text-align: center;
   justify-content: center;
