@@ -21,7 +21,7 @@
       <v-row justify="center">
         <v-col cols="12">
           <v-data-table :headers="headers" :items="transactions" :loading="loading" :page="currentPage"
-            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
             @update:options="getTransactions" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
@@ -30,10 +30,10 @@
               <tr>
                 <td>{{ displayedIndex + index }}</td>
                 <td>{{ item.invoice_number }}</td>
-                <td>{{ item.product_code ? item.transacted_product.product_code: 'Unknown product code' }}</td>
-                <td>{{ item.barcode ? item.transacted_product.barcode: 'Unknown barcode' }}</td>
-                <td>{{ item.description ? item.transacted_product.description: 'Unknown description' }}</td>
-                <td>{{ item.category_name ? item.transacted_product.category.category_name: 'Unknown description' }}</td>
+                <td>{{ item.product_code ? item.transacted_product.product_code : 'Unknown product code' }}</td>
+                <td>{{ item.barcode ? item.transacted_product.barcode : 'Unknown barcode' }}</td>
+                <td>{{ item.description ? item.transacted_product.description : 'Unknown description' }}</td>
+                <td>{{ item.category_name ? item.transacted_product.category.category_name : 'Unknown description' }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.total }}</td>
@@ -41,8 +41,19 @@
                 <td>{{ item.user.first_name }}</td>
               </tr>
             </template>
+            <template v-slot:bottom>
+              <div class="text-center pt-8 pagination">
+                <button class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                  :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                  {{ pageNumber }}
+                </button>
+
+                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+              </div>
+            </template>
           </v-data-table>
-          <!-- <CustomTable :columns="tableColumns" :items="products" height="460px" /> -->
         </v-col>
       </v-row>
       <v-row>
@@ -83,7 +94,7 @@ export default {
         { title: "Product Code", key: 'transacted_product.product_code' },
         { title: "Barcode", key: 'transacted_product.barcode' },
         { title: "Description", key: 'transacted_product.description' },
-        {title: "Category", key: 'transacted_product.category.category_name'},
+        { title: "Category", key: 'transacted_product.category.category_name' },
         { title: "Price", key: 'price' },
         { title: "Quantity", key: 'quantity' },
         { title: "Total", key: 'total' },
@@ -101,6 +112,10 @@ export default {
   computed: {
     displayedIndex() {
       return (this.currentPage - 1) * this.itemsPerPage + 1;
+    },
+
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
     },
 
     totalOfAllTotal() {
@@ -128,6 +143,26 @@ export default {
           this.loading = false;
         });
     },
+
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getTransactions();
+      }
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getTransactions();
+      }
+    },
+
+    gotoPage(pageNumber) {
+      this.currentPage = pageNumber;
+      this.getTransactions();
+    },
+
     renderProductCode(transactions) {
       return transactions.transacted_product ? transactions.transacted_product.product_code : 'Unknown';
     },
@@ -172,6 +207,26 @@ export default {
 .total-value {
   font-weight: bold;
   color: #333;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 </style>
   

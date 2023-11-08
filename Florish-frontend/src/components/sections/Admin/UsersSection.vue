@@ -9,7 +9,7 @@
       <v-row justify="center">
         <v-col cols="12">
           <v-data-table :headers="headers" :items="users" :loading="loading" :page="currentPage"
-            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
             @update:options="getUsers" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
@@ -34,6 +34,18 @@
                 </td>
               </tr>
             </template>
+            <template v-slot:bottom>
+              <div class="text-center pt-8 pagination">
+                <button class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                  :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                  {{ pageNumber }}
+                </button>
+
+                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+              </div>
+            </template>
           </v-data-table>
         </v-col>
       </v-row>
@@ -42,8 +54,8 @@
         <v-col cols="12">
           <v-row class="d-flex justify-center">
             <v-col cols="12" sm="10" xl="10" lg="10" md="10" class="form-container">
-              <UserForm v-if="showForm" @add-user="addUser" @update-user="updateUser"
-                @cancel="hideUserForm" :initialUser="editingUser" :userTypes="userTypes" />
+              <UserForm v-if="showForm" @add-user="addUser" @update-user="updateUser" @cancel="hideUserForm"
+                :initialUser="editingUser" :userTypes="userTypes" />
             </v-col>
           </v-row>
         </v-col>
@@ -105,6 +117,9 @@ export default {
     displayedIndex() {
       return (this.currentPage - 1) * this.itemsPerPage + 1;
     },
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
   },
 
   async mounted() {
@@ -139,6 +154,25 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getUsers();
+      }
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getUsers();
+      }
+    },
+
+    gotoPage(pageNumber) {
+      this.currentPage = pageNumber;
+      this.getUsers();
     },
 
     async addUser(userData) {
@@ -307,8 +341,25 @@ export default {
   overflow-y: auto;
 }
 
-.custom-table {
-  height: 445px;
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 </style>
  

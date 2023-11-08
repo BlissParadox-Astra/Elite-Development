@@ -8,7 +8,7 @@
         <v-row justify="center">
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
-                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
                     @update:options="getProducts" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
@@ -25,6 +25,20 @@
                             <td>{{ item.reorder_level }}</td>
                             <td>{{ item.stock_on_hand }}</td>
                         </tr>
+                    </template>
+                    <template v-slot:bottom>
+                        <div class="text-center pt-8 pagination">
+                            <button class="pagination-button" @click="previousPage"
+                                :disabled="currentPage === 1">Previous</button>
+
+                            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                                {{ pageNumber }}
+                            </button>
+
+                            <v-btn class="pagination-button" @click="nextPage"
+                                :disabled="currentPage === totalPages">Next</v-btn>
+                        </div>
                     </template>
                 </v-data-table>
             </v-col>
@@ -72,6 +86,9 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
     },
 
     async mounted() {
@@ -97,6 +114,25 @@ export default {
                 });
         },
 
+        previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.getProducts();
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.getProducts();
+            }
+        },
+
+        gotoPage(pageNumber) {
+            this.currentPage = pageNumber;
+            this.getProducts();
+        },
+
         renderProductCategory(category) {
             return category.category ? category.category.category_name : 'Unknown';
         },
@@ -109,6 +145,25 @@ export default {
 </script>
   
 <style scoped>
-/* Add any scoped styles here */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-button {
+    padding: 6px 12px;
+    margin: 0 4px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
 </style>
   

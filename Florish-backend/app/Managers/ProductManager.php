@@ -70,9 +70,9 @@ class ProductManager
         return $newProductCode;
     }
 
-    public function getCriticalStock($page)
+    public function getCriticalStock($page, $itemsPerPage)
     {
-        return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->paginate(2000, ['*'], 'page', $page);
+        return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getCriticalStockCount()

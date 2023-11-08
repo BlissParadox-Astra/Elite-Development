@@ -44,9 +44,9 @@ class CanceledOrderManager
         }
     }
 
-    public function getAllCanceledOrders($page)
+    public function getAllCanceledOrders($page, $itemsPerPage)
     {
         return CanceledOrder::with(['canceledTransaction.transactedProduct', 'user'])
-            ->paginate(3000, ['*'], 'page', $page);
+            ->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 }

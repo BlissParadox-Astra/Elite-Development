@@ -159,8 +159,9 @@ class ProductController extends Controller
     {
         try {
             $page = $request->input('page');
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $criticalStocks = $this->productManager->getCriticalStock($page);
+            $criticalStocks = $this->productManager->getCriticalStock($page, $itemsPerPage);
             return response()->json([
                 'criticalStocks' => $criticalStocks->items(),
                 'totalItems' => $criticalStocks->total(),

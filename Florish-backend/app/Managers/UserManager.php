@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Hash;
 
 class UserManager
 {
-    public function getAllUsers($page)
+    public function getAllUsers($page, $itemsPerPage)
     {
-        return User::with(['userType', 'userCredential'])->paginate(500, ['*'], 'page', $page);
+        return User::with(['userType', 'userCredential'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function createUser(array $userData, array $credentialData)

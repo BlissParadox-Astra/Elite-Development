@@ -26,8 +26,10 @@ class UserController extends Controller
     {
         try {
             $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $users = $this->userManager->getAllUsers($page);
+            $users = $this->userManager->getAllUsers($page, $itemsPerPage);
+            
             return response()->json([
                 'users' => $users->items(),
                 'totalItems' => $users->total(),

@@ -23,7 +23,9 @@ class CanceledOrderController extends Controller
     {
         try {
             $page = $request->input('page');
-            $canceledOrders = $this->canceledOrderManager->getAllCanceledOrders($page);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
+
+            $canceledOrders = $this->canceledOrderManager->getAllCanceledOrders($page, $itemsPerPage);
 
             return response()->json([
                 'canceled_orders' => $canceledOrders->items(),

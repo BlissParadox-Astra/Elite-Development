@@ -8,7 +8,7 @@
         <v-row justify="center">
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="canceled_orders" :loading="loading" :page="currentPage"
-                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
                     @update:options="getCanceledOrders" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
@@ -29,8 +29,21 @@
                             <td>{{ item.action_taken }}</td>
                         </tr>
                     </template>
+                    <template v-slot:bottom>
+                        <div class="text-center pt-8 pagination">
+                            <button class="pagination-button" @click="previousPage"
+                                :disabled="currentPage === 1">Previous</button>
+
+                            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                                {{ pageNumber }}
+                            </button>
+
+                            <v-btn class="pagination-button" @click="nextPage"
+                                :disabled="currentPage === totalPages">Next</v-btn>
+                        </div>
+                    </template>
                 </v-data-table>
-                <!-- <CustomTable :columns="tableColumns" :items="products" height="500px" /> -->
             </v-col>
         </v-row>
     </v-container>
@@ -78,6 +91,9 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
     },
 
     async mounted() {
@@ -98,6 +114,24 @@ export default {
                     this.totalItems = res.data.totalItems;
                     this.loading = false;
                 });
+        },
+        previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.getCanceledOrders();
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.getCanceledOrders();
+            }
+        },
+
+        gotoPage(pageNumber) {
+            this.currentPage = pageNumber;
+            this.getCanceledOrders();
         },
         renderReferenceNUmber(canceled_order) {
             return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.invoice_number : 'Unknown';
@@ -139,6 +173,25 @@ export default {
 };
 </script>
 <style scoped>
-/* Add any scoped styles here */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-button {
+    padding: 6px 12px;
+    margin: 0 4px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
 </style>
   

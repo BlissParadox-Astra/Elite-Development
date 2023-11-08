@@ -33,15 +33,15 @@
               </tr>
             </template>
             <template v-slot:bottom>
-              <div class="text-center pt-2">
-                <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+              <div class="text-center pt-8 pagination">
+                <button class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</button>
 
                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
-                  :class="{ active: pageNumber === currentPage }">
+                  :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </button>
 
-                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
           </v-data-table>
@@ -364,4 +364,27 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+</style>
   
