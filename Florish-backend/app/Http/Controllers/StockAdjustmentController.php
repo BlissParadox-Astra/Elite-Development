@@ -25,8 +25,9 @@ class StockAdjustmentController extends Controller
     {
         try {
             $page = $request->input('page');
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page);
+            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page, $itemsPerPage);
             return response()->json([
                 'stockAdjustments' => $stockAdjustments->items(),
                 'totalItems' => $stockAdjustments->total(),

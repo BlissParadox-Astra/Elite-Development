@@ -7,7 +7,6 @@ use App\Http\Requests\BrandRequest;
 use App\Managers\BrandManager;
 use Illuminate\Http\Request;
 use App\Models\Brand;
-use App\Models\Category;
 use Illuminate\Http\Response;
 
 class BrandController extends Controller
@@ -25,8 +24,10 @@ class BrandController extends Controller
     {
         try {
             $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $brands = $this->brandManager->getAllBrands($page);
+            $brands = $this->brandManager->getAllBrands($page, $itemsPerPage);
+            
             return response()->json([
                 'brands' => $brands->items(),
                 'totalItems' => $brands->total(),
@@ -134,18 +135,18 @@ class BrandController extends Controller
         }
     }
 
-    /**
-     * Show categories from category table.
+        /**
+     * Show brands from brand table.
      */
 
-    public function getCategories()
-    {
-        try {
-            $categories = Category::all();
-
-            return response()->json($categories);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Unable to fetch categories'], 500);
-        }
-    }
+     public function getBrands()
+     {
+         try {
+             $brands = Brand::all();
+ 
+             return response()->json($brands);
+         } catch (\Exception $e) {
+             return response()->json(['error' => 'Unable to fetch brands'], 500);
+         }
+     }
 }

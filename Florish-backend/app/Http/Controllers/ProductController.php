@@ -28,7 +28,10 @@ class ProductController extends Controller
     {
         try {
             $page = $request->input('page');
-            $products = $this->productManager->getAllProducts($page);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
+
+            $products = $this->productManager->getAllProducts($page, $itemsPerPage);
+            
             return response()->json([
                 'products' => $products->items(),
                 'totalItems' => $products->total(),
@@ -138,6 +141,17 @@ class ProductController extends Controller
             $errorMessage = $e->getMessage();
 
             return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    public function getCategories()
+    {
+        try {
+            $categories = Category::all();
+
+            return response()->json($categories);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to fetch categories'], 500);
         }
     }
 

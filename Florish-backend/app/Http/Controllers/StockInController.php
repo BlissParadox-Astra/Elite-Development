@@ -23,8 +23,10 @@ class StockInController extends Controller
     {
         try {
             $page = $request->input('page');
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $stockIns = $this->stockInManager->getAllStockIns($page);
+            $stockIns = $this->stockInManager->getAllStockIns($page, $itemsPerPage);
+
             return response()->json([
                 'stockIns' => $stockIns->items(),
                 'totalItems' => $stockIns->total(),

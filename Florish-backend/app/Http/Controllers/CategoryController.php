@@ -27,7 +27,7 @@ class CategoryController extends Controller
             $page = $request->input('page', 1);
             $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $categories = $this->categoryManager->getAllCategories($page, $itemsPerPage);
+            $categories = $this->categoryManager->getPaginatedAllCategories($page, $itemsPerPage);
 
             return response()->json([
                 'categories' => $categories->items(),
@@ -142,6 +142,21 @@ class CategoryController extends Controller
             $errorMessage = $e->getMessage();
 
             return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    /**
+     * Show categories from category table.
+     */
+
+    public function getCategories()
+    {
+        try {
+            $categories = Category::all();
+
+            return response()->json($categories);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to fetch categories'], 500);
         }
     }
 }

@@ -27,9 +27,9 @@ class StockAdjustmentManager
         StockAdjustment::create($stockAdjustmentData);
     }
 
-    public function getAllStockAdjustment($page)
+    public function getAllStockAdjustment($page, $itemsPerPage)
     {
-        return StockAdjustment::with(['stockAdjustmentByUser', 'adjustedProduct'])->paginate(2000, ['*'], 'page', $page);
+        return StockAdjustment::with(['stockAdjustmentByUser', 'adjustedProduct'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function generateReferenceNumber(): string

@@ -20,9 +20,9 @@ class ProductManager
         return Product::create($productData);
     }
 
-    public function getAllProducts($page)
+    public function getAllProducts($page, $itemsPerPage)
     {
-        return Product::with(['productType', 'category.products', 'brand.products'])->paginate(2000, ['*'], 'page', $page);
+        return Product::with(['productType', 'category.products', 'brand.products'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getTotalStockOnHand()

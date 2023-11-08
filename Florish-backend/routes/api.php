@@ -42,7 +42,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     // Group for category management routes
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('/get-categories', [BrandController::class, 'getCategories'])->name('get-categories.get');
+    Route::get('/get-categories', [CategoryController::class, 'getCategories'])->name('get-categories.get');
     Route::prefix('/category')->group(function () {
         Route::post('/', [CategoryController::class, 'store'])->name('categories.store');
         Route::get('/product-line-count', [CategoryController::class, 'getProductLineCount'])->name('product-line-count.getCategoryCount');
@@ -53,6 +53,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     // Group for brand management routes
     Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+    Route::get('/get-brands', [BrandController::class, 'getBrands'])->name('get-brands.get');
     Route::prefix('/brand')->group(function () {
         Route::post('/', [BrandController::class, 'store'])->name('brands.store');
         Route::get('/{id}', [BrandController::class, 'show'])->name('brands.show');

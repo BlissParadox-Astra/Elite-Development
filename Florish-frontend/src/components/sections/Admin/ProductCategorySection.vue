@@ -136,18 +136,21 @@ export default {
           console.error('Error fetching categories:', error);
         });
     },
+
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
         this.getCategories();
       }
     },
+
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
         this.getCategories();
       }
     },
+    
     gotoPage(pageNumber) {
       this.currentPage = pageNumber;
       this.getCategories();

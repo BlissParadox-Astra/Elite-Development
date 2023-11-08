@@ -9,7 +9,7 @@
       <v-row justify="center">
         <v-col cols="12">
           <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
-            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
             @update:options="getProducts" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
@@ -31,6 +31,18 @@
                   </span>
                 </td>
               </tr>
+            </template>
+            <template v-slot:bottom>
+              <div class="text-center pt-2">
+                <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                  :class="{ active: pageNumber === currentPage }">
+                  {{ pageNumber }}
+                </button>
+
+                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+              </div>
             </template>
           </v-data-table>
         </v-col>
@@ -202,6 +214,10 @@ export default {
     displayedIndex() {
       return (this.currentPage - 1) * this.itemsPerPage + 1;
     },
+
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
   },
 
   async mounted() {
@@ -228,6 +244,24 @@ export default {
         .catch((error) => {
           console.error('Error fetching products:', error);
         });
+    },
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getProducts();
+      }
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getProducts();
+      }
+    },
+
+    gotoPage(pageNumber) {
+      this.currentPage = pageNumber;
+      this.getProducts();
     },
 
     async saveStockAdjustment() {

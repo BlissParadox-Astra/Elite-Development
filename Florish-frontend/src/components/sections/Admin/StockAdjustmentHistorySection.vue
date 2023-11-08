@@ -10,7 +10,7 @@
                 <v-col cols="12">
                     <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
                         :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
-                        @update:options="getStockAdjustments" fixed-header height="400">
+                        hide-default-footer @update:options="getStockAdjustments" fixed-header height="400">
                         <template v-slot:custom-sort="{ header }">
                             <span v-if="header.key === 'actions'">Actions</span>
                         </template>
@@ -26,6 +26,18 @@
                                 <td>{{ item.quantity }}</td>
                                 <td>{{ item.stock_adjustment_by_user.first_name }}</td>
                             </tr>
+                        </template>
+                        <template v-slot:bottom>
+                            <div class="text-center pt-2">
+                                <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                                    :class="{ active: pageNumber === currentPage }">
+                                    {{ pageNumber }}
+                                </button>
+
+                                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                            </div>
                         </template>
                     </v-data-table>
                 </v-col>
@@ -69,6 +81,9 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
     },
 
     async mounted() {
@@ -94,6 +109,25 @@ export default {
                     console.error('Error fetching stock adjustment records:', error);
                 });
         },
+        previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.getStockAdjustments();
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.getStockAdjustments();
+            }
+        },
+
+        gotoPage(pageNumber) {
+            this.currentPage = pageNumber;
+            this.getStockAdjustments();
+        },
+
         renderProductCode(adjusted_product) {
             return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
         },

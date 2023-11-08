@@ -31,8 +31,8 @@
             </v-row>
             <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                 :items-per-page="itemsPerPage" density="compact" :reference_number="reference_number"
-                :stock_in_date="stock_in_date" :stock_in_by="stock_in_by" item-value="id" class="elevation-1" fixed-header
-                height="400">
+                :stock_in_date="stock_in_date" :stock_in_by="stock_in_by" item-value="id" class="elevation-1"
+                hide-default-footer fixed-header height="400">
                 <template v-slot:custom-sort="{ header }">
                     <span v-if="header.key === 'actions'">Actions</span>
                 </template>
@@ -105,6 +105,18 @@
                     <v-btn color="pink" variant="text" @click="snackbar = false">
                         Close
                     </v-btn>
+                </template>
+                <template v-slot:bottom>
+                    <div class="text-center pt-2">
+                        <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                        <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            :class="{ active: pageNumber === currentPage }">
+                            {{ pageNumber }}
+                        </button>
+
+                        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                    </div>
                 </template>
             </v-snackbar>
         </v-container>
@@ -183,6 +195,9 @@ export default {
 
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
+        },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
         },
     },
 
@@ -265,8 +280,11 @@ export default {
             if (index !== -1) {
                 this.products.splice(index, 1);
                 this.totalItems = this.products.length;
+                this.snackbarColor = 'success';
+                this.showSnackbar('Successfully removed product from cart');
             } else {
-                console.error(`Product not found.`);
+                this.snackbarColor = 'error';
+                this.showSnackbar('Error removing product from cart');
             }
         },
 
@@ -311,6 +329,25 @@ export default {
                     this.snackbarColor = 'error';
                     this.showSnackbar('Failed to save Stock-In records. Please try again later.', 'error');
                 });
+        },
+
+        previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                // this.getBrands();
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                // this.getBrands();
+            }
+        },
+
+        gotoPage(pageNumber) {
+            this.currentPage = pageNumber;
+            // this.getBrands();
         },
 
         showConfirmation() {

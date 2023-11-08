@@ -12,7 +12,7 @@
       <v-row>
         <v-col cols="12">
           <v-data-table :headers="headers" :items="brands" :loading="loading" :page="currentPage"
-            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
+            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
             @update:options="getBrands" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
@@ -30,6 +30,18 @@
                   </span>
                 </td>
               </tr>
+            </template>
+            <template v-slot:bottom>
+              <div class="text-center pt-2">
+                <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+
+                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                  :class="{ active: pageNumber === currentPage }">
+                  {{ pageNumber }}
+                </button>
+
+                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+              </div>
             </template>
           </v-data-table>
         </v-col>
@@ -98,6 +110,9 @@ export default {
     displayedIndex() {
       return (this.currentPage - 1) * this.itemsPerPage + 1;
     },
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
   },
 
   async mounted() {
@@ -130,11 +145,30 @@ export default {
 
     async fetchCategories() {
       try {
-        const response = await axios.get('/categories');
-        this.existingCategories = response.data.categories;
+        const response = await axios.get('/get-categories');
+        this.existingCategories = response.data;
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
+    },
+
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getBrands();
+      }
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getBrands();
+      }
+    },
+    
+    gotoPage(pageNumber) {
+      this.currentPage = pageNumber;
+      this.getBrands();
     },
 
     async addBrand(brandData) {
@@ -155,9 +189,6 @@ export default {
         this.snackbarColor = 'error';
         this.showSnackbar(error.response.data.message, 'error');
       }
-      // this.brands.push(brandData);
-      // this.hideBrandForm();
-      // this.getBrands();
     },
 
     editBrandRow(brand) {

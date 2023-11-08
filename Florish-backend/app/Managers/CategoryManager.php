@@ -39,7 +39,7 @@ class CategoryManager
         return $this->generateUniqueCategoryCode($newCode, $attempt + 1);
     }
 
-    public function getAllCategories($page, $itemsPerPage)
+    public function getPaginatedAllCategories($page, $itemsPerPage)
     {
         return Category::paginate($itemsPerPage, ['*'], 'page', $page);
     }

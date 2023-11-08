@@ -41,7 +41,6 @@ export default {
             brand_name: this.initialBrand ? this.initialBrand.brand_name : '',
             category_name: this.initialBrand ? this.initialBrand.category_name : '',
             editingBrand: !!this.initialBrand,
-
             brandError: '',
             selectedCategoryError: '',
         }
@@ -65,51 +64,6 @@ export default {
             } else {
                 this.$emit('add-brand', brandData);
             }
-            //     axios
-            //         .put(`/brand/${this.initialBrand.id}`, brandData)
-            //         .then((response) => {
-            //             if (response.status === 200) {
-            //                 this.$emit('update', response.data);
-            //                 alert(response.data.message);
-            //                 this.resetFormFields();
-            //                 this.clearErrors();
-            //             } else {
-            //                 alert(response.data.message);
-            //             }
-            //         })
-            //         .catch((error) => {
-            //             console.error(error);
-            //             if (error.response && error.response.status === 422) {
-            //                 const validationErrors = error.response.data.errors;
-            //                 this.brandError = validationErrors.brand_name ? validationErrors.brand_name[0] : '';
-            //                 this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
-            //             } else {
-            //                 console.error(error);
-            //             }
-            //         })
-            // } else {
-            //     axios
-            //             .post('/brand', brandData)
-            //         .then((response) => {
-            //             if (response.status === 200) {
-            //                 this.$emit('add', response.data);
-            //                 alert(response.data.message);
-            //                 this.resetFormFields();
-            //                 this.clearErrors();
-            //             } else {
-            //                 alert(response.data.message);
-            //             }
-            //         })
-            //         .catch((error) => {
-            //             if (error.response && error.response.status === 422) {
-            //                 const validationErrors = error.response.data.errors;
-            //                 this.brandError = validationErrors.brand_name ? validationErrors.brand_name[0] : '';
-            //                 this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
-            //             } else {
-            //                 console.error(error);
-            //             }
-            //         });
-            // }
         },
         findCategoryIdByName(categoryName) {
             const category = this.existingCategories.find(category => category.category_name === categoryName);
