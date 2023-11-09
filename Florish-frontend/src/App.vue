@@ -96,6 +96,8 @@ export default {
 </script>
 
 <style>
+
+
 .app-bar-title {
   text-align: center;
   justify-content: center;
