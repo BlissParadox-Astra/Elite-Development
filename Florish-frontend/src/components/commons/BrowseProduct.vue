@@ -71,6 +71,10 @@ export default {
     SearchField,
   },
 
+  props: {
+    addToCart: Function,
+  },
+
   data() {
     return {
       loading: true,
@@ -104,10 +108,6 @@ export default {
 
   async mounted() {
     await this.debouncedGetProducts();
-  },
-
-  props: {
-    addToCart: Function,
   },
 
   methods: {

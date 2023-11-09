@@ -13,7 +13,8 @@
                             readonly />
                     </v-col>
                     <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <h5 class="text-blue clickable-text" @click="generateAndFetchInvoiceNumber" :disabled="isGeneratingInvoiceNumber">[GENERATE]</h5>
+                        <h5 class="text-blue clickable-text" @click="generateAndFetchInvoiceNumber"
+                            :disabled="isGeneratingInvoiceNumber">[GENERATE]</h5>
                     </v-col>
                     <v-col cols="12" sm="5" lg="3" xl="5">
                         <v-text-field class="ml-15" label="Transaction Date" type="date" variant="plain"
@@ -28,9 +29,10 @@
                         <SearchField class="ml-n6"></SearchField>
                     </v-col>
                     <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <v-btn class="text-blue clickable-text" block @click="showBrowseProductForm" :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
+                        <v-btn class="text-blue clickable-text" block @click="showBrowseProductForm"
+                            :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
                     </v-col>
-                    <v-col cols="12" xl="5" lg="3" class="d-flex align-center">
+                    <!-- <v-col cols="12" xl="5" lg="3" class="d-flex align-center">
                         <v-card class="pa-3 total-card">
                             <v-row class="text-left">
                                 <v-col v-for="(column, index) in headers" :key="index" cols="3">
@@ -38,7 +40,7 @@
                                 </v-col>
                             </v-row>
                         </v-card>
-                    </v-col>
+                    </v-col> -->
                 </v-row>
             </v-col>
         </v-row>
@@ -58,16 +60,21 @@
                             <td>{{ item.barcode }}</td>
                             <td>{{ item.description }}</td>
                             <td>{{ item.price }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <td>
+                                <span v-if="isTransactionPage">
+                                    <span @click="openEditQuantityDialog(item)">{{ item.quantity_added }}</span>
+                                </span>
+                                <span v-else>{{ item.quantity_added }}</span>
+                            </td>
                             <td>{{ item.total }}</td>
                             <td>
                                 <span>
                                     <v-icon @click="subtractProduct(item)">mdi-minus-circle</v-icon>
                                 </span>
-                                <span>
+                                <span style="margin-left: 2px;">
                                     <v-icon @click="addProduct(item)">mdi-plus-circle</v-icon>
                                 </span>
-                                <span>
+                                <span style="margin-left: 2px;">
                                     <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
                                 </span>
                             </td>
@@ -75,13 +82,13 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <button class="pagination-button" @click="previousPage"
-                                :disabled="currentPage === 1">Previous</button>
+                            <v-btn class="pagination-button" @click="previousPage"
+                                :disabled="currentPage === 1">Previous</v-btn>
 
-                            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
-                            </button>
+                            </v-btn>
 
                             <v-btn class="pagination-button" @click="nextPage"
                                 :disabled="currentPage === totalPages">Next</v-btn>
@@ -97,7 +104,7 @@
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="8" md="8" lg="8" xl="10" class="form-container">
-                        <BrowseProduct @close="closeBrowseProductForm" @add-to-cart-product="addToCartProduct" />
+                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" />
                     </v-col>
                 </v-row>
             </v-col>
@@ -110,11 +117,20 @@
                     <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
                 </v-card-text>
                 <v-card-actions class="d-flex justify-center">
-                    <v-btn color="primary" @click="saveEditedQuantity">Save</v-btn>
+                    <v-btn color="primary" @click="saveEditedQuantity"
+                        :disabled="isEditQuantitySaveButtonDisabled">Save</v-btn>
                     <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+            {{ snackbarText }}
+            <template v-slot:actions>
+                <v-btn color="pink" variant="text" @click="snackbar = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
         <v-row class="d-flex justify-space-between">
             <v-col cols="12" sm="6" lg="3" class="text-start">
                 <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
@@ -148,9 +164,13 @@ export default {
             isGeneratingInvoiceNumber: false,
             editedQuantity: 0,
             editingIndex: -1,
+            snackbar: false,
+            isTransactionPage: true,
+            snackbarColor: '',
             loading: false,
             products: [],
             headers: [
+                { title: '#', value: 'index' },
                 { title: "Product Code", key: "product_code" },
                 { title: "Barcode", key: "barcode" },
                 { title: "Description", key: "description" },
@@ -173,6 +193,10 @@ export default {
             } else {
                 return '';
             }
+        },
+
+        isEditQuantitySaveButtonDisabled() {
+            return this.editedQuantity === '' || isNaN(this.editedQuantity);
         },
 
         canBrowseProduct() {
@@ -213,9 +237,9 @@ export default {
                 });
         },
 
-        calculateTotal(total) {
-            return total;
-        },
+        // calculateTotal(total) {
+        //     return total;
+        // },
 
         showBrowseProductForm() {
             this.showBrowseProduct = true;
@@ -225,58 +249,131 @@ export default {
             this.showBrowseProduct = false;
         },
 
-        addToCartProduct(product) {
-            console.log("Adding to cart:", product);
-            this.products.push;
-        },
+        calculateTotal(product) {
+            const quantity = parseFloat(product.quantity_added);
+            const price = parseFloat(product.price);
 
-        deleteProductRow(product) {
-            const index = this.products.findIndex(p => p.productCode === product.productCode);
-            if (index !== -1) {
-                this.products.splice(index, 1);
+            if (!isNaN(quantity) && !isNaN(price)) {
+                return quantity * price;
+            } else {
+                return 0;
             }
         },
 
-        openEditQuantityDialog(index) {
-            // Set editingIndex and editedQuantity based on the clicked row
-            this.editingIndex = index;
-            this.editedQuantity = this.products[index].quantity;
-            this.showEditQuantityDialog = true; // Open the dialog
+        addToCartProduct(product) {
+            const existingProduct = this.products.find(p => p.product_code === product.product_code);
+            if (existingProduct) {
+                existingProduct.quantity_added++;
+                existingProduct.total = this.calculateTotal(existingProduct);
+            } else {
+                const newProduct = {
+                    id: product.id,
+                    product_code: product.product_code,
+                    barcode: product.barcode,
+                    description: product.description,
+                    price: product.price,
+                    quantity_added: 1,
+                    total: product.price * 1, 
+                };
+                this.products.push(newProduct);
+                this.loading.false;
+            }
+            this.totalItems = this.products.length;
+        },
+
+        openEditQuantityDialog(item) {
+            this.editingIndex = this.products.indexOf(item);
+            this.editedQuantity = item.quantity_added;
+            this.showEditQuantityDialog = true;
         },
 
         saveEditedQuantity() {
             if (this.editingIndex !== -1) {
-                this.products[this.editingIndex].quantity = this.editedQuantity;
+                const editedProduct = this.products[this.editingIndex];
+                editedProduct.quantity_added = this.editedQuantity;
+
+                editedProduct.total = this.calculateTotal(editedProduct);
+
                 this.showEditQuantityDialog = false;
                 this.editingIndex = -1;
                 this.editedQuantity = 0;
+                this.snackbarColor = 'success';
+                this.showSnackbar('Quantity updated successfully', 'success');
+            } else {
+                console.error('Editing index is invalid');
+                this.snackbarColor = 'error';
+                this.showSnackbar('Failed to update quantity. Please try again later.', 'error');
             }
         },
 
         closeEditQuantityDialog() {
             this.showEditQuantityDialog = false;
             this.editingIndex = -1;
-            this.editedQuantity = 0
-                ;
+            this.editedQuantity = 0;
         },
+
+        deleteProductRow(item) {
+            const index = this.products.indexOf(item);
+            if (index !== -1) {
+                this.products.splice(index, 1);
+                this.totalItems = this.products.length;
+                this.snackbarColor = 'success';
+                this.showSnackbar('Successfully removed product from cart');
+            } else {
+                this.snackbarColor = 'error';
+                this.showSnackbar('Error removing product from cart');
+            }
+        },
+
+        showDeleteConfirmation(item) {
+            this.itemToDelete = item;
+            this.deleteProductRow(item);
+        },
+
+        // deleteProductRow(product) {
+        //     const index = this.products.findIndex(p => p.productCode === product.productCode);
+        //     if (index !== -1) {
+        //         this.products.splice(index, 1);
+        //     }
+        // },
+
+        // openEditQuantityDialog(index) {
+        //     // Set editingIndex and editedQuantity based on the clicked row
+        //     this.editingIndex = index;
+        //     this.editedQuantity = this.products[index].quantity;
+        //     this.showEditQuantityDialog = true; // Open the dialog
+        // },
+
+        // saveEditedQuantity() {
+        //     if (this.editingIndex !== -1) {
+        //         this.products[this.editingIndex].quantity = this.editedQuantity;
+        //         this.showEditQuantityDialog = false;
+        //         this.editingIndex = -1;
+        //         this.editedQuantity = 0;
+        //     }
+        // },
+
+        // closeEditQuantityDialog() {
+        //     this.showEditQuantityDialog = false;
+        //     this.editingIndex = -1;
+        //     this.editedQuantity = 0
+        //         ;
+        // },
 
         previousPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                // this.getBrands();
             }
         },
 
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                // this.getBrands();
             }
         },
 
         gotoPage(pageNumber) {
             this.currentPage = pageNumber;
-            // this.getBrands();
         },
 
         showSnackbar(text, color, timeout = 3000) {
@@ -292,6 +389,8 @@ export default {
         hideSnackbar() {
             this.snackbar = false;
         },
+
+
     },
 }
 </script>
@@ -330,5 +429,26 @@ export default {
 
 .clickable-text {
     cursor: pointer;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-button {
+    padding: 6px 12px;
+    margin: 0 4px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
 }
 </style>
