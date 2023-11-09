@@ -17,7 +17,7 @@
       <v-col cols="12">
         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-          @update:options="getProducts" fixed-header height="400">
+          @update:options="debouncedGetProducts" fixed-header height="400">
           <template v-slot:custom-sort="{ header }">
             <span v-if="header.key === 'actions'">Actions</span>
           </template>
@@ -36,15 +36,15 @@
             </tr>
           </template>
           <template v-slot:bottom>
-            <div class="text-center pt-2">
-              <button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+            <div class="text-center pt-8 pagination">
+              <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
 
-              <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
-                :class="{ active: pageNumber === currentPage }">
+              <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                :class="{ active: pageNumber === currentPage }" class="pagination-button">
                 {{ pageNumber }}
-              </button>
+              </v-btn>
 
-              <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+              <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
             </div>
           </template>
         </v-data-table>
@@ -63,6 +63,7 @@
 
 <script>
 import SearchField from "../commons/SearchField.vue";
+import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
@@ -102,7 +103,7 @@ export default {
   },
 
   async mounted() {
-    await this.getProducts();
+    await this.debouncedGetProducts();
   },
 
   props: {
@@ -110,6 +111,10 @@ export default {
   },
 
   methods: {
+    debouncedGetProducts: _debounce(function () {
+      this.getProducts();
+    }, 3000),
+
     getProducts() {
       this.loading = true;
       axios
@@ -129,22 +134,25 @@ export default {
     },
 
     previousPage() {
+      this.loading = true;
       if (this.currentPage > 1) {
         this.currentPage--;
-        this.getProducts();
+        this.debouncedGetProducts();
       }
     },
 
     nextPage() {
+      this.loading = true;
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
-        this.getProducts();
+        this.debouncedGetProducts();
       }
     },
 
     gotoPage(pageNumber) {
+      this.loading = true;
       this.currentPage = pageNumber;
-      this.getProducts();
+      this.debouncedGetProducts();
     },
 
     addToCartProduct(product) {
@@ -192,5 +200,26 @@ export default {
   top: 25px;
   right: 20px;
   z-index: 999;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 </style>

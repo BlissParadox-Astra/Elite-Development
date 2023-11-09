@@ -22,7 +22,7 @@
         <v-col cols="12">
           <v-data-table :headers="headers" :items="transactions" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="getTransactions" fixed-header height="400">
+            @update:options="debouncedGetTransactions" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -30,10 +30,10 @@
               <tr>
                 <td>{{ displayedIndex + index }}</td>
                 <td>{{ item.invoice_number }}</td>
-                <td>{{ item.product_code ? item.transacted_product.product_code : 'Unknown product code' }}</td>
-                <td>{{ item.barcode ? item.transacted_product.barcode : 'Unknown barcode' }}</td>
-                <td>{{ item.description ? item.transacted_product.description : 'Unknown description' }}</td>
-                <td>{{ item.category_name ? item.transacted_product.category.category_name : 'Unknown description' }}</td>
+                <td>{{ item.transacted_product.product_code }}</td>
+                <td>{{ item.transacted_product.barcode }}</td>
+                <td>{{ item.transacted_product.description }}</td>
+                <td>{{ item.transacted_product.category.category_name }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.total }}</td>
@@ -43,12 +43,12 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <button class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</button>
+                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
 
-                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
-                </button>
+                </v-btn>
 
                 <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
               </div>
@@ -69,8 +69,9 @@
 </template>
   
 <script>
-import axios from "axios";
 import FilterByDate from "../../commons/FilterByDate.vue";
+import _debounce from 'lodash/debounce';
+import axios from "axios";
 
 export default {
   name: "SalesHistory",
@@ -124,10 +125,14 @@ export default {
   },
 
   async mounted() {
-    await this.getTransactions();
+    await this.debouncedGetTransactions();
   },
 
   methods: {
+    debouncedGetTransactions: _debounce(function () {
+      this.getTransactions();
+    }, 3000),
+
     getTransactions() {
       this.loading = true;
       axios
@@ -145,34 +150,37 @@ export default {
     },
 
     previousPage() {
+      this.loading = true;
       if (this.currentPage > 1) {
         this.currentPage--;
-        this.getTransactions();
+        this.debouncedGetTransactions();
       }
     },
 
     nextPage() {
+      this.loading = true;
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
-        this.getTransactions();
+        this.debouncedGetTransactions();
       }
     },
 
     gotoPage(pageNumber) {
+      this.loading = true;
       this.currentPage = pageNumber;
-      this.getTransactions();
+      this.debouncedGetTransactions();
     },
 
-    renderProductCode(transactions) {
-      return transactions.transacted_product ? transactions.transacted_product.product_code : 'Unknown';
+    renderProductCode(transacted_product) {
+      return transacted_product.transacted_product ? transacted_product.transacted_product.product_code : 'Unknown';
     },
 
-    renderBarCode(transactions) {
-      return transactions.transacted_product ? transactions.transacted_product.barcode : 'Unknown';
+    renderBarCode(transacted_product) {
+      return transacted_product.transacted_product ? transacted_product.transacted_product.barcode : 'Unknown';
     },
 
-    renderDescription(transactions) {
-      return transactions.transacted_product ? transactions.transacted_product.description : 'Unknown';
+    renderDescription(transacted_product) {
+      return transacted_product.transacted_product ? transacted_product.transacted_product.description : 'Unknown';
     },
 
     renderProductCategory(transactions) {
@@ -208,6 +216,7 @@ export default {
   font-weight: bold;
   color: #333;
 }
+
 .pagination {
   display: flex;
   align-items: center;

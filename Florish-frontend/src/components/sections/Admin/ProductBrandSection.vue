@@ -13,7 +13,7 @@
         <v-col cols="12">
           <v-data-table :headers="headers" :items="brands" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="getBrands" fixed-header height="400">
+            @update:options="debouncedGetBrands" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -33,12 +33,12 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <button class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</button>
+                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
 
-                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
-                </button>
+                </v-btn>
 
                 <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
               </div>
@@ -73,6 +73,7 @@
 import SearchField from "../../commons/SearchField.vue";
 import BrandForm from "../../forms/BrandForm.vue";
 import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
+import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
@@ -119,10 +120,14 @@ export default {
     this.loadingCategories = true;
     await this.fetchCategories();
     this.loadingCategories = false;
-    await this.getBrands();
+    await this.debouncedGetBrands();
   },
 
   methods: {
+    debouncedGetBrands: _debounce(function () {
+      this.getBrands();
+    }, 3000),
+
     getBrands() {
       this.loading = true;
       axios
@@ -153,22 +158,25 @@ export default {
     },
 
     previousPage() {
+      this.loading = true;
       if (this.currentPage > 1) {
         this.currentPage--;
-        this.getBrands();
+        this.debouncedGetBrands();
       }
     },
 
     nextPage() {
+      this.loading = true;
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
-        this.getBrands();
+        this.debouncedGetBrands();
       }
     },
 
     gotoPage(pageNumber) {
+      this.loading = true;
       this.currentPage = pageNumber;
-      this.getBrands();
+      this.debouncedGetBrands();
     },
 
     async addBrand(brandData) {
@@ -193,7 +201,6 @@ export default {
 
     editBrandRow(brand) {
       const category = this.existingCategories.find(category => category.category_name === brand.category.category_name);
-
       if (category) {
         this.editingBrand = {
           ...brand,
@@ -220,7 +227,6 @@ export default {
 
     async updateBrand(brandData) {
       try {
-        console.log(brandData.id)
         const response = await axios.put(`/brand/${brandData.id}`, brandData);
         if (response.status === 200) {
           this.brands[this.index] = brandData;
@@ -258,6 +264,7 @@ export default {
             }
             this.$refs.deleteConfirmationDialog.closeDialog();
             this.showSnackbar(response.data.message, 'success');
+            this.getBrands();
           })
           .catch((error) => {
             if (error.response.data.error === 'Cannot delete brand. In use by other records.') {
@@ -267,7 +274,6 @@ export default {
             }
           });
       }
-      this.getBrands();
     },
 
     showDeleteConfirmation(item) {
@@ -332,6 +338,7 @@ export default {
 .custom-table {
   height: 500px;
 }
+
 .pagination {
   display: flex;
   align-items: center;

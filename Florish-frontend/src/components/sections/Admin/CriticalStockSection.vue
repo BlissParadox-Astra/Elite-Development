@@ -9,7 +9,7 @@
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="getCriticalStocks" fixed-header height="400">
+                    @update:options="debouncedGetCriticalStocks" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
@@ -28,13 +28,13 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <button class="pagination-button" @click="previousPage"
-                                :disabled="currentPage === 1">Previous</button>
+                            <v-btn class="pagination-button" @click="previousPage"
+                                :disabled="currentPage === 1">Previous</v-btn>
 
-                            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
-                            </button>
+                            </v-btn>
 
                             <v-btn class="pagination-button" @click="nextPage"
                                 :disabled="currentPage === totalPages">Next</v-btn>
@@ -48,6 +48,7 @@
   
 <script>
 import SearchField from '../../commons/SearchField.vue';
+import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
@@ -91,10 +92,14 @@ export default {
     },
 
     async mounted() {
-        await this.getCriticalStocks();
+        await this.debouncedGetCriticalStocks();
     },
 
     methods: {
+        debouncedGetCriticalStocks: _debounce(function () {
+            this.getCriticalStocks();
+        }, 3000),
+
         getCriticalStocks() {
             this.loading = true;
             axios
@@ -114,22 +119,25 @@ export default {
                 });
         },
         previousPage() {
+            this.loading = true;
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.getCriticalStocks();
+                this.debouncedGetCriticalStocks();
             }
         },
 
         nextPage() {
+            this.loading = true;
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.getCriticalStocks();
+                this.debouncedGetCriticalStocks();
             }
         },
 
         gotoPage(pageNumber) {
+            this.loading = true;
             this.currentPage = pageNumber;
-            this.getCriticalStocks();
+            this.debouncedGetCriticalStocks();
         },
     },
 

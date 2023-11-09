@@ -25,7 +25,6 @@ class TransactionRequest extends FormRequest
             'transaction_requests' => 'required|array',
             'transactions.*.invoice_number' => 'required|string',
             'transactions.*.product_id' => 'required|exists:products,id',
-            'transactions.*.price' => 'required|numeric|min:0',
             'transactions.*.quantity' => 'required|integer|min:1',
         ];
     }

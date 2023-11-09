@@ -10,7 +10,7 @@
         <v-col cols="12">
           <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="getProducts" fixed-header height="400">
+            @update:options="debouncedGetProducts" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -34,16 +34,17 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <button class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</button>
+                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
 
-                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
-                </button>
+                </v-btn>
 
                 <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
+
           </v-data-table>
         </v-col>
       </v-row>
@@ -122,6 +123,7 @@
 <script>
 import SearchField from "../../commons/SearchField.vue";
 import { mapState } from 'vuex';
+import _debounce from 'lodash/debounce';
 import axios from 'axios'
 
 export default {
@@ -221,11 +223,15 @@ export default {
   },
 
   async mounted() {
-    await this.getProducts();
+    await this.debouncedGetProducts();
     this.validateQuantity();
   },
 
   methods: {
+    debouncedGetProducts: _debounce(function () {
+      this.getProducts();
+    }, 3000),
+
     getProducts() {
       this.loading = true;
       axios
@@ -246,22 +252,25 @@ export default {
         });
     },
     previousPage() {
+      this.loading = true;
       if (this.currentPage > 1) {
         this.currentPage--;
-        this.getProducts();
+        this.debouncedGetProducts();
       }
     },
 
     nextPage() {
+      this.loading = true;
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
-        this.getProducts();
+        this.debouncedGetProducts();
       }
     },
 
     gotoPage(pageNumber) {
+      this.loading = true;
       this.currentPage = pageNumber;
-      this.getProducts();
+      this.debouncedGetProducts();
     },
 
     async saveStockAdjustment() {

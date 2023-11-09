@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TransactionRequest;
 use App\Managers\TransactionManager;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use App\Http\Requests\TransactionRequest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
@@ -24,8 +24,9 @@ class TransactionController extends Controller
     {
         try {
             $page = $request->input('page');
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $transactions = $this->transactionManager->getAllTransactions($page);
+            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage);
 
             return response()->json([
                 'transactions' => $transactions->items(),
@@ -68,7 +69,11 @@ class TransactionController extends Controller
             $validatedData = $request->validated();
 
             foreach ($validatedData['transaction_requests'] as $transactionRequest) {
-                $this->transactionManager->createTransaction($transactionRequest);
+                try {
+                    $this->transactionManager->createTransaction($transactionRequest);
+                } catch (\Exception $e) {
+                    return response()->json(['error' => $e->getMessage()], 400);
+                }
             }
 
             return response()->json(['message' => 'Transaction records created successfully']);

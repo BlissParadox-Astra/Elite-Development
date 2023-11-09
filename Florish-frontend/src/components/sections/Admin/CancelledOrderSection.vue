@@ -9,7 +9,7 @@
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="canceled_orders" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="getCanceledOrders" fixed-header height="400">
+                    @update:options="debouncedGetCanceledOrders" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
@@ -31,13 +31,13 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <button class="pagination-button" @click="previousPage"
-                                :disabled="currentPage === 1">Previous</button>
+                            <v-btn class="pagination-button" @click="previousPage"
+                                :disabled="currentPage === 1">Previous</v-btn>
 
-                            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
-                            </button>
+                            </v-btn>
 
                             <v-btn class="pagination-button" @click="nextPage"
                                 :disabled="currentPage === totalPages">Next</v-btn>
@@ -50,8 +50,9 @@
 </template>
   
 <script>
-import axios from 'axios';
 import SearchField from '../../commons/SearchField.vue';
+import _debounce from 'lodash/debounce';
+import axios from 'axios';
 
 export default {
     name: 'CancelOrderSection',
@@ -97,11 +98,16 @@ export default {
     },
 
     async mounted() {
-        await this.getCanceledOrders();
+        await this.debouncedGetCanceledOrders();
     },
 
     methods: {
+        debouncedGetCanceledOrders: _debounce(function () {
+            this.getCanceledOrders();
+        }, 3000),
+
         getCanceledOrders() {
+            this.loading = true;
             axios
                 .get('/canceled-orders', {
                     params: {
@@ -116,23 +122,27 @@ export default {
                 });
         },
         previousPage() {
+            this.loading = true;
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.getCanceledOrders();
+                this.debouncedGetCanceledOrders();
             }
         },
 
         nextPage() {
+            this.loading = true;
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.getCanceledOrders();
+                this.debouncedGetCanceledOrders();
             }
         },
 
         gotoPage(pageNumber) {
+            this.loading = true;
             this.currentPage = pageNumber;
-            this.getCanceledOrders();
+            this.debouncedGetCanceledOrders();
         },
+        
         renderReferenceNUmber(canceled_order) {
             return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.invoice_number : 'Unknown';
         },

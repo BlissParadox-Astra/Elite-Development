@@ -10,7 +10,7 @@
                 <v-col cols="12">
                     <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
                         :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
-                        hide-default-footer @update:options="getStockAdjustments" fixed-header height="400">
+                        hide-default-footer @update:options="debouncedStockAdjustments" fixed-header height="400">
                         <template v-slot:custom-sort="{ header }">
                             <span v-if="header.key === 'actions'">Actions</span>
                         </template>
@@ -50,6 +50,7 @@
 
 <script>
 import SearchField from "../../commons/SearchField.vue";
+import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
@@ -89,10 +90,14 @@ export default {
     },
 
     async mounted() {
-        await this.getStockAdjustments();
+        await this.debouncedStockAdjustments();
     },
 
     methods: {
+        debouncedStockAdjustments: _debounce(function () {
+            this.getStockAdjustments();
+        }, 3000),
+        
         getStockAdjustments() {
             this.loading = true;
             axios
@@ -112,22 +117,25 @@ export default {
                 });
         },
         previousPage() {
+            this.loading = true;
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.getStockAdjustments();
+                this.debouncedStockAdjustments();
             }
         },
 
         nextPage() {
+            this.loading = true;
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.getStockAdjustments();
+                this.debouncedStockAdjustments();
             }
         },
 
         gotoPage(pageNumber) {
+            this.loading = true;
             this.currentPage = pageNumber;
-            this.getStockAdjustments();
+            this.debouncedStockAdjustments();
         },
 
         renderProductCode(adjusted_product) {

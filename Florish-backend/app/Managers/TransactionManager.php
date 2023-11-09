@@ -14,25 +14,25 @@ class TransactionManager
         $transactionBy = Auth::id();
         $transactionDate = now()->format("Y-m-d H:i:s");
 
-        $total = $transactionRequest['price'] * $transactionRequest['quantity'];
+        $product = Product::findOrFail($transactionRequest['product_id']);
+        $total = $product->price * $transactionRequest['quantity'];
 
         $transactionData = [
             'invoice_number' => $transactionRequest['invoice_number'],
             'user_id' => $transactionBy,
             'transaction_date' => $transactionDate,
             'product_id' => $transactionRequest['product_id'],
-            'price' => $transactionRequest['price'],
+            'price' => $product->price,
             'quantity' => $transactionRequest['quantity'],
             'total' => $total,
         ];
-
-        Transaction::create($transactionData);
 
         $product = Product::findOrFail($transactionRequest['product_id']);
         if ($transactionRequest['quantity'] > $product->stock_on_hand) {
             throw new \Exception('Cannot sell more products than available in stock.');
         } else {
             $product->decrementStockOnHand($transactionRequest['quantity']);
+            Transaction::create($transactionData);
             $product->save();
         }
     }
@@ -44,9 +44,9 @@ class TransactionManager
         return "{$timestamp}{$randomNumber}";
     }
 
-    public function getAllTransactions($page)
+    public function getAllTransactions($page, $itemsPerPage)
     {
-        return Transaction::with(['transactedProduct.category', 'user'])->paginate(3000, ['*'], 'page', $page);
+        return Transaction::with(['transactedProduct.category', 'user'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getDailyTransactions()
