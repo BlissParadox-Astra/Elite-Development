@@ -1,11 +1,8 @@
 <?php
 
-
 namespace App\Http\Requests;
 
-
 use Illuminate\Foundation\Http\FormRequest;
-
 
 class CategoryRequest extends FormRequest
 {
@@ -17,7 +14,6 @@ class CategoryRequest extends FormRequest
         return true;
     }
 
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,13 +22,13 @@ class CategoryRequest extends FormRequest
     public function rules()
     {
         $rules = [
-        'category_name' => 'required|unique:categories,category_name',
+            'category_name' => 'required|unique:categories,category_name',
         ];
 
         if ($this->isMethod('PUT')) {
-            $rules = [
-                'category_name' => 'required'
-            ];
+            $rules = array_merge($rules = [
+                'category_name' => 'required',
+            ]);
         }
         return $rules;
     }

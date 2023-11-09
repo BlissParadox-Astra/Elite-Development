@@ -1,7 +1,7 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ props }">
-      <v-avatar v-bind="props" size="40" class="text-center">
+      <v-avatar v-bind="props" size="40" class="text-center clickable-avatar">
         <v-img src="../../assets/assets/profileIcon.png" alt="Profile" contain></v-img>
       </v-avatar>
     </template>
@@ -14,7 +14,6 @@
         <v-card-subtitle class="caption">Member since August 12, 2023</v-card-subtitle>
       </v-card-text>
       <v-card-actions class="justify-center">
-        <v-btn color="primary" class="mr-4">Profile</v-btn>
         <v-btn color="error" @click="logout">Logout</v-btn>
       </v-card-actions>
     </v-card>
@@ -63,5 +62,8 @@ export default {
   text-align: center;
   font-size: 14px;
   font-weight: bold;
+}
+.clickable-avatar {
+  cursor: pointer;
 }
 </style>

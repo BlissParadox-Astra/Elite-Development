@@ -29,11 +29,51 @@
                     </v-row>
                 </v-col>
             </v-row>
-            <CustomTable :columns="tableColumns" :items="products" :showDeleteIcon="true" :isStockEntryPage="true"
-                @delete-data="showDeleteConfirmation" @edit-quantity="openEditQuantityDialog"
-                @add-to-cart-product="addToCartProduct" :reference_number="reference_number" :stock_in_date="stock_in_date"
-                :stock_in_by="stock_in_by" height="450px" />
-            <DeleteConfirmationDialog @confirm-delete="deleteProductRow" ref="deleteConfirmationDialog" />
+            <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
+                :items-per-page="itemsPerPage" density="compact" :reference_number="reference_number"
+                :stock_in_date="stock_in_date" :stock_in_by="stock_in_by" item-value="id" class="elevation-1"
+                hide-default-footer fixed-header height="400">
+                <template v-slot:custom-sort="{ header }">
+                    <span v-if="header.key === 'actions'">Actions</span>
+                </template>
+                <template v-slot:item="{ item, index }">
+                    <tr>
+                        <td>{{ displayedIndex + index }}</td>
+                        <td>{{ item.reference_number }}</td>
+                        <td>{{ item.product_code }}</td>
+                        <td>{{ item.barcode }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>
+                            <span v-if="isStockEntryPage">
+                                <span @click="openEditQuantityDialog(item)">{{ item.quantity_added }}</span>
+                            </span>
+                            <span v-else>{{ item.quantity_added }}</span>
+                        </td>
+                        <td>{{ item.stock_in_date }}</td>
+                        <td>{{ item.stock_in_by }}</td>
+                        <td>
+                            <span style="margin-left: 2px;">
+                                <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                            </span>
+                        </td>
+                    </tr>
+                </template>
+                <template v-slot:bottom>
+                    <div class="text-center pt-8 pagination">
+                        <button class="pagination-button" @click="previousPage"
+                            :disabled="currentPage === 1">Previous</button>
+
+                        <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                            {{ pageNumber }}
+                        </button>
+
+                        <v-btn class="pagination-button" @click="nextPage"
+                            :disabled="currentPage === totalPages">Next</v-btn>
+                    </div>
+                </template>
+            </v-data-table>
+            <!-- <DeleteConfirmationDialog @confirm-delete="deleteProductRow" ref="deleteConfirmationDialog" /> -->
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
                     <v-btn color="success" @click="showConfirmation" style="width: 150px;"
@@ -73,43 +113,59 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+                {{ snackbarText }}
+                <template v-slot:actions>
+                    <v-btn color="pink" variant="text" @click="snackbar = false">
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
         </v-container>
     </v-main>
 </template>
 
 <script>
-import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
-import CustomTable from '../../commons/CustomTable.vue';
+// import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import BrowseProduct from '../../commons/BrowseProduct.vue';
 import { VIcon } from "vuetify/lib/components";
 import { mapState } from 'vuex';
 import axios from 'axios';
 export default {
     components: {
-        CustomTable,
         BrowseProduct,
-        DeleteConfirmationDialog,
+        // DeleteConfirmationDialog,
         VIcon,
     },
     data() {
         return {
+            itemsPerPage: 10,
+            currentPage: 1,
+            id: 1,
+            totalItems: 0,
             showEditQuantityDialog: false,
             showConfirmationDialog: false,
             showBrowseProduct: false,
             isGeneratingReferenceNumber: false,
             products: [],
+            loading: false,
             editedQuantity: 0,
             editingIndex: -1,
             reference_number: '',
             stock_in_date: '',
-            tableColumns: [
-                { key: "reference_number", label: "Reference No." },
-                { key: 'product_code', label: 'Product Code' },
-                { key: 'barcode', label: 'Bar Code' },
-                { key: "description", label: "Description" },
-                { key: "quantity_added", label: "Quantity" },
-                { key: "stock_in_date", label: "Stock In Date" },
-                { key: "stock_in_by", label: "Stock In By" },
+            isStockEntryPage: true,
+            snackbar: false,
+            snackbarColor: '',
+            headers: [
+                { title: '#', value: 'index' },
+                { title: 'Reference No.', key: 'reference_number' },
+                { title: 'Product Code', key: 'product_code' },
+                { title: 'Barcode', key: 'barcode' },
+                { title: 'Description', key: 'description' },
+                { title: 'Quantity', key: 'quantity_added' },
+                { title: 'Stock In Date', key: 'stock_in_date' },
+                { title: 'Stock In By', key: 'stock_in_by' },
+                { title: 'Actions', key: 'actions', sortable: false }
             ],
         };
     },
@@ -137,7 +193,14 @@ export default {
 
         isSaveButtonDisabled() {
             return this.reference_number === '' || this.stock_in_date === '' || this.stock_in_by === '' || this.products.length === 0;
-        }
+        },
+
+        displayedIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage + 1;
+        },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
     },
 
     created() {
@@ -151,6 +214,7 @@ export default {
             const day = today.getDate();
             this.stock_in_date = `${year}-${month}-${day}`;
         }
+        this.totalItems = this.products.length;
     },
 
     methods: {
@@ -166,33 +230,29 @@ export default {
         },
 
         addToCartProduct(product) {
-            const reference_number = this.reference_number;
-            const stock_in_date = this.stock_in_date;
-            const stock_in_by = this.stock_in_by;
-
-            const product_id = product.product_id;
-
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
-            if (existingProduct !== undefined) {
+            if (existingProduct) {
                 existingProduct.quantity_added++;
             } else {
                 const newProduct = {
+                    id: product.id,
                     product_code: product.product_code,
                     barcode: product.barcode,
-                    quantity_added: 1,
                     description: product.description,
-                    reference_number,
-                    stock_in_date,
-                    stock_in_by,
-                    product_id,
+                    reference_number: this.reference_number,
+                    quantity_added: 1,
+                    stock_in_date: this.stock_in_date,
+                    stock_in_by: this.stock_in_by,
                 };
                 this.products.push(newProduct);
+                this.loading = false;
+                this.totalItems = this.products.length;
             }
         },
 
-        openEditQuantityDialog(index) {
-            this.editingIndex = index;
-            this.editedQuantity = this.products[index].quantity_added;
+        openEditQuantityDialog(item) {
+            this.editingIndex = this.products.indexOf(item);
+            this.editedQuantity = item.quantity_added;
             this.showEditQuantityDialog = true;
         },
 
@@ -202,8 +262,12 @@ export default {
                 this.showEditQuantityDialog = false;
                 this.editingIndex = -1;
                 this.editedQuantity = 0;
+                this.snackbarColor = 'success';
+                this.showSnackbar('Quantity updated successfully', 'success');
             } else {
                 console.error('Editing index is invalid');
+                this.snackbarColor = 'error';
+                this.showSnackbar('Failed to update quantity. Please try again later.', 'error');
             }
         },
 
@@ -213,18 +277,27 @@ export default {
             this.editedQuantity = 0;
         },
 
-        deleteProductRow(product_code) {
-            const index = this.products.find(p => p.product_code === product_code);
+        deleteProductRow(item) {
+            const index = this.products.indexOf(item);
             if (index !== -1) {
-                this.products.splice(index, 1); 
+                this.products.splice(index, 1);
+                this.totalItems = this.products.length;
+                this.snackbarColor = 'success';
+                this.showSnackbar('Successfully removed product from cart');
             } else {
-                console.error(`Product with product code "${product_code}" not found.`);
+                this.snackbarColor = 'error';
+                this.showSnackbar('Error removing product from cart');
             }
         },
 
+        // showDeleteConfirmation(item) {
+        //     this.itemToDelete = item;
+        //     this.$refs.deleteConfirmationDialog.showConfirmationDialog(item);
+        // },
+
         showDeleteConfirmation(item) {
             this.itemToDelete = item;
-            this.$refs.deleteConfirmationDialog.showConfirmationDialog();
+            this.deleteProductRow(item);
         },
 
         saveRecord() {
@@ -234,7 +307,7 @@ export default {
                     reference_number: this.reference_number,
                     stock_in_date: this.stock_in_date,
                     stock_in_by: this.stock_in_by,
-                    product_id: product.product_id,
+                    product_id: product.id,
                     quantity_added: product.quantity_added,
                 };
             });
@@ -246,14 +319,34 @@ export default {
             axios
                 .post("/stock-in", stockInData)
                 .then(() => {
-                    console.log("Stock-In records saved successfully");
                     this.resetData();
                     this.isGeneratingReferenceNumber = false;
+                    this.totalItems = this.products.length;
+                    this.snackbarColor = 'success';
+                    this.showSnackbar('Stock-In records saved successfully', 'success');
                 })
                 .catch((error) => {
                     console.error("Error saving Stock-In records", error);
                     this.isGeneratingReferenceNumber = true;
+                    this.snackbarColor = 'error';
+                    this.showSnackbar('Failed to save Stock-In records. Please try again later.', 'error');
                 });
+        },
+
+        previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
+        },
+
+        gotoPage(pageNumber) {
+            this.currentPage = pageNumber;
         },
 
         showConfirmation() {
@@ -275,7 +368,21 @@ export default {
         resetData() {
             this.products = [];
             this.reference_number = '';
-        }
+        },
+
+        showSnackbar(text, color, timeout = 3000) {
+            this.snackbarText = text;
+            this.snackbarColor = color;
+            this.snackbar = true;
+
+            setTimeout(() => {
+                this.hideSnackbar();
+            }, timeout);
+        },
+
+        hideSnackbar() {
+            this.snackbar = false;
+        },
     },
 };
 </script>
@@ -292,5 +399,25 @@ export default {
     position: fixed;
     left: 30%;
     right: 15%;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 </style>

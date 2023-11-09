@@ -21,7 +21,7 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'barcode' => 'required|string|max:39|unique:products,barcode',
             'description' => 'required|string|max:1000|min:5',
             'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0',
@@ -30,5 +30,13 @@ class ProductRequest extends FormRequest
             'category_id' => 'required|integer|exists:categories,id',
             'brand_id' => 'required|integer|exists:brands,id',
         ];
+
+        if ($this->isMethod('PUT')) {
+            $rules = array_merge($rules, [
+                'barcode' => 'required|string|max:39'
+            ]);
+        }
+
+        return $rules;
     }
 }
