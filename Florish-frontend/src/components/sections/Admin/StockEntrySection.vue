@@ -160,7 +160,7 @@ export default {
                 { title: '#', value: 'index' },
                 { title: 'Reference No.', key: 'reference_number' },
                 { title: 'Product Code', key: 'product_code' },
-                { title: 'Bar Code', key: 'barcode' },
+                { title: 'Barcode', key: 'barcode' },
                 { title: 'Description', key: 'description' },
                 { title: 'Quantity', key: 'quantity_added' },
                 { title: 'Stock In Date', key: 'stock_in_date' },
@@ -336,20 +336,17 @@ export default {
         previousPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                // this.getBrands();
             }
         },
 
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                // this.getBrands();
             }
         },
 
         gotoPage(pageNumber) {
             this.currentPage = pageNumber;
-            // this.getBrands();
         },
 
         showConfirmation() {

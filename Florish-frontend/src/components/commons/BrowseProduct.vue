@@ -189,11 +189,9 @@ export default {
   z-index: 999;
 }
 
-
 .custom-table {
   height: 445px;
 }
-
 
 .close-button {
   position: absolute;

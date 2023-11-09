@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class TransactionController extends Controller
 {
@@ -141,5 +142,12 @@ class TransactionController extends Controller
             ->get();
 
         return response()->json(['monthlyEarnings' => $monthlyEarnings], 200);
+    }
+
+    public function generateInvoiceNumber()
+    {
+        $invoiceNumber = $this->transactionManager->generateInvoiceNumber();
+
+        return response()->json(['transaction_number' => $invoiceNumber]);
     }
 }

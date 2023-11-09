@@ -37,8 +37,8 @@ class CanceledOrderManager
             }
 
             $transaction['total'] -= $canceledTotal;
-            $transaction->save();
             CanceledOrder::create($canceledOrderData);
+            $transaction->save();
         } else {
             throw new \Exception('Something went wrong.');
         }

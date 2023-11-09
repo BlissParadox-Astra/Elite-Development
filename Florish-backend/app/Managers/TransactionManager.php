@@ -44,6 +44,38 @@ class TransactionManager
         return "{$timestamp}{$randomNumber}";
     }
 
+    // public function generateInvoiceNumber(): string
+    // {
+    //     $timestamp = now()->format('YmdHis');
+    //     $lastSequentialNumber = $this->getLastSequentialNumberFromDatabase();
+    //     $nextSequentialNumber = $lastSequentialNumber + 1;
+    //     $paddedSequentialNumber = str_pad($nextSequentialNumber, 2, '0', STR_PAD_LEFT);
+    //     $this->saveSequentialNumberToDatabase($nextSequentialNumber);
+    //     $invoiceNumber = "{$timestamp}{$paddedSequentialNumber}";
+    //     return $invoiceNumber;
+    // }
+
+    // public function getLastSequentialNumberFromDatabase()
+    // {
+    //     $lastRecord = DB::connection('mysql')
+    //         ->table('transactions')
+    //         ->orderBy('id', 'desc')
+    //         ->first();
+
+    //     if ($lastRecord) {
+    //         return $lastRecord->id;
+    //     }
+
+    //     return 0;
+    // }
+
+    // public function saveSequentialNumberToDatabase($nextSequentialNumber)
+    // {
+    //     DB::connection('mysql')
+    //         ->table('transactions')
+    //         ->insert(['id' => $nextSequentialNumber]);
+    // }
+
     public function getAllTransactions($page, $itemsPerPage)
     {
         return Transaction::with(['transactedProduct.category', 'user'])->paginate($itemsPerPage, ['*'], 'page', $page);

@@ -26,6 +26,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
@@ -64,7 +65,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Group for product routes
     Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     Route::get('/critical-stock-count', [ProductController::class, 'getCriticalStockCount'])->name('critical-stock-count.getCriticalStockCount');
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
         Route::get('/total-stock', [ProductController::class,'getTotalStockOnHand'])->name('total-stock.getTotalStockOnHand');
@@ -97,11 +98,12 @@ Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
     // Group for transaction routes
     Route::prefix('/transaction')->group(function () {
         Route::post('/', [TransactionController::class, 'store'])->name('transactions.store');
+        Route::get('/generate-invoice-number', [TransactionController::class, 'generateInvoiceNumber'])->name('transaction.generate_invoice_number');
         // Route::get('/{id}', [TransactionController::class, 'show'])->name('transactions.show');
         // Route::put('/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
         // Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
     });
-
+    
     Route::prefix('cancel-order')->group(function () {
         Route::post('/', [CanceledOrderController::class, 'store'])->name('cancel-order.store');
     });
