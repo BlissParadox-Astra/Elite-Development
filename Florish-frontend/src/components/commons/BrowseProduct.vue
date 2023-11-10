@@ -156,9 +156,24 @@ export default {
     },
 
     addToCartProduct(product) {
+      if (this.isAddingToCart) {
+        // If already adding to cart, ignore the request
+        return;
+      }
+
+      this.isAddingToCart = true;
+
       this.snackbarColor = 'success';
       this.showSnackbar('Product successfully added to cart', 'success');
       this.addToCart(product);
+
+      setTimeout(() => {
+        this.isAddingToCart = false;
+      }, 1000);
+
+      setTimeout(() => {
+        this.isAddingToCart = false;
+      }, 3000);
     },
 
     closeForm() {

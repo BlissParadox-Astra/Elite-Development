@@ -13,8 +13,8 @@
                             readonly />
                     </v-col>
                     <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <h5 class="text-blue clickable-text" @click="generateAndFetchInvoiceNumber"
-                            :disabled="isGeneratingInvoiceNumber">[GENERATE]</h5>
+                        <v-btn class="text-blue clickable-text" @click="generateAndFetchInvoiceNumber"
+                            :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
                     </v-col>
                     <v-col cols="12" sm="5" lg="3" xl="5">
                         <v-text-field class="ml-15" label="Transaction Date" type="date" variant="plain"
@@ -32,15 +32,16 @@
                         <v-btn class="text-blue clickable-text" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
                     </v-col>
-                    <!-- <v-col cols="12" xl="5" lg="3" class="d-flex align-center">
-                        <v-card class="pa-3 total-card">
-                            <v-row class="text-left">
-                                <v-col v-for="(column, index) in headers" :key="index" cols="3">
-                                    <span class="total-value">{{ calculateTotal(column.total) }}</span>
+                    <v-col cols="12" sm="4" lg="3" class="d-flex align-center">
+                        <v-card class="pa-3 total-card" style="height: 50px; width: 80%;">
+                            <v-row class="text-left" style="height: 80%;">
+                                <v-col cols="12">
+                                    <span class="total-label" style="margin-right: 8px;">Overall Total:</span>
+                                    <span class="total-value">{{ calculateOverallTotal() }}</span>
                                 </v-col>
                             </v-row>
                         </v-card>
-                    </v-col> -->
+                    </v-col>
                 </v-row>
             </v-col>
         </v-row>
@@ -95,8 +96,6 @@
                         </div>
                     </template>
                 </v-data-table>
-                <!-- <CustomTable :columns="tableColumns" :items="products" :showMinusIcon="true" :showPlusCartIcon="true"  :isStockEntryPage="true"
-                    @delete-data="deleteProductRow" :showDeleteIcon="true"  @edit-quantity="openEditQuantityDialog" height="450px" /> -->
             </v-col>
         </v-row>
         <!--Browse Product -->
@@ -136,8 +135,27 @@
                 <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
             </v-col>
             <v-col cols="12" sm="6" lg="3" class="text-end">
-                <v-btn color="success" block>SOLD</v-btn>
+                <v-btn color="success" @click="showConfirmation" style="width: 150px;"
+                    :disabled="isSoldButtonDisabled">SOLD</v-btn>
             </v-col>
+            <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
+                <v-card>
+                    <v-card-title>
+                        <v-icon left>mdi-alert-circle-outline</v-icon>
+                        Confirm Save
+                    </v-card-title>
+                    <v-card-text class="text-center">
+                        <v-icon left>mdi-comment-question</v-icon>
+                        ARE YOU SURE YOU WANT TO SOLD THIS TRANSACTION?
+                    </v-card-text>
+                    <v-card-actions class="d-flex justify-center">
+                        <div>
+                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Save</v-btn>
+                            <v-btn @click="cancelSave">Cancel</v-btn>
+                        </div>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-row>
     </v-container>
 </template>
@@ -158,6 +176,7 @@ export default {
             currentPage: 1,
             totalItems: 0,
             showEditQuantityDialog: false,
+            showConfirmationDialog: false,
             showBrowseProduct: false,
             transaction_date: '',
             transaction_number: '',
@@ -203,9 +222,14 @@ export default {
             return this.transaction_number && this.transaction_date;
         },
 
+        isSoldButtonDisabled() {
+            return this.transaction_number === '' || this.transaction_date === '' || this.products.length === 0;
+        },
+
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
         },
@@ -237,29 +261,6 @@ export default {
                 });
         },
 
-        // calculateTotal(total) {
-        //     return total;
-        // },
-
-        showBrowseProductForm() {
-            this.showBrowseProduct = true;
-        },
-
-        closeBrowseProductForm() {
-            this.showBrowseProduct = false;
-        },
-
-        calculateTotal(product) {
-            const quantity = parseFloat(product.quantity_added);
-            const price = parseFloat(product.price);
-
-            if (!isNaN(quantity) && !isNaN(price)) {
-                return quantity * price;
-            } else {
-                return 0;
-            }
-        },
-
         addToCartProduct(product) {
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
             if (existingProduct) {
@@ -273,12 +274,39 @@ export default {
                     description: product.description,
                     price: product.price,
                     quantity_added: 1,
-                    total: product.price * 1, 
+                    total: product.price * 1,
                 };
                 this.products.push(newProduct);
                 this.loading.false;
             }
             this.totalItems = this.products.length;
+        },
+
+        subtractProduct(item) {
+            if (item.quantity_added > 1) {
+                item.quantity_added--;
+                item.total = this.calculateTotal(item);
+            }
+        },
+
+        addProduct(item) {
+            item.quantity_added++;
+            item.total = this.calculateTotal(item);
+        },
+
+        calculateOverallTotal() {
+            return this.products.reduce((total, product) => total + product.total, 0);
+        },
+
+        calculateTotal(product) {
+            const quantity = parseFloat(product.quantity_added);
+            const price = parseFloat(product.price);
+
+            if (!isNaN(quantity) && !isNaN(price)) {
+                return quantity * price;
+            } else {
+                return 0;
+            }
         },
 
         openEditQuantityDialog(item) {
@@ -330,35 +358,21 @@ export default {
             this.deleteProductRow(item);
         },
 
-        // deleteProductRow(product) {
-        //     const index = this.products.findIndex(p => p.productCode === product.productCode);
-        //     if (index !== -1) {
-        //         this.products.splice(index, 1);
-        //     }
-        // },
+        showConfirmation() {
+            this.showConfirmationDialog = true;
+        },
 
-        // openEditQuantityDialog(index) {
-        //     // Set editingIndex and editedQuantity based on the clicked row
-        //     this.editingIndex = index;
-        //     this.editedQuantity = this.products[index].quantity;
-        //     this.showEditQuantityDialog = true; // Open the dialog
-        // },
+        cancelSave() {
+            this.showConfirmationDialog = false;
+        },
 
-        // saveEditedQuantity() {
-        //     if (this.editingIndex !== -1) {
-        //         this.products[this.editingIndex].quantity = this.editedQuantity;
-        //         this.showEditQuantityDialog = false;
-        //         this.editingIndex = -1;
-        //         this.editedQuantity = 0;
-        //     }
-        // },
+        showBrowseProductForm() {
+            this.showBrowseProduct = true;
+        },
 
-        // closeEditQuantityDialog() {
-        //     this.showEditQuantityDialog = false;
-        //     this.editingIndex = -1;
-        //     this.editedQuantity = 0
-        //         ;
-        // },
+        closeBrowseProductForm() {
+            this.showBrowseProduct = false;
+        },
 
         previousPage() {
             if (this.currentPage > 1) {
@@ -389,8 +403,6 @@ export default {
         hideSnackbar() {
             this.snackbar = false;
         },
-
-
     },
 }
 </script>
