@@ -9,8 +9,7 @@
           <h2 class="text-center mb-4">{{ editingProduct ? 'Edit Product' : 'Product Module' }}</h2>
           <v-row justify="center">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter Barcode" :error-messages="barCodeError"
-                @input="clearFieldErrors('barcode')" :rules="[v => !!v || 'Barcode is required']"></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter Barcode" :error-messages="barCodeError"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="description" label="Description" placeholder="Enter Description"

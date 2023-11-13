@@ -23,7 +23,7 @@ class TransactionRequest extends FormRequest
     {
         return [
             'transaction_requests' => 'required|array',
-            'transactions.*.invoice_number' => 'required|string',
+            'transactions.*.transaction_number' => 'required|string',
             'transactions.*.product_id' => 'required|exists:products,id',
             'transactions.*.quantity' => 'required|integer|min:1',
         ];

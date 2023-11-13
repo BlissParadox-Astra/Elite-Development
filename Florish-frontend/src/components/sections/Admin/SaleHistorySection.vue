@@ -29,7 +29,7 @@
             <template v-slot:item="{ item, index }">
               <tr>
                 <td>{{ displayedIndex + index }}</td>
-                <td>{{ item.invoice_number }}</td>
+                <td>{{ item.transaction_number }}</td>
                 <td>{{ item.transacted_product.product_code }}</td>
                 <td>{{ item.transacted_product.barcode }}</td>
                 <td>{{ item.transacted_product.description }}</td>
@@ -60,7 +60,8 @@
         <v-col cols="12" xl="5" lg="3">
           <v-card class="pa-3 total-card">
             <span class="total-label">Total of All Total: </span>
-            <span class="total-value">{{ totalOfAllTotal }}</span>
+            <span class="total-value" v-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
+            <span class="loading-message" v-else>Loading...</span>
           </v-card>
         </v-col>
       </v-row>
@@ -87,11 +88,12 @@ export default {
       totalItems: 0,
       loading: true,
       showForm: false,
+      totalOfAllTotalValue: null,
       transactions: [],
       sortByOptions: ["Category", "Total", "Alphabetically"],
       headers: [
         { title: '#', value: 'index' },
-        { title: "Invoice No.", key: 'invoice_number' },
+        { title: "Invoice No.", key: 'transaction_number' },
         { title: "Product Code", key: 'transacted_product.product_code' },
         { title: "Barcode", key: 'transacted_product.barcode' },
         { title: "Description", key: 'transacted_product.description' },
@@ -118,14 +120,11 @@ export default {
     totalPages() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
     },
-
-    totalOfAllTotal() {
-      return this.transactions.reduce((total, item) => total + parseFloat(item.total), 0);
-    },
   },
 
   async mounted() {
     await this.debouncedGetTransactions();
+    await this.fetchTotalOfAllTotal();
   },
 
   methods: {
@@ -147,6 +146,16 @@ export default {
           this.totalItems = res.data.totalItems;
           this.loading = false;
         });
+    },
+
+    async fetchTotalOfAllTotal() {
+      try {
+        const response = await axios.get('/all-transactions-total');
+        this.totalOfAllTotalValue = response.data.total;
+      } catch (error) {
+        console.error('Error fetching total of all total', error);
+        this.totalOfAllTotalValue = 0;
+      }
     },
 
     previousPage() {

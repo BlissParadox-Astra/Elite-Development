@@ -16,7 +16,7 @@
                     <template v-slot:item="{ item, index }">
                         <tr>
                             <td>{{ displayedIndex + index }}</td>
-                            <td>{{ item.canceled_transaction.invoice_number }}</td>
+                            <td>{{ item.canceled_transaction.transaction_number }}</td>
                             <td>{{ item.canceled_transaction.transacted_product.product_code }}</td>
                             <td>{{ item.canceled_transaction.transacted_product.barcode }}</td>
                             <td>{{ item.canceled_transaction.transacted_product.description }}</td>
@@ -73,7 +73,7 @@ export default {
             editingProductIndex: -1,
             headers: [
                 { title: '#', value: 'index' },
-                { title: 'Reference No.', key: 'canceled_transaction.invoice_number' },
+                { title: 'Reference No.', key: 'canceled_transaction.transaction_number' },
                 { title: 'Product Code', key: 'canceled_transaction.transacted_product.product_code' },
                 { title: 'Barcode', key: 'canceled_transaction.transacted_product.barcode' },
                 { title: 'Description', key: 'canceled_transaction.transacted_product.description' },
@@ -144,7 +144,7 @@ export default {
         },
         
         renderReferenceNUmber(canceled_order) {
-            return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.invoice_number : 'Unknown';
+            return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.transaction_number : 'Unknown';
         },
 
         renderProductCode(canceled_order) {

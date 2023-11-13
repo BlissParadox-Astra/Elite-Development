@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TransactionManager
 {
@@ -18,7 +19,7 @@ class TransactionManager
         $total = $product->price * $transactionRequest['quantity'];
 
         $transactionData = [
-            'invoice_number' => $transactionRequest['invoice_number'],
+            'transaction_number' => $transactionRequest['transaction_number'],
             'user_id' => $transactionBy,
             'transaction_date' => $transactionDate,
             'product_id' => $transactionRequest['product_id'],
@@ -40,7 +41,7 @@ class TransactionManager
     public function generateInvoiceNumber(): string
     {
         $timestamp = now()->format('YmdHis');
-        $randomNumber = mt_rand(100, 999);
+        $randomNumber = mt_rand(10, 99);
         return "{$timestamp}{$randomNumber}";
     }
 

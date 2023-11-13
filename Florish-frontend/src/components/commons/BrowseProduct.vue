@@ -14,7 +14,7 @@
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col cols="12">
+      <v-col cols="12"> 
         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
           @update:options="debouncedGetProducts" fixed-header height="400">
@@ -71,6 +71,10 @@ export default {
     SearchField,
   },
 
+  props: {
+    addToCart: Function,
+  },
+
   data() {
     return {
       loading: true,
@@ -104,10 +108,6 @@ export default {
 
   async mounted() {
     await this.debouncedGetProducts();
-  },
-
-  props: {
-    addToCart: Function,
   },
 
   methods: {
@@ -156,9 +156,22 @@ export default {
     },
 
     addToCartProduct(product) {
-      this.snackbarColor = 'success';
-      this.showSnackbar('Product successfully added to cart', 'success');
-      this.addToCart(product);
+      if (this.isAddingToCart) {
+        return;
+      }
+
+      this.isAddingToCart = true;
+
+      const addToCartSuccess = this.addToCart(product);
+
+      if (addToCartSuccess) {
+        this.snackbarColor = 'success';
+        this.showSnackbar('Product successfully added to cart', 'success');
+      }
+
+      setTimeout(() => {
+        this.isAddingToCart = false;
+      }, 1000);
     },
 
     closeForm() {
