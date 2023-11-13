@@ -246,8 +246,9 @@ export default {
                 };
                 this.products.push(newProduct);
                 this.loading = false;
-                this.totalItems = this.products.length;
             }
+            this.totalItems = this.products.length;
+            return true;
         },
 
         openEditQuantityDialog(item) {
@@ -289,11 +290,6 @@ export default {
                 this.showSnackbar('Error removing product from cart');
             }
         },
-
-        // showDeleteConfirmation(item) {
-        //     this.itemToDelete = item;
-        //     this.$refs.deleteConfirmationDialog.showConfirmationDialog(item);
-        // },
 
         showDeleteConfirmation(item) {
             this.itemToDelete = item;

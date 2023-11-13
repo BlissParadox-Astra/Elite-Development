@@ -150,4 +150,17 @@ class TransactionController extends Controller
 
         return response()->json(['transaction_number' => $invoiceNumber]);
     }
+
+    public function calculateTotalOfAllTotals()
+    {
+        try {
+            $total = DB::table('transactions')->sum('total');
+
+            return response()->json(['total' => $total], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
 }

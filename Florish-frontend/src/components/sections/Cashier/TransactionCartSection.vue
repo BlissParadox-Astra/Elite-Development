@@ -63,9 +63,9 @@
                             <td>{{ item.price }}</td>
                             <td>
                                 <span v-if="isTransactionPage">
-                                    <span @click="openEditQuantityDialog(item)">{{ item.quantity_added }}</span>
+                                    <span @click="openEditQuantityDialog(item)">{{ item.quantity }}</span>
                                 </span>
-                                <span v-else>{{ item.quantity_added }}</span>
+                                <span v-else>{{ item.quantity }}</span>
                             </td>
                             <td>{{ item.total }}</td>
                             <td>
@@ -252,7 +252,7 @@ export default {
     methods: {
         generateAndFetchInvoiceNumber() {
             this.isGeneratingInvoiceNumber = true;
-            axios.get('/transaction/generate-invoice-number')
+            axios.get('/transaction/generate-transaction-number')
                 .then(response => {
                     this.transaction_number = response.data.transaction_number;
                 })
@@ -263,43 +263,69 @@ export default {
 
         addToCartProduct(product) {
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
+
             if (existingProduct) {
-                existingProduct.quantity_added++;
+                if (existingProduct.quantity + 1 > product.stock_on_hand) {
+                    this.showSnackbar('Not enough stock available for this product', 'error');
+                    return;
+                }
+
+                existingProduct.quantity++;
                 existingProduct.total = this.calculateTotal(existingProduct);
             } else {
+                if (1 > product.stock_on_hand) {
+                    this.showSnackbar('Not enough stock available for this product', 'error');
+                    return;
+                }
+
                 const newProduct = {
                     id: product.id,
                     product_code: product.product_code,
                     barcode: product.barcode,
                     description: product.description,
                     price: product.price,
-                    quantity_added: 1,
+                    quantity: 1,
                     total: product.price * 1,
                 };
+
                 this.products.push(newProduct);
                 this.loading.false;
             }
             this.totalItems = this.products.length;
+            return true;
         },
 
         subtractProduct(item) {
-            if (item.quantity_added > 1) {
-                item.quantity_added--;
+            if (item.quantity > 1) {
+                item.quantity--;
                 item.total = this.calculateTotal(item);
             }
         },
 
         addProduct(item) {
-            item.quantity_added++;
-            item.total = this.calculateTotal(item);
+            axios.get(`transaction/get-products/${item.id}`)
+                .then(response => {
+                    const inventoryItem = response.data.product;
+
+                    if (inventoryItem && item.quantity + 1 > inventoryItem.stock_on_hand) {
+                        this.showSnackbar('Not enough stock available for this product', 'error');
+                        return;
+                    }
+
+                    item.quantity++;
+                    item.total = this.calculateTotal(item);
+                })
+                .catch(error => {
+                    console.error('Error fetching inventory data for adding product', error);
+                });
         },
 
         calculateOverallTotal() {
-            return this.products.reduce((total, product) => total + product.total, 0);
+            return this.products.reduce((total, product) => total + parseFloat(product.total), 0);
         },
 
         calculateTotal(product) {
-            const quantity = parseFloat(product.quantity_added);
+            const quantity = parseFloat(product.quantity);
             const price = parseFloat(product.price);
 
             if (!isNaN(quantity) && !isNaN(price)) {
@@ -311,22 +337,36 @@ export default {
 
         openEditQuantityDialog(item) {
             this.editingIndex = this.products.indexOf(item);
-            this.editedQuantity = item.quantity_added;
+            this.editedQuantity = item.quantity;
             this.showEditQuantityDialog = true;
         },
 
         saveEditedQuantity() {
             if (this.editingIndex !== -1) {
                 const editedProduct = this.products[this.editingIndex];
-                editedProduct.quantity_added = this.editedQuantity;
 
-                editedProduct.total = this.calculateTotal(editedProduct);
+                axios.get(`transaction/get-products/${editedProduct.id}`)
+                    .then(response => {
+                        const inventoryItem = response.data.product;
 
-                this.showEditQuantityDialog = false;
-                this.editingIndex = -1;
-                this.editedQuantity = 0;
-                this.snackbarColor = 'success';
-                this.showSnackbar('Quantity updated successfully', 'success');
+                        if (inventoryItem && this.editedQuantity > inventoryItem.stock_on_hand) {
+                            this.snackbarColor = 'error';
+                            this.showSnackbar('Not enough stock available for this product', 'error');
+                            return;
+                        }
+
+                        editedProduct.quantity = this.editedQuantity;
+                        editedProduct.total = this.calculateTotal(editedProduct);
+
+                        this.showEditQuantityDialog = false;
+                        this.editingIndex = -1;
+                        this.editedQuantity = 0;
+                        this.snackbarColor = 'success';
+                        this.showSnackbar('Quantity updated successfully', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching inventory data for editing quantity', error);
+                    });
             } else {
                 console.error('Editing index is invalid');
                 this.snackbarColor = 'error';
@@ -356,6 +396,43 @@ export default {
         showDeleteConfirmation(item) {
             this.itemToDelete = item;
             this.deleteProductRow(item);
+        },
+
+        saveRecord() {
+            this.showConfirmationDialog = false;
+            const transactionRequests = this.products.map((product) => {
+                return {
+                    transaction_number: this.transaction_number,
+                    transaction_date: this.transaction_date,
+                    product_id: product.id,
+                    quantity: product.quantity,
+                };
+            });
+
+            const transactionData = {
+                transaction_requests: transactionRequests,
+            };
+
+            axios
+                .post("/transaction", transactionData)
+                .then(() => {
+                    this.resetData();
+                    this.isGeneratingInvoiceNumber = false;
+                    this.totalItems = this.products.length;
+                    this.snackbarColor = 'success';
+                    this.showSnackbar('Transacted successfully', 'success');
+                })
+                .catch((error) => {
+                    console.error("Transaction errored", error);
+                    this.isGeneratingInvoiceNumber = true;
+                    this.snackbarColor = 'error';
+                    this.showSnackbar('Failed to transact. Please try again later.', 'error');
+                });
+        },
+
+        resetData() {
+            this.products = [];
+            this.transaction_number = '';
         },
 
         showConfirmation() {

@@ -14,7 +14,7 @@
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col cols="12">
+      <v-col cols="12"> 
         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
           @update:options="debouncedGetProducts" fixed-header height="400">
@@ -157,23 +157,21 @@ export default {
 
     addToCartProduct(product) {
       if (this.isAddingToCart) {
-        // If already adding to cart, ignore the request
         return;
       }
 
       this.isAddingToCart = true;
 
-      this.snackbarColor = 'success';
-      this.showSnackbar('Product successfully added to cart', 'success');
-      this.addToCart(product);
+      const addToCartSuccess = this.addToCart(product);
+
+      if (addToCartSuccess) {
+        this.snackbarColor = 'success';
+        this.showSnackbar('Product successfully added to cart', 'success');
+      }
 
       setTimeout(() => {
         this.isAddingToCart = false;
       }, 1000);
-
-      setTimeout(() => {
-        this.isAddingToCart = false;
-      }, 3000);
     },
 
     closeForm() {
