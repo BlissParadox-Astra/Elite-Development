@@ -53,7 +53,7 @@
                                 :rules="[v => !!v || 'Quantity is required']" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field v-model="cancel_by" label="CANCEL BY"></v-text-field>
+                            <v-text-field :model-value="cancel_by" label="CANCEL BY" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
                             <v-text-field v-model="reasons" label="REASON(S)" @input="clearFieldErrors('reason')"
@@ -61,7 +61,8 @@
                                 required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-combobox v-model="value" :items="items" label="ADD TO INVENTORY?"></v-combobox>
+                            <v-select v-model="options" :error-messages="actionTakenError"
+                                :items="commandOptions"></v-select>
                         </v-col>
                         <v-col cols="6" class="mt-16">
                             <v-btn type="submit" color="primary" block>
@@ -72,61 +73,121 @@
                 </v-form>
             </v-col>
         </v-row>
+        <v-dialog v-model="showConfirmationDialog" max-width="500px">
+            <v-card>
+                <v-card-title class="headline">
+                    Confirm Cancel Order
+                </v-card-title>
+                <v-card-text>
+                    Are you sure you want to cancel this order?
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="cancelOrderConfirmed" color="primary">
+                        Yes
+                    </v-btn>
+                    <v-btn @click="cancelOrderCancelled" color="red darken-1">
+                        No
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
   
 <script>
+import { mapState } from 'vuex';
 export default {
     name: 'CancelOrderForm',
-    props: ['initialTransaction'],
+    props: {
+        initialTransaction: {
+            type: Object,
+            default: null,
+        },
+        currentUser: {
+            type: Object,
+            default: null,
+        },
+    },
+
     data() {
         return {
             id: this.initialTransaction ? this.initialTransaction.id : '',
             transaction_number: this.initialTransaction ? this.initialTransaction.transaction_number : '',
-            product_code: this.initialTransaction ? this.initialTransaction.product_code : '',
-            barcode: this.initialTransaction ? this.initialTransaction.barcode : '',
-            description: this.initialTransaction ? this.initialTransaction.description : '',
+            product_code: this.initialTransaction ? this.initialTransaction.transacted_product.product_code : '',
+            barcode: this.initialTransaction ? this.initialTransaction.transacted_product.barcode : '',
+            description: this.initialTransaction ? this.initialTransaction.transacted_product.description : '',
             price: this.initialTransaction ? this.initialTransaction.price : '',
             quantity: this.initialTransaction ? this.initialTransaction.quantity : '',
             total: this.initialTransaction ? parseInt(this.initialTransaction.total) : '',
             cancel_quantity: this.initialTransaction ? this.initialTransaction.cancel_quantity : '',
-            cancel_by: this.initialTransaction ? this.initialTransaction.cancel_by : '',
             reasons: this.initialTransaction ? this.initialTransaction.reasons : '',
-            // soldTransaction: !!this.initialTransaction,
-            items: ['Yes', 'NO'],
-            value: 'Select Options',
+
+            commandOptions: ["Yes", "No"],
+
+            options: "ADD TO INVENTORY?",
 
             cancelQuantityError: "",
             reasonError: "",
+            actionTakenError: "",
+            showConfirmationDialog: false,
         };
+    },
+
+    computed: {
+        ...mapState({
+            user: state => state.user,
+        }),
+
+        cancel_by() {
+            if (this.user && this.user.first_name && this.user.last_name) {
+                return `${this.user.first_name} ${this.user.last_name}`;
+            } else {
+                return '';
+            }
+        },
     },
 
     methods: {
         async submitForm() {
-            console.log('Submit Form called');
             this.clearErrors();
-
-            if (
+            if (!this.options || this.options === "ADD TO INVENTORY?") {
+                this.actionTakenError = "Action taken is required";
+            } else if (
                 this.cancelQuantityError ||
-                this.cancelQuantityError
+                this.cancelQuantityError ||
+                this.actionTakenError
             ) {
                 return;
             }
+            this.showConfirmationDialog = true;
+            // const transactionData = {
+            //     transaction_id: this.id,
+            //     total: this.total,
+            //     quantity: this.cancel_quantity,
+            //     cancel_by: this.cancel_by,
+            //     reason: this.reasons,
+            //     action_taken: this.options,
+            // };
+            // this.$emit('cancel-order', transactionData);
+        },
+
+        cancelOrderConfirmed() {
+            this.showConfirmationDialog = false;
+
             const transactionData = {
-                id: this.id,
-                transaction_number: this.transaction_number,
-                product_code: this.product_code,
-                barcode: this.barcode,
-                description: this.description,
-                price: this.price,
-                quantity: this.quantity,
+                transaction_id: this.id,
                 total: this.total,
-                cancel_quantity: this.cancel_quantity,
+                quantity: this.cancel_quantity,
                 cancel_by: this.cancel_by,
-                reasons: this.reasons,
-                items: this.items,
+                reason: this.reasons,
+                action_taken: this.options,
             };
+
             this.$emit('cancel-order', transactionData);
+        },
+
+        cancelOrderCancelled() {
+            this.showConfirmationDialog = false;
         },
 
         resetFormFields() {
@@ -145,6 +206,7 @@ export default {
         clearErrors() {
             this.cancelQuantityError = "";
             this.reasonsError = "";
+            this.actionTakenError = "";
         },
 
         clearFieldErrors(fieldName) {

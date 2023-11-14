@@ -73,7 +73,8 @@
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="8" md="8" lg="8" xl="10" class="form-container">
-                        <CancelOrderForm v-if="showForm" @close="hideCancelOrderForm" @cancel-order = "cancelOrder"/>
+                        <CancelOrderForm v-if="showForm" @close="hideCancelOrderForm" @cancel-order="cancelOrder"
+                            :initialTransaction="soldTransaction" />
                     </v-col>
                 </v-row>
             </v-col>
@@ -84,6 +85,15 @@
                 <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
             </v-col>
         </v-row>
+
+        <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+            {{ snackbarText }}
+            <template v-slot:actions>
+                <v-btn color="pink" variant="text" @click="snackbar = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-container>
 </template>
 <script>
@@ -92,7 +102,7 @@ import CancelOrderForm from "../../forms/CancelOrderForm.vue";
 import _debounce from 'lodash/debounce';
 import axios from "axios";
 export default {
-    name: 'transactionCart',
+    name: 'soldPurchased',
     components: {
         FilterByDate,
         CancelOrderForm,
@@ -102,12 +112,15 @@ export default {
             itemsPerPage: 10,
             currentPage: 1,
             totalItems: 0,
-            soldTransaction: -1,
+            soldTransaction: null,
+            soldTransactionIndex: -1,
             // CancelOrderForm: false,
             loading: true,
             totalOfAllTotalValue: null,
             showForm: false,
             transactions: [],
+            snackbar: false,
+            snackbarColor: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Invoice No.", key: 'transaction_number' },
@@ -167,14 +180,35 @@ export default {
                 id: transaction.id,
             }
             const index = this.transactions.findIndex(t => t.id === transaction.id);
-            this.soldTransaction = index;
+            this.soldTransactionIndex = index;
             this.showForm = true;
         },
 
-        async cancelOrder() {
-
+        async cancelOrder(transactionData) {
+            try {
+                const response = await axios.post('/cancel-order', transactionData);
+                if (response.status === 200) {
+                    this.transactions.push(response.data);
+                    this.hideCancelOrderForm();
+                    this.snackbarColor = 'success';
+                    this.showSnackbar(response.data.message, 'success');
+                    this.getTransactions();
+                    this.fetchTotalOfAllTotal();
+                } else {
+                    this.snackbarColor = 'error';
+                    this.showSnackbar(response.data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error adding product:', error);
+                if (error.response && error.response.status === 500) {
+                    this.snackbarColor = 'error';
+                    this.showSnackbar(error.response.data.error || 'An error occurred.', 'error');
+                } else {
+                    this.snackbarColor = 'error';
+                    this.showSnackbar(error.response.data.message, 'error');
+                }
+            }
         },
-
 
         async fetchTotalOfAllTotal() {
             try {
@@ -243,6 +277,20 @@ export default {
 
         closeCancelOrderForm() {
             this.showForm = false;
+        },
+
+        showSnackbar(text, color, timeout = 3000) {
+            this.snackbarText = text;
+            this.snackbarColor = color;
+            this.snackbar = true;
+
+            setTimeout(() => {
+                this.hideSnackbar();
+            }, timeout);
+        },
+
+        hideSnackbar() {
+            this.snackbar = false;
         },
     }
 }
