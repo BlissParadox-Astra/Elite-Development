@@ -14,61 +14,183 @@
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col cols="12">
-        <CustomTable :columns="tableColumns" :items="products" :showAddToCartIcon="true"
-          @add-to-cart-product="addToCartProduct" class="custom-table" />
+      <v-col cols="12"> 
+        <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
+          :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
+          @update:options="debouncedGetProducts" fixed-header height="400">
+          <template v-slot:custom-sort="{ header }">
+            <span v-if="header.key === 'actions'">Actions</span>
+          </template>
+          <template v-slot:item="{ item, index }">
+            <tr>
+              <td>{{ displayedIndex + index }}</td>
+              <td>{{ item.product_code }}</td>
+              <td>{{ item.barcode }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.stock_on_hand }}</td>
+              <td>
+                <span>
+                  <v-icon @click="addToCartProduct(item)">mdi-cart-plus</v-icon>
+                </span>
+              </td>
+            </tr>
+          </template>
+          <template v-slot:bottom>
+            <div class="text-center pt-8 pagination">
+              <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
+
+              <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                {{ pageNumber }}
+              </v-btn>
+
+              <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+            </div>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
+    <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+      {{ snackbarText }}
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
 import SearchField from "../commons/SearchField.vue";
-import CustomTable from "./CustomTable.vue";
+import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
   components: {
     SearchField,
-    CustomTable,
-  },
-
-  data() {
-    return {
-      products: [],
-      tableColumns: [
-        { key: "product_code", label: "Product Code" },
-        { key: "barcode", label: "Barcode" },
-        { key: "description", label: "Description" },
-        { key: "stock_on_hand", label: "Stock On Hand" },
-      ],
-      showProductForm: false,
-    };
-  },
-
-  mounted() {
-    this.getProducts();
   },
 
   props: {
     addToCart: Function,
   },
 
+  data() {
+    return {
+      loading: true,
+      itemsPerPage: 10,
+      currentPage: 1,
+      id: 1,
+      products: [],
+      totalItems: 0,
+      snackbar: false,
+      snackbarColor: '',
+      headers: [
+        { title: '#', value: 'index' },
+        { title: 'Product Code', key: 'product_code' },
+        { title: 'Barcode', key: 'barcode' },
+        { title: 'Description', key: 'description' },
+        { title: 'Stock On Hand', key: "stock_on_hand" },
+        { title: 'Actions', key: 'actions', sortable: false }
+      ],
+      showProductForm: false,
+    };
+  },
+
+  computed: {
+    displayedIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage + 1;
+    },
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+  },
+
+  async mounted() {
+    await this.debouncedGetProducts();
+  },
+
   methods: {
+    debouncedGetProducts: _debounce(function () {
+      this.getProducts();
+    }, 3000),
+
     getProducts() {
-      axios.get('/products').then(res => {
-        this.products = res.data.products
-      });
+      this.loading = true;
+      axios
+        .get('/products', {
+          params: {
+            page: this.currentPage,
+            itemsPerPage: this.itemsPerPage,
+          }
+        }).then((res) => {
+          this.products = res.data.products;
+          this.totalItems = res.data.totalItems;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error('Error fetching products:', error);
+        });
+    },
+
+    previousPage() {
+      this.loading = true;
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.debouncedGetProducts();
+      }
+    },
+
+    nextPage() {
+      this.loading = true;
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.debouncedGetProducts();
+      }
+    },
+
+    gotoPage(pageNumber) {
+      this.loading = true;
+      this.currentPage = pageNumber;
+      this.debouncedGetProducts();
     },
 
     addToCartProduct(product) {
-      window.alert("Product added to cart!");
-      this.addToCart(product);
+      if (this.isAddingToCart) {
+        return;
+      }
+
+      this.isAddingToCart = true;
+
+      const addToCartSuccess = this.addToCart(product);
+
+      if (addToCartSuccess) {
+        this.snackbarColor = 'success';
+        this.showSnackbar('Product successfully added to cart', 'success');
+      }
+
+      setTimeout(() => {
+        this.isAddingToCart = false;
+      }, 1000);
     },
 
     closeForm() {
       this.showProductForm = false;
       this.$emit("close");
+    },
+
+    showSnackbar(text, color, timeout = 1000) {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
+
+      setTimeout(() => {
+        this.hideSnackbar();
+      }, timeout);
+    },
+
+    hideSnackbar() {
+      this.snackbar = false;
     },
   },
 };
@@ -80,11 +202,9 @@ export default {
   z-index: 999;
 }
 
-
 .custom-table {
   height: 445px;
 }
-
 
 .close-button {
   position: absolute;
@@ -92,5 +212,26 @@ export default {
   right: 30px;
   z-index: 999;
   font-size: larger;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 </style>

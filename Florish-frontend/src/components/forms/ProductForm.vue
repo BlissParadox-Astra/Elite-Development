@@ -3,10 +3,10 @@
     <v-row>
       <v-col cols="12">
         <div @click="cancelForm" class="close-button">
-          <v-icon color="black">mdi-close</v-icon>
+          <v-icon color="white">mdi-close</v-icon>
         </div>
         <v-form @submit.prevent="submitForm" class="form">
-          <v-row  justify="center" class="bg-teal-darken-3 pa-3">
+          <v-row  justify="center" class="bg-teal pa-3">
             <h2 class="text-center">
             {{ editingProduct ? 'Edit Product' : 'Product Module' }}
           </h2>
@@ -14,60 +14,32 @@
          
           <v-row justify="center" class="bg-teal-darken-2 pa-2">
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="barcode"
-                label="Bar Code"
-                placeholder="Enter Bar Code"
-                :error-messages="barCodeError"
-                @input="clearFieldErrors('barcode')"
-              ></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter Bar Code" :error-messages="barCodeError"
+                @input="clearFieldErrors('barcode')"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="description"
-                label="Description"
-                placeholder="Enter Description"
-                @input="clearFieldErrors('description')"
-                :error-messages="descriptionError"
-              ></v-text-field>
+              <v-text-field v-model="description" label="Description" placeholder="Enter Description"
+                @input="clearFieldErrors('description')" :error-messages="descriptionError"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-select
-                v-model="category_name"
+              <v-select v-model="category_name"
                 :items="existingCategories.length > 0 ? existingCategories.map(category => category.category_name) : []"
-                label="Categories"
-                placeholder="Choose Category"
-                :error-messages="selectedCategoryError"
-                @input="clearFieldErrors('categories')"
-              ></v-select>
+                label="Categories" placeholder="Choose Category" :error-messages="selectedCategoryError"
+                @input="clearFieldErrors('categories')"></v-select>
             </v-col>
             <v-col cols="12" md="6">
-              <v-select
-                v-model="brand_name"
-                label="Brand"
+              <v-select v-model="brand_name" label="Brand"
                 :items="existingBrands.length > 0 ? existingBrands.map(brand => brand.brand_name) : []"
-                placeholder="Enter Brand Name"
-                @input="clearFieldErrors('brands')"
-                :error-messages="brandError"
-              ></v-select>
+                placeholder="Enter Brand Name" @input="clearFieldErrors('brands')"
+                :error-messages="brandError"></v-select>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="price"
-                label="Price"
-                placeholder="Enter Price"
-                @input="clearFieldErrors('price')"
-                :error-messages="priceError"
-              ></v-text-field>
+              <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
+                :error-messages="priceError"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
-                v-model="reorder_level"
-                label="Reorder Level"
-                placeholder="Enter Reorder Level"
-                @input="clearFieldErrors('reorderLevel')"
-                :error-messages="reorderLevelError"
-              ></v-text-field>
+              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level" @input="clearFieldErrors('reorderLevel')"
+                :error-messages="reorderLevelError"></v-text-field>
             </v-col>
           </v-row>
           <v-row  justify="center" class="bg-teal-darken-1 pa-2">
@@ -86,13 +58,10 @@
   </v-container>
 </template>
 
-
 <script>
-import axios from 'axios';
-
 export default {
   name: 'ProductForm',
-  props: { initialProduct: Object, existingCategories: Array, existingBrands: Array },
+  props: ['initialProduct', 'existingCategories', 'existingBrands'],
   data() {
     return {
       barcode: this.initialProduct ? this.initialProduct.barcode : "",
@@ -112,9 +81,9 @@ export default {
       reorderLevelError: "",
     };
   },
+
   methods: {
-    submitForm() {
-      console.log('Submit Form called');
+    async submitForm() {
       this.clearErrors();
       const categoryId = this.findCategoryIdByName(this.category_name);
       const brandId = this.findBrandIdByName(this.brand_name);
@@ -135,7 +104,7 @@ export default {
         return;
       }
       const productData = {
-        productCode: this.productCode,
+        id: this.initialProduct ? this.initialProduct.id : null,
         barcode: this.barcode,
         description: this.description,
         category_id: categoryId,
@@ -145,61 +114,9 @@ export default {
         stockOnHand: this.stockOnHand,
       };
       if (this.editingProduct) {
-        axios
-          .put(`/product/${this.initialProduct.id}`, productData)
-          .then((response) => {
-            if (response.status === 200) {
-              this.$emit('update', response.data);
-              alert(response.data.message);
-              this.resetFormFields();
-              this.clearErrors();
-              this.reloadPage();
-            } else {
-              alert(response.data.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            if (error.response && error.response.status === 422) {
-              const validationErrors = error.response.data.errors;
-              this.barCodeError = validationErrors.barcode ? validationErrors.barcode[0] : '';
-              this.descriptionError = validationErrors.description ? validationErrors.description[0] : '';
-              this.brandError = validationErrors.brand_id ? validationErrors.brand_id[0] : '';
-              this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
-              this.priceError = validationErrors.price ? validationErrors.price[0] : '';
-              this.reorderLevelError = validationErrors.reorder_level ? validationErrors.reorder_level[0] : '';
-            } else {
-              console.error(error);
-            }
-          });
+        this.$emit('update-product', productData);
       } else {
-        axios
-          .post('/product', productData)
-          .then((response) => {
-            console.log('Response Status:', response.status);
-            if (response.status === 200) {
-              this.$emit('add', response.data);
-              alert(response.data.message);
-              this.resetFormFields();
-              this.clearErrors();
-              this.reloadPage();
-            } else {
-              alert(response.data.message);
-            }
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 422) {
-              const validationErrors = error.response.data.errors;
-              this.barCodeError = validationErrors.barcode ? validationErrors.barcode[0] : '';
-              this.descriptionError = validationErrors.description ? validationErrors.description[0] : '';
-              this.brandError = validationErrors.brand_id ? validationErrors.brand_id[0] : '';
-              this.selectedCategoryError = validationErrors.category_id ? validationErrors.category_id[0] : '';
-              this.priceError = validationErrors.price ? validationErrors.price[0] : '';
-              this.reorderLevelError = validationErrors.reorder_level ? validationErrors.reorder_level[0] : '';
-            } else {
-              console.error(error);
-            }
-          });
+        this.$emit('add-product', productData);
       }
     },
 
@@ -241,14 +158,9 @@ export default {
       this.editingProduct = false;
       this.$emit("cancel");
     },
-
-    reloadPage() {
-      window.location.reload();
-    },
   },
 };
 </script>
-
 
 <style scoped>
 .showProductForm {
@@ -256,6 +168,8 @@ export default {
   /* background-color: #23b78d; */
   z-index: 999;
 }
+
+
 .close-button {
   position: absolute;
   top: 35px;

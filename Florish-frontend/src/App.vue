@@ -72,7 +72,7 @@ export default {
       return this.showMainContent && this.$route.name !== 'Login Page' && this.$route.name !== 'NotFound';
     },
     showAdminSidebar() {
-      return this.isAdmin && !this.isMobileSize && this.showMainContent && this.$route.name !== 'Login Page';
+      return this.isAdmin && !this.isMobileSize && this.showMainContent && this.$route.name !== 'Login Page' && this.$route.name !== 'NotFound';
     },
     alertMessage() {
       return this.$store.state.alertMessage;

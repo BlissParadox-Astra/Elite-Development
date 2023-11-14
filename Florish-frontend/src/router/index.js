@@ -134,6 +134,11 @@ const routes = [
     name: 'Transaction Cart Page',
     component: TransactionCartView,
     meta: {title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
+    beforeEnter: (to, from, next) => {
+      const currentDate = new Date().toISOString().split('T')[0];
+      to.query.date = currentDate;
+      next();
+    }
   },
   {
     path: '/low-stock',

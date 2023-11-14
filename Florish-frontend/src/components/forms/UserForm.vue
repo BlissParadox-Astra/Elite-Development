@@ -10,15 +10,18 @@
                     <v-row justify="center">
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="first_name" label="First Name" placeholder="Enter First Name" required
-                                :error-messages="firstNameError" @input="clearFieldErrors('firstName')"></v-text-field>
+                                :error-messages="firstNameError" @input="clearFieldErrors('firstName')"
+                                :rules="[v => !!v || 'First name is required']"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="last_name" label="Last Name" placeholder="Enter Last Name" required
-                                :error-messages="lastNameError" @input="clearFieldErrors('lastName')"></v-text-field>
+                                :error-messages="lastNameError" @input="clearFieldErrors('lastName')"
+                                :rules="[v => !!v || 'Last name is required']"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="username" label="User Name" placeholder="Enter User Name" required
-                                :error-messages="userNameError" @input="clearFieldErrors('userName')"></v-text-field>
+                                :error-messages="userNameError" @input="clearFieldErrors('userName')"
+                                :rules="[v => !!v || 'Username is required']"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-select v-model="user_type" :items="userTypes.map(userType => userType.user_type)"
@@ -37,20 +40,23 @@
                         <v-col cols="12" md="6" lg="5">
                             <v-select v-model="gender" :items="['male', 'female', 'other']" label="Gender"
                                 placeholder="Select Gender" required :error-messages="genderError"
-                                @input="clearFieldErrors('gender')"></v-select>
+                                @input="clearFieldErrors('gender')" :rules="[v => !!v || 'Gender is required']"></v-select>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="age" label="Age" placeholder="Enter Age" required
-                                :error-messages="ageError" @input="clearFieldErrors('age')"></v-text-field>
+                                :error-messages="ageError" @input="clearFieldErrors('age')"
+                                :rules="[v => !!v || 'Age is required']"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="address" label="Address" placeholder="Enter Address" required
-                                :error-messages="addressError" @input="clearFieldErrors('address')"></v-text-field>
+                                :error-messages="addressError" @input="clearFieldErrors('address')"
+                                :rules="[v => !!v || 'Address is required']"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
                             <v-text-field v-model="contact_number" label="Contact Number" placeholder="Enter Contact Number"
                                 required :error-messages="contactNumberError"
-                                @input="clearFieldErrors('contactNumber')"></v-text-field>
+                                @input="clearFieldErrors('contactNumber')"
+                                :rules="[v => !!v || 'Contact number is required']"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row justify="center">
@@ -70,7 +76,6 @@
 </template>
  
 <script>
-import axios from 'axios';
 export default {
     name: 'userForm',
     props: ['initialUser', 'userTypes'],
@@ -101,10 +106,8 @@ export default {
         };
     },
 
-
     methods: {
         async submitForm() {
-            console.log('Submit Form called');
             this.clearErrors();
             const userTypeId = this.findUserTypeIdByName(this.user_type);
             if (!userTypeId) {
@@ -122,6 +125,7 @@ export default {
             }
 
             const userData = {
+                id: this.initialUser ? this.initialUser.id : null,
                 user_type_id: userTypeId,
                 first_name: this.first_name,
                 last_name: this.last_name,
@@ -142,79 +146,75 @@ export default {
             }
 
             if (this.editingUser) {
-                axios
-                    .put(`/user/${this.initialUser.id}`, userData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            this.$emit('update', response.data);
-                            alert(response.data.message);
-                            this.resetFormFields();
-                            this.clearErrors();
-                            this.reloadPage();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.response && error.response.status === 422) {
-                            const validationErrors = error.response.data.errors;
-                            this.userTypeError = validationErrors.user_type_id ? validationErrors.user_type_id[0] : '';
-                            this.userNameError = validationErrors.username ? validationErrors.username[0] : '';
-                            this.firstNameError = validationErrors.first_name ? validationErrors.first_name[0] : '';
-                            this.lastNameError = validationErrors.last_name ? validationErrors.last_name[0] : '';
-                            this.genderError = validationErrors.gender ? validationErrors.gender[0] : '';
-                            this.ageError = validationErrors.age ? validationErrors.age[0] : '';
-                            this.addressError = validationErrors.address ? validationErrors.address[0] : '';
-                            this.contactNumberError = validationErrors.contact_number ? validationErrors.contact_number[0] : '';
-                            this.passwordError = validationErrors.password ? validationErrors.password[0] : '';
-                            this.confirmPasswordError = validationErrors.password_confirmation ? validationErrors.password_confirmation[0] : '';
-                        } else {
-                            console.error(error);
-                        }
-                    });
+                this.$emit('update-user', userData);
             } else {
-                axios
-                    .post('/user', userData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            this.$emit('add', response.data);
-                            alert(response.data.message);
-                            this.resetFormFields();
-                            this.clearErrors();
-                            this.reloadPage();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.response && error.response.status === 422) {
-                            const validationErrors = error.response.data.errors;
-                            this.userTypeError = validationErrors.user_type_id ? validationErrors.user_type_id[0] : '';
-                            this.userNameError = validationErrors.username ? validationErrors.username[0] : '';
-                            this.firstNameError = validationErrors.first_name ? validationErrors.first_name[0] : '';
-                            this.lastNameError = validationErrors.last_name ? validationErrors.last_name[0] : '';
-                            this.genderError = validationErrors.gender ? validationErrors.gender[0] : '';
-                            this.ageError = validationErrors.age ? validationErrors.age[0] : '';
-                            this.addressError = validationErrors.address ? validationErrors.address[0] : '';
-                            this.contactNumberError = validationErrors.contact_number ? validationErrors.contact_number[0] : '';
-                            this.passwordError = validationErrors.password ? validationErrors.password[0] : '';
-                            this.confirmPasswordError = validationErrors.password_confirmation ? validationErrors.password_confirmation[0] : '';
-                        } else {
-                            console.error(error);
-                        }
-                    });
+                this.$emit('add-user', userData);
             }
+            //     axios
+            //         .put(`/user/${this.initialUser.id}`, userData)
+            //         .then((response) => {
+            //             if (response.status === 200) {
+            //                 this.$emit('update', response.data);
+            //                 alert(response.data.message);
+            //                 this.resetFormFields();
+            //                 this.clearErrors();
+            //             } else {
+            //                 alert(response.data.message);
+            //             }
+            //         })
+            //         .catch((error) => {
+            //             if (error.response && error.response.status === 422) {
+            //                 const validationErrors = error.response.data.errors;
+            //                 this.userTypeError = validationErrors.user_type_id ? validationErrors.user_type_id[0] : '';
+            //                 this.userNameError = validationErrors.username ? validationErrors.username[0] : '';
+            //                 this.firstNameError = validationErrors.first_name ? validationErrors.first_name[0] : '';
+            //                 this.lastNameError = validationErrors.last_name ? validationErrors.last_name[0] : '';
+            //                 this.genderError = validationErrors.gender ? validationErrors.gender[0] : '';
+            //                 this.ageError = validationErrors.age ? validationErrors.age[0] : '';
+            //                 this.addressError = validationErrors.address ? validationErrors.address[0] : '';
+            //                 this.contactNumberError = validationErrors.contact_number ? validationErrors.contact_number[0] : '';
+            //                 this.passwordError = validationErrors.password ? validationErrors.password[0] : '';
+            //                 this.confirmPasswordError = validationErrors.password_confirmation ? validationErrors.password_confirmation[0] : '';
+            //             } else {
+            //                 console.error(error);
+            //             }
+            //         });
+            // } else {
+            //     axios
+            //         .post('/user', userData)
+            //         .then((response) => {
+            //             if (response.status === 200) {
+            //                 this.$emit('add', response.data);
+            //                 alert(response.data.message);
+            //                 this.resetFormFields();
+            //                 this.clearErrors();
+            //             } else {
+            //                 alert(response.data.message);
+            //             }
+            //         })
+            //         .catch((error) => {
+            //             if (error.response && error.response.status === 422) {
+            //                 const validationErrors = error.response.data.errors;
+            //                 this.userTypeError = validationErrors.user_type_id ? validationErrors.user_type_id[0] : '';
+            //                 this.userNameError = validationErrors.username ? validationErrors.username[0] : '';
+            //                 this.firstNameError = validationErrors.first_name ? validationErrors.first_name[0] : '';
+            //                 this.lastNameError = validationErrors.last_name ? validationErrors.last_name[0] : '';
+            //                 this.genderError = validationErrors.gender ? validationErrors.gender[0] : '';
+            //                 this.ageError = validationErrors.age ? validationErrors.age[0] : '';
+            //                 this.addressError = validationErrors.address ? validationErrors.address[0] : '';
+            //                 this.contactNumberError = validationErrors.contact_number ? validationErrors.contact_number[0] : '';
+            //                 this.passwordError = validationErrors.password ? validationErrors.password[0] : '';
+            //                 this.confirmPasswordError = validationErrors.password_confirmation ? validationErrors.password_confirmation[0] : '';
+            //             } else {
+            //                 console.error(error);
+            //             }
+            //         });
+            // }
         },
 
         findUserTypeIdByName(userTypeName) {
             const userType = this.userTypes.find(userType => userType.user_type === userTypeName);
             return userType ? userType.id : null;
-        },
-
-        cancelForm() {
-            this.resetFormFields();
-            this.editingUser = false;
-            this.$emit('cancel');
         },
 
         resetFormFields() {
@@ -247,9 +247,12 @@ export default {
             this[fieldName + 'Error'] = '';
         },
 
-        reloadPage() {
-            window.location.reload();
+        cancelForm() {
+            this.resetFormFields();
+            this.editingUser = false;
+            this.$emit('cancel');
         },
+
     },
 
     computed: {

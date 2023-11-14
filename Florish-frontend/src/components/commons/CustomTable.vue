@@ -2,19 +2,19 @@
   <v-table>
     <thead>
       <tr>
-        <th class="text-center">#</th>
-        <th v-for="column in columns" :key="column.key" class="text-center">
+        <th>#</th>
+        <th v-for="column in columns" :key="column.key">
           {{ column.label }}
         </th>
-        <th v-if="showEditIcon" class="text-center"></th>
-        <th v-if="showDeleteIcon" class="text-center"></th>
-        <th v-if="showFetchIcon" class="text-center"></th>
-        <th v-if="showAddToCartIcon" class="text-center"></th>
+        <th v-if="showEditIcon"></th>
+        <th v-if="showDeleteIcon"></th>
+        <th v-if="showFetchIcon"></th>
+        <th v-if="showAddToCartIcon"></th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="item.productCode">
-        <td class="text-center">{{ index + 1 }}</td>
+        <td>{{ index + 1 }}</td>
         <td class="text-center" v-for="column in columns" :key="column.key">
           <template v-if="column.key === 'quantity_added' && isStockEntryPage">
             <span @click="openEditQuantityDialog(index)">{{ item[column.key] }}</span>

@@ -7,8 +7,40 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
-                <CustomTable v-if="products.length > 0" :columns="tableColumns" :items="products" height="500px" />
-                <div v-else>No critical products available.</div>
+                <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
+                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
+                    @update:options="debouncedGetCriticalStocks" fixed-header>
+                    <template v-slot:custom-sort="{ header }">
+                        <span v-if="header.key === 'actions'">Actions</span>
+                    </template>
+                    <template v-slot:item="{ item, index }">
+                        <tr>
+                            <td>{{ displayedIndex + index }}</td>
+                            <td>{{ item.product_code }}</td>
+                            <td>{{ item.barcode }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.brand.brand_name }}</td>
+                            <td>{{ item.category.category_name }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.reorder_level }}</td>
+                            <td>{{ item.stock_on_hand }}</td>
+                        </tr>
+                    </template>
+                    <template v-slot:bottom>
+                        <div class="text-center pt-8 pagination">
+                            <v-btn class="pagination-button" @click="previousPage"
+                                :disabled="currentPage === 1">Previous</v-btn>
+
+                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                                {{ pageNumber }}
+                            </v-btn>
+
+                            <v-btn class="pagination-button" @click="nextPage"
+                                :disabled="currentPage === totalPages">Next</v-btn>
+                        </div>
+                    </template>
+                </v-data-table>
             </v-col>
         </v-row>
     </v-container>
@@ -16,7 +48,7 @@
   
 <script>
 import SearchField from '../../commons/SearchField.vue';
-import CustomTable from '../../commons/CustomTable.vue';
+import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
@@ -24,55 +56,122 @@ export default {
 
     components: {
         SearchField,
-        CustomTable,
     },
 
     data() {
         return {
+            itemsPerPage: 10,
+            currentPage: 1,
+            id: 1,
+            totalItems: 0,
+            loading: true,
             showForm: false,
             editingProductIndex: -1,
             products: [],
-            tableColumns: [
-                { key: 'product_code', label: 'Product Code' },
-                { key: 'barcode', label: 'Barcode' },
-                { key: 'description', label: 'Description' },
-                { key: 'brand', label: 'Brand', render: this.renderProductBrand },
-                { key: 'category', label: 'Category', render: this.renderProductCategory },
-                { key: 'price', label: 'Price' },
-                { key: 'reorder_level', label: 'Reorder Level' },
-                { key: 'stock_on_hand', label: 'Stock On Hand' },
+            headers: [
+                { title: '#', key: 'id' },
+                { title: 'Product Code', key: 'product_code' },
+                { title: 'Barcode', key: 'barcode' },
+                { title: 'Description', key: 'description' },
+                { title: 'Brand', key: 'brand.brand_name' },
+                { title: 'Category', key: 'category.category_name' },
+                { title: 'Price', key: 'price' },
+                { title: 'Reorder Level', key: 'reorder_level' },
+                { title: 'Stock On Hand', key: 'stock_on_hand' },
             ],
         };
     },
 
-    mounted() {
-        this.getCriticalStocks();
+    computed: {
+        displayedIndex() {
+            return (this.currentPage - 1) * this.itemsPerPage + 1;
+        },
+        totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+    },
+
+    async mounted() {
+        await this.debouncedGetCriticalStocks();
     },
 
     methods: {
-        async getCriticalStocks() {
-            try {
-                const response = await axios.get('/critical-stocks');
-                this.products = response.data;
-                console.log('Products:', this.products);
-            } catch (error) {
-                console.error('Error fetching critical stocks:', error);
+        debouncedGetCriticalStocks: _debounce(function () {
+            this.getCriticalStocks();
+        }, 3000),
+
+        getCriticalStocks() {
+            this.loading = true;
+            axios
+                .get('/critical-stocks', {
+                    params: {
+                        page: this.currentPage,
+                        itemsPerPage: this.itemsPerPage,
+                    }
+                })
+                .then((res) => {
+                    this.products = res.data.criticalStocks;
+                    this.totalItems = res.data.totalItems;
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    console.error('Error fetching products:', error);
+                });
+        },
+        previousPage() {
+            this.loading = true;
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.debouncedGetCriticalStocks();
             }
         },
 
-        renderProductCategory(category) {
-            return category.category ? category.category.category_name : 'Unknown';
+        nextPage() {
+            this.loading = true;
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.debouncedGetCriticalStocks();
+            }
         },
 
-        renderProductBrand(brand) {
-            return brand.brand ? brand.brand.brand_name : 'Unknown';
+        gotoPage(pageNumber) {
+            this.loading = true;
+            this.currentPage = pageNumber;
+            this.debouncedGetCriticalStocks();
         },
+    },
 
-    }
+    renderProductCategory(category) {
+        return category.category ? category.category.category_name : 'Unknown';
+    },
+
+    renderProductBrand(brand) {
+        return brand.brand ? brand.brand.brand_name : 'Unknown';
+    },
+
 };
 </script>
   
 <style scoped>
-/* Add any scoped styles here */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-button {
+    padding: 6px 12px;
+    margin: 0 4px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
 </style>
   

@@ -14,7 +14,6 @@
         <v-card-subtitle class="caption">Member since August 12, 2023</v-card-subtitle>
       </v-card-text>
       <v-card-actions class="justify-center">
-        <v-btn color="primary" class="mr-4">Profile</v-btn>
         <v-btn color="error" @click="logout">Logout</v-btn>
       </v-card-actions>
     </v-card>

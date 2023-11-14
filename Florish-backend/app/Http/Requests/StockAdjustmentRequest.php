@@ -22,6 +22,7 @@ class StockAdjustmentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'reference_number' => 'required',
             'action' => 'required',
             'product_id' => 'required|exists:products,id',
             'remarks' => 'required',

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BrandRequest;
 use App\Managers\BrandManager;
+use Illuminate\Http\Request;
 use App\Models\Brand;
-use App\Models\Category;
 use Illuminate\Http\Response;
 
 class BrandController extends Controller
@@ -20,12 +20,18 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $brands = $this->brandManager->getAllBrands();
+            $page = $request->input('page', 1);
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            return response()->json(['brands' => $brands], Response::HTTP_OK);
+            $brands = $this->brandManager->getAllBrands($page, $itemsPerPage);
+            
+            return response()->json([
+                'brands' => $brands->items(),
+                'totalItems' => $brands->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
@@ -129,18 +135,18 @@ class BrandController extends Controller
         }
     }
 
-    /**
-     * Show categories from category table.
+        /**
+     * Show brands from brand table.
      */
 
-    public function getCategories()
-    {
-        try {
-            $categories = Category::all();
-
-            return response()->json($categories);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Unable to fetch categories'], 500);
-        }
-    }
+     public function getBrands()
+     {
+         try {
+             $brands = Brand::all();
+ 
+             return response()->json($brands);
+         } catch (\Exception $e) {
+             return response()->json(['error' => 'Unable to fetch brands'], 500);
+         }
+     }
 }

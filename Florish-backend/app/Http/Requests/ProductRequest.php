@@ -21,14 +21,24 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'barcode' => 'required|string|max:39|unique:products,barcode',
-            'description' => 'required|string|max:1000|min:5',
+        $rules = [
+            'barcode' => 'nullable|string|max:39|unique:products,barcode',
+            'description' => 'required|string|max:1000|min:5|unique:products,description',
             'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0',
             'reorder_level' => 'required|integer|min:1',
             'stock_on_hand' => 'nullable|integer|min:0',
             'category_id' => 'required|integer|exists:categories,id',
             'brand_id' => 'required|integer|exists:brands,id',
         ];
+
+        if ($this->isMethod('PUT')) {
+            $rules = array_merge($rules, [
+                'barcode' => 'nullable', 'string', 'max:39'
+            ]);
+            $rules = array_merge($rules, [
+                'description' => 'required', 'string', ' max:1000', 'min:5'
+            ]);
+        }
+        return $rules;
     }
 }

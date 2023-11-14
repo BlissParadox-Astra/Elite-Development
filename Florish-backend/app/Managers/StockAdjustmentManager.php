@@ -10,13 +10,12 @@ class StockAdjustmentManager
 {
     public function createStockAdjustment(array $stockAdjustmentData)
     {
-        $stockAdjustmentData['reference_number'] = $this->generateReferenceNumber();
-        $stockAdjustmentData['user'] = Auth::id(); // Set the current user's ID
+        $stockAdjustmentData['user'] = Auth::id();
 
         $product = Product::findOrFail($stockAdjustmentData['product_id']);
-        if ($stockAdjustmentData['action'] === 'add') {
+        if ($stockAdjustmentData['action'] === 'Add to Inventory') {
             $product->stock_on_hand += $stockAdjustmentData['quantity'];
-        } elseif ($stockAdjustmentData['action'] === 'remove') {
+        } elseif ($stockAdjustmentData['action'] === 'Remove From Inventory') {
             if ($product->stock_on_hand < $stockAdjustmentData['quantity']) {
                 throw new \Exception('Cannot remove more products than available in stock.');
             }
@@ -28,15 +27,15 @@ class StockAdjustmentManager
         StockAdjustment::create($stockAdjustmentData);
     }
 
-    public function getAllStockAdjustment()
+    public function getAllStockAdjustment($page, $itemsPerPage)
     {
-        return StockAdjustment::with(['stockAdjustmentByUser', 'adjustedProduct'])->get();
+        return StockAdjustment::with(['stockAdjustmentByUser', 'adjustedProduct'])->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
-    protected function generateReferenceNumber(): string
+    public function generateReferenceNumber(): string
     {
-        $timestamp = now()->format('YmdHis'); // Current date and time in YmdHis format
-        $randomNumber = mt_rand(1000, 9999); // Generate a random 4-digit number
+        $timestamp = now()->format('YmdHis');
+        $randomNumber = mt_rand(1000, 9999);
         return "{$timestamp}{$randomNumber}";
     }
 }

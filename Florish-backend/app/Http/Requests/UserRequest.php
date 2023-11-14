@@ -23,15 +23,15 @@ class UserRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'user_type_id' => 'required|exists:user_types,id',
             'first_name' => 'required',
             'last_name' => 'required',
+            'username' => 'required|string|unique:user_credentials',
+            'user_type_id' => 'required|exists:user_types,id',
             'password' => [
                 'required',
                 'string',
                 'min:8',
                 'confirmed',
-                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
             ],
             'gender' => 'required',
             'age' => 'required|numeric',
@@ -40,22 +40,22 @@ class UserRequest extends FormRequest
                 'required',
                 'regex:/^[0-9]{11}$/'
             ],
-            'username' => 'required|string|unique:user_credentials',
         ];
 
         if ($this->isMethod('PUT')) {
-            $rules['username'] = [
+            $rules = array_merge($rules, [
+                'username' =>
                 'required',
                 'string',
                 Rule::unique('user_credentials')->ignore($this->route('user')),
-            ];
-            $rules['password'] = [
+            ]);
+            $rules = array_merge($rules, [
+                'password' => 
                 'nullable',
                 'string',
                 'min:8',
                 'confirmed',
-                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
-            ];
+            ]);
         }
 
         return $rules;
@@ -81,7 +81,6 @@ class UserRequest extends FormRequest
             'password.string' => 'The password must be a string.',
             'password.min' => 'The password must be at least :min characters long.',
             'password.confirmed' => 'The password confirmation does not match.',
-            'password.regex' => 'The password must include at least one uppercase letter, one lowercase letter, one number, and one special character.',
         ];
     }
 }

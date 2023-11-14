@@ -7,6 +7,7 @@ use App\Managers\StockAdjustmentManager;
 use App\Models\StockAdjustment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class StockAdjustmentController extends Controller
 {
@@ -20,12 +21,17 @@ class StockAdjustmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $stockAdjustment = $this->stockAdjustmentManager->getAllStockAdjustment(); // Replace with your manager method
+            $page = $request->input('page');
+            $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            return response()->json(['stock_adjustments' => $stockAdjustment]);
+            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page, $itemsPerPage);
+            return response()->json([
+                'stockAdjustments' => $stockAdjustments->items(),
+                'totalItems' => $stockAdjustments->total(),
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 
@@ -88,5 +94,12 @@ class StockAdjustmentController extends Controller
     public function destroy(StockAdjustment $stockAdjustment)
     {
         //
+    }
+
+    public function generateReferenceNumber()
+    {
+        $referenceNumber = $this->stockAdjustmentManager->generateReferenceNumber();
+
+        return response()->json(['reference_number' => $referenceNumber]);
     }
 }
