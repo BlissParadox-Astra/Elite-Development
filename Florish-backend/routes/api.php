@@ -27,6 +27,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/all-transactions-total', [TransactionController::class, 'calculateTotalOfAllTotals']);
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
@@ -67,7 +69,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/critical-stock-count', [ProductController::class, 'getCriticalStockCount'])->name('critical-stock-count.getCriticalStockCount');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
-        Route::get('/total-stock', [ProductController::class,'getTotalStockOnHand'])->name('total-stock.getTotalStockOnHand');
+        Route::get('/total-stock', [ProductController::class, 'getTotalStockOnHand'])->name('total-stock.getTotalStockOnHand');
         Route::put('/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::get('{id}', [ProductController::class, 'show'])->name('products.show');
@@ -85,11 +87,11 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::prefix('/stock-adjustment')->group(function () {
         Route::post('/', [StockAdjustmentController::class, 'store'])->name('stockAdjustments.store');
     });
-    
-    Route::get('/all-transactions-total', [TransactionController::class, 'calculateTotalOfAllTotals']);
-    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+
+    // Route::get('/all-transactions-total', [TransactionController::class, 'calculateTotalOfAllTotals']);
+    // Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transaction-years-earnings', [TransactionController::class, 'getTransactionYearsAndEarnings']);
-    Route::get('/monthly-earnings', [TransactionController::class,'getMonthlyEarningsForYear']);
+    Route::get('/monthly-earnings', [TransactionController::class, 'getMonthlyEarningsForYear']);
     Route::get('/daily-transactions', [TransactionController::class, 'dailyTransactions'])->name('daily-transactions.dailyTransactions');
     Route::get('/canceled-orders', [CanceledOrderController::class, 'index'])->name('cancel-order.index');
 });
@@ -104,8 +106,8 @@ Route::middleware(['auth:sanctum', 'cashier'])->group(function () {
         // Route::put('/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
         // Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
     });
-    
-    Route::prefix('cancel-order')->group(function () {
+
+    Route::prefix('/cancel-order')->group(function () {
         Route::post('/', [CanceledOrderController::class, 'store'])->name('cancel-order.store');
     });
 });
