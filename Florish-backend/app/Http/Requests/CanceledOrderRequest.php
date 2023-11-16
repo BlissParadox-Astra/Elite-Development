@@ -24,7 +24,6 @@ class CanceledOrderRequest extends FormRequest
         return [
             'transaction_id' => 'required|exists:transactions,id',
             'quantity' => 'required|integer|min:1',
-            'canceled_date' => 'required|date',
             'reason' => 'required',
             'action_taken' => 'required',
         ];

@@ -18,29 +18,29 @@
                     </v-col>
                     <v-row justify="center">
                         <v-col cols="12" md="6">
-                            <v-text-field label="ID"></v-text-field>
+                            <v-text-field v-model="id" label="ID" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="Transaction" required></v-text-field>
+                            <v-text-field v-model="transaction_number" label="Transaction" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="Product Code" required></v-text-field>
+                            <v-text-field v-model="product_code" label="Product Code" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="Bar Code" required></v-text-field>
+                            <v-text-field v-model="barcode" label="Bar Code" readonly></v-text-field>
                         </v-col>
 
                         <v-col cols="12" md="6">
-                            <v-text-field label="Description"></v-text-field>
+                            <v-text-field v-model="description" label="Description" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="Price" required></v-text-field>
+                            <v-text-field v-model="price" label="Price" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="Quantity"></v-text-field>
+                            <v-text-field v-model="quantity" label="Quantity" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="Total" required></v-text-field>
+                            <v-text-field v-model="total" label="Total" readonly></v-text-field>
                         </v-col>
                     </v-row>
                     <v-col>
@@ -48,19 +48,21 @@
                     </v-col>
                     <v-row justify="center">
                         <v-col cols="12" md="6">
-                            <v-text-field label="VIOD BY" required></v-text-field>
+                            <v-text-field v-model="cancel_quantity" label="CANCEL QUANTITY"
+                                @input="clearFieldErrors('quantity')" :error-messages="cancelQuantityError"
+                                :rules="[v => !!v || 'Quantity is required']" required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="CANCEL QUANTITY" required></v-text-field>
+                            <v-text-field :model-value="cancel_by" label="CANCEL BY" readonly></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="CANCEL BY"></v-text-field>
+                            <v-text-field v-model="reasons" label="REASON(S)" @input="clearFieldErrors('reason')"
+                                :error-messages="reasonError" :rules="[v => !!v || 'Reason is required']"
+                                required></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field label="REASON(S)" required></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-combobox v-model="value" :items="items" label="Default"></v-combobox>
+                            <v-select v-model="options" :error-messages="actionTakenError"
+                                :items="commandOptions"></v-select>
                         </v-col>
                         <v-col cols="6" class="mt-16">
                             <v-btn type="submit" color="primary" block>
@@ -71,37 +73,146 @@
                 </v-form>
             </v-col>
         </v-row>
+        <v-dialog v-model="showConfirmationDialog" max-width="500px">
+            <v-card>
+                <v-card-title class="headline">
+                    Confirm Cancel Order
+                </v-card-title>
+                <v-card-text>
+                    Are you sure you want to cancel this order?
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="cancelOrderConfirmed" color="primary">
+                        Yes
+                    </v-btn>
+                    <v-btn @click="cancelOrderCancelled" color="red darken-1">
+                        No
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
   
 <script>
+import { mapState } from 'vuex';
 export default {
     name: 'CancelOrderForm',
-    props: ['initialUser', 'userTypes'],
+    props: {
+        initialTransaction: {
+            type: Object,
+            default: null,
+        },
+        currentUser: {
+            type: Object,
+            default: null,
+        },
+    },
+
     data() {
         return {
-            showUserForm: false,
-            user_type: this.initialUser ? this.initialUser.user_type : '',
-            user_name: this.initialUser ? this.initialUser.user_name : '',
-            password: this.initialUser ? this.initialUser.password : '',
-            password_confirmation: this.initialUser ? this.initialUser.password_confirmation : '',
-            first_name: this.initialUser ? this.initialUser.first_name : '',
-            last_name: this.initialUser ? this.initialUser.last_name : '',
-            gender: this.initialUser ? this.initialUser.gender : '',
-            age: this.initialUser ? parseInt(this.initialUser.age) : '',
-            address: this.initialUser ? this.initialUser.address : '',
-            contact_number: this.initialUser ? this.initialUser.contact_number : '',
-            editingUser: !!this.initialUser,
-            items: ['Yes', 'NO'],
-            value: 'Select Options',
+            id: this.initialTransaction ? this.initialTransaction.id : '',
+            transaction_number: this.initialTransaction ? this.initialTransaction.transaction_number : '',
+            product_code: this.initialTransaction ? this.initialTransaction.transacted_product.product_code : '',
+            barcode: this.initialTransaction ? this.initialTransaction.transacted_product.barcode : '',
+            description: this.initialTransaction ? this.initialTransaction.transacted_product.description : '',
+            price: this.initialTransaction ? this.initialTransaction.price : '',
+            quantity: this.initialTransaction ? this.initialTransaction.quantity : '',
+            total: this.initialTransaction ? parseInt(this.initialTransaction.total) : '',
+            cancel_quantity: this.initialTransaction ? this.initialTransaction.cancel_quantity : '',
+            reasons: this.initialTransaction ? this.initialTransaction.reasons : '',
+
+            commandOptions: ["Yes", "No"],
+
+            options: "ADD TO INVENTORY?",
+
+            cancelQuantityError: "",
+            reasonError: "",
+            actionTakenError: "",
+            showConfirmationDialog: false,
         };
+    },
+
+    computed: {
+        ...mapState({
+            user: state => state.user,
+        }),
+
+        cancel_by() {
+            if (this.user && this.user.first_name && this.user.last_name) {
+                return `${this.user.first_name} ${this.user.last_name}`;
+            } else {
+                return '';
+            }
+        },
     },
 
     methods: {
         async submitForm() {
-            console.log('Submit Form called');
-
+            this.clearErrors();
+            if (!this.options || this.options === "ADD TO INVENTORY?") {
+                this.actionTakenError = "Action taken is required";
+            } else if (
+                this.cancelQuantityError ||
+                this.cancelQuantityError ||
+                this.actionTakenError
+            ) {
+                return;
+            }
+            this.showConfirmationDialog = true;
+            // const transactionData = {
+            //     transaction_id: this.id,
+            //     total: this.total,
+            //     quantity: this.cancel_quantity,
+            //     cancel_by: this.cancel_by,
+            //     reason: this.reasons,
+            //     action_taken: this.options,
+            // };
+            // this.$emit('cancel-order', transactionData);
         },
+
+        cancelOrderConfirmed() {
+            this.showConfirmationDialog = false;
+
+            const transactionData = {
+                transaction_id: this.id,
+                total: this.total,
+                quantity: this.cancel_quantity,
+                cancel_by: this.cancel_by,
+                reason: this.reasons,
+                action_taken: this.options,
+            };
+
+            this.$emit('cancel-order', transactionData);
+        },
+
+        cancelOrderCancelled() {
+            this.showConfirmationDialog = false;
+        },
+
+        resetFormFields() {
+            this.id = "";
+            this.transaction_number = "";
+            this.product_code = "";
+            this.barcode = "";
+            this.description = "";
+            this.price = "";
+            this.quantity = "";
+            this.total = "";
+            this.cancel_quantity = "";
+            this.reasons = "";
+        },
+
+        clearErrors() {
+            this.cancelQuantityError = "";
+            this.reasonsError = "";
+            this.actionTakenError = "";
+        },
+
+        clearFieldErrors(fieldName) {
+            this[fieldName + 'Error'] = '';
+        },
+
         closeForm() {
             this.showUserForm = false;
             this.$emit("close");

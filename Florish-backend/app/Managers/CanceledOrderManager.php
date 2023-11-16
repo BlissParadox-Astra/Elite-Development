@@ -11,6 +11,7 @@ class CanceledOrderManager
     public function cancelOrder(array $canceledOrderData)
     {
         $canceledOrderData['user_id'] = Auth::id();
+        $canceledOrderData['canceled_date'] = $canceledOrderData['canceled_date'] ?? now();
 
         $transaction = Transaction::findOrFail($canceledOrderData['transaction_id']);
         $product = $transaction->transactedProduct;
@@ -19,7 +20,7 @@ class CanceledOrderManager
         } elseif ($transaction['quantity'] == $canceledOrderData['quantity']) {
             $canceledOrderData['total'] = $transaction['total'];
 
-            if ($canceledOrderData['action_taken'] === 'return') {
+            if ($canceledOrderData['action_taken'] === 'Yes') {
                 $product->incrementStockOnHand($canceledOrderData['quantity']);
             }
 
@@ -32,7 +33,7 @@ class CanceledOrderManager
             $canceledOrderData['total'] = $canceledTotal;
             $transaction['quantity'] -= $canceledOrderData['quantity'];
 
-            if ($canceledOrderData['action_taken'] === 'return') {
+            if ($canceledOrderData['action_taken'] === 'Yes') {
                 $product->incrementStockOnHand($canceledOrderData['quantity']);
             }
 

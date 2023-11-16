@@ -73,7 +73,7 @@ export default {
             editingProductIndex: -1,
             headers: [
                 { title: '#', value: 'index' },
-                { title: 'Reference No.', key: 'canceled_transaction.transaction_number' },
+                { title: 'Transaction No.', key: 'canceled_transaction.transaction_number' },
                 { title: 'Product Code', key: 'canceled_transaction.transacted_product.product_code' },
                 { title: 'Barcode', key: 'canceled_transaction.transacted_product.barcode' },
                 { title: 'Description', key: 'canceled_transaction.transacted_product.description' },
