@@ -2,7 +2,7 @@
   <v-app id="inspire">
     <AdminSidebar v-model="admindrawer" v-if="!isMobileSize && showAdminSidebar" />
     <v-app-bar v-if="showAppBar">
-      <v-app-bar-nav-icon v-if="isMobileSize" @click="isMobileSidebarOpen = !isMobileSidebarOpen"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-if="isAdmin && isMobileSize" @click="isMobileSidebarOpen = !isMobileSidebarOpen"></v-app-bar-nav-icon>
       <v-app-bar-title class="app-bar-title">{{ appTitle }}</v-app-bar-title>
       <Profile></Profile>
     </v-app-bar>
@@ -96,10 +96,7 @@ export default {
 </script>
 
 <style>
-.align-center {
-  display: flex;
-  align-items: center;
-}
+
 
 .app-bar-title {
   text-align: center;

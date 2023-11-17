@@ -10,7 +10,7 @@
                 <v-col cols="12">
                     <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
                         :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
-                        hide-default-footer @update:options="debouncedStockAdjustments" fixed-header height="400">
+                        hide-default-footer @update:options="debouncedStockAdjustments" fixed-header>
                         <template v-slot:custom-sort="{ header }">
                             <span v-if="header.key === 'actions'">Actions</span>
                         </template>
@@ -29,7 +29,7 @@
                         </template>
                         <template v-slot:bottom>
                             <div class="text-center pt-8 pagination">
-                                <button class="pagination-button" @click="previousPage"
+                                <button class="pagination-button" @click="previousPage" color="#23b78d"
                                     :disabled="currentPage === 1">Previous</button>
 
                                 <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
@@ -37,7 +37,7 @@
                                     {{ pageNumber }}
                                 </button>
 
-                                <v-btn class="pagination-button" @click="nextPage"
+                                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
                                     :disabled="currentPage === totalPages">Next</v-btn>
                             </div>
                         </template>

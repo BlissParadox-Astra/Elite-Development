@@ -10,7 +10,7 @@
         <v-col cols="12">
           <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetProducts" fixed-header height="400">
+            @update:options="debouncedGetProducts" fixed-header>
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -34,14 +34,14 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
 
                 <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
 
@@ -86,7 +86,7 @@
       </v-row>
       <v-row class="mt-3">
         <v-col cols="2" offset-md="10">
-          <v-btn @click="showConfirmation" :disabled="isSaveButtonDisabled" color="success"
+          <v-btn @click="showConfirmation" :disabled="isSaveButtonDisabled" color="#23b78d"
             style="width: 150px">Save</v-btn>
         </v-col>
       </v-row>

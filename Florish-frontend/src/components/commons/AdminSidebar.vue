@@ -133,7 +133,8 @@ a {
 }
 
 .v-navigation-drawer.custom-bg-color {
-  background-image: url("../../assets/assets/vuejs.jpg");
+  /* background-image: url("../../assets/assets/vuejs.jpg"); */
+  background-color:#23b78d;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat; 

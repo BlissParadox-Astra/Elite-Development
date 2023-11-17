@@ -1,46 +1,51 @@
 <template>
-        <v-container class="dashboard" fluid>
-            <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
-            <v-row justify="center" class="cardbox-container">
-                <v-col cols="12" sm="6" md="4">
-                    <v-card class="mx-auto cardbox pa-4" max-width="200" to='/transaction-cart'>
-                        <v-img class="align-end text-white" height="fit-content"
-                            src="../../../assets/assets/shopping-cart-xxl.png" cover>
-                        </v-img>
-                        <v-card-text class="text-center">NEW TRANSACTION</v-card-text>
-                    </v-card>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                    <v-card class="mx-auto cardbox pa-4" max-width="200" to="/low-stock">
-                        <v-img src="../../../assets/assets/negative-dynamic-xxl.png" alt="cart" class="icon"></v-img>
-                        <v-card-text class="text-center">LOW STOCKS</v-card-text>
-                    </v-card>
-                </v-col>
-            </v-row>
-            <v-row justify="center">
-                <v-col cols="12" sm="6" md="4">
-                    <v-card class="mx-auto cardbox pa-4" max-width="200" to="/sold-purchase">
-                        <v-img src="../../../assets/assets/border-color-xxl.png" alt="cart" class="icon"></v-img>
-                        <v-card-text class="text-center"> SOLD PURCHASE</v-card-text>
-                    </v-card>
-                </v-col>
-            </v-row>
-        </v-container>
+    <v-container class="dashboard" fluid>
+        <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
+        <v-row>
+            <v-col cols="12" sm="8" md="6" xl="6" lg="6" class="d-flex justify-center">
+                <div class="logo" justify="space-between">
+                    <v-img src="../../../assets/assets/florish-logo.png" alt="storelogo" contain></v-img>
+                </div>
+            </v-col>
+            <v-col cols="12" sm="12" md="6" xl="6" lg="6" class="cardbox-container">
+                <v-row justify="space-between">
+                    <v-col cols="12" sm="10" md="4">
+                        <v-card class="mx-auto cardbox pa-4" max-width="200" to="/transaction-cart">
+                            <v-img class="align-end text-white" height="fit-content"
+                                src="../../../assets/assets/shopping-cart-xxl.png" cover></v-img>
+                            <v-card-text class="text-center">NEW TRANSACTION</v-card-text>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" sm="10" md="4">
+                        <v-card class="mx-auto cardbox pa-4" max-width="200" to="/low-stock">
+                            <v-img src="../../../assets/assets/negative-dynamic-xxl.png" alt="cart" class="icon"></v-img>
+                            <v-card-text class="text-center">LOW STOCKS</v-card-text>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" sm="10" md="4">
+                        <v-card class="mx-auto cardbox pa-4" max-width="200" to="/sold-purchase">
+                            <v-img src="../../../assets/assets/border-color-xxl.png" alt="cart" class="icon"></v-img>
+                            <v-card-text class="text-center">SOLD PURCHASE</v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
   
 <script>
 export default {
     name: 'cashierDashboard',
-}
+};
 </script>
   
 <style>
-
-
 .dashboard {
     height: 100%;
     text-align: center;
-    background-color: #859766;
+    background-color: #07a278;
+    /* background-color:#23b78d; */
 }
 
 .dashboard h2 {
@@ -50,7 +55,8 @@ export default {
 }
 
 .cardbox-container {
-    margin-top: 20px;
+    margin-top: 100px;
+    align-items: center;
 }
 
 .cardbox {
@@ -71,6 +77,15 @@ export default {
 .icon {
     max-width: 100%;
     height: auto;
+}
+
+.logo {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .logout-btn {

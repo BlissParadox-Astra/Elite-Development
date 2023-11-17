@@ -2,24 +2,28 @@
     <v-container class="mt-2 showCategoryForm">
         <v-row class="justify-center">
             <v-col cols="12">
-                <v-btn icon @click="cancelForm" class="close-button" color="transparent">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
+                <div @click="cancelForm" class="close-button">
+                    <v-icon color="white">mdi-close</v-icon>
+                </div>
                 <v-form @submit.prevent="submitForm">
+                    <v-row  justify="center" class="bg-teal pa-3">
                     <h2 class="text-center mb-4">{{ editingCategory ? 'Edit Category' : 'Category Module' }}</h2>
+                    </v-row>
+                    <v-row justify="center" class="bg-teal-darken-2 pa-2">
                     <v-col cols="12" lg="12">
                         <v-text-field v-model="category_name" label="Category Name" placeholder="Enter Category Name"
                             required :error-messages="categoryError" @input="clearFieldErrors('categoryName')"
                             :rules="[v => !!v || 'Category Name is required']"></v-text-field>
                     </v-col>
-                    <v-row justify="center">
+                    </v-row>
+                    <v-row  justify="center" class="bg-teal-darken-1 pa-2">
                         <v-col cols="12" md="6" lg="5">
-                            <v-btn type="submit" color="primary" block>
+                            <v-btn type="submit" color="#23b78d" block>
                                 {{ editingCategory ? 'Save' : 'Submit' }}
                             </v-btn>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
-                            <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
+                            <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -76,15 +80,16 @@ export default {
 
 <style scoped>
 .showCategoryForm {
-    background-image: url("../../assets/assets/vuejs.jpg");
+    /* background-image: url("../../assets/assets/vuejs.jpg"); */
     z-index: 999;
 }
 
 .close-button {
-    position: absolute;
-    top: 25px;
-    right: 20px;
-    z-index: 999;
+  position: absolute;
+  top: 40px;
+  right: 30px;
+  z-index: 999;
+  font-size: larger;
 }
 
 .error-messages {

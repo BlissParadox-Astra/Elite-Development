@@ -1,72 +1,73 @@
 <template>
-    <v-container class="mt-2 showUserForm">
+    <v-container class="mt-1 showUserForm">
         <v-row justify="center">
             <v-col cols="12">
-                <v-btn icon @click="cancelForm" class="close-button" color="transparent">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-                <v-form @submit.prevent="submitForm">
-                    <h2 class="text-center mb-4">{{ editingUser ? 'Edit User' : 'User Module' }}</h2>
-                    <v-row justify="center">
-                        <v-col cols="12" md="6" lg="5">
+                <div @click="cancelForm" class="close-button">
+                    <v-icon color="white">mdi-close</v-icon>
+                </div>
+                <v-form @submit.prevent="submitForm" class="form">
+                    <v-row justify="center" class="bg-teal pa-1">
+                        <h2 class="text-center mb-4">{{ editingUser ? 'Edit User' : 'User Module' }}</h2>
+                    </v-row>
+                    <v-row justify="center" class="bg-teal-darken-2 pa-1">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="first_name" label="First Name" placeholder="Enter First Name" required
                                 :error-messages="firstNameError" @input="clearFieldErrors('firstName')"
                                 :rules="[v => !!v || 'First name is required']"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="last_name" label="Last Name" placeholder="Enter Last Name" required
                                 :error-messages="lastNameError" @input="clearFieldErrors('lastName')"
                                 :rules="[v => !!v || 'Last name is required']"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="username" label="User Name" placeholder="Enter User Name" required
                                 :error-messages="userNameError" @input="clearFieldErrors('userName')"
                                 :rules="[v => !!v || 'Username is required']"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-select v-model="user_type" :items="userTypes.map(userType => userType.user_type)"
                                 label="User Type" :error-messages="userTypeError" @input="clearFieldErrors('userType')">
                             </v-select>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="password" :label="passwordLabel" placeholder="Enter Password" required
                                 :error-messages="passwordError" @input="clearFieldErrors('password')"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="password_confirmation" :label="passwordConfirmationLabel"
                                 placeholder="Enter Confirm Password" required :error-messages="confirmPasswordError"
                                 @input="clearFieldErrors('confirmPassword')"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-select v-model="gender" :items="['male', 'female', 'other']" label="Gender"
                                 placeholder="Select Gender" required :error-messages="genderError"
                                 @input="clearFieldErrors('gender')" :rules="[v => !!v || 'Gender is required']"></v-select>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="age" label="Age" placeholder="Enter Age" required
                                 :error-messages="ageError" @input="clearFieldErrors('age')"
                                 :rules="[v => !!v || 'Age is required']"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="address" label="Address" placeholder="Enter Address" required
                                 :error-messages="addressError" @input="clearFieldErrors('address')"
                                 :rules="[v => !!v || 'Address is required']"></v-text-field>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
+                        <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="contact_number" label="Contact Number" placeholder="Enter Contact Number"
-                                required :error-messages="contactNumberError"
-                                @input="clearFieldErrors('contactNumber')"
+                                required :error-messages="contactNumberError" @input="clearFieldErrors('contactNumber')"
                                 :rules="[v => !!v || 'Contact number is required']"></v-text-field>
                         </v-col>
                     </v-row>
-                    <v-row justify="center">
-                        <v-col cols="12" md="6" lg="5">
-                            <v-btn type="submit" color="primary" block>
+                    <v-row justify="center" class="bg-teal-darken-1 pa-2">
+                        <v-col cols="12" md="6" lg="4">
+                            <v-btn type="submit" color="#23b78d" block>
                                 {{ editingUser ? 'Save' : 'Submit' }}
                             </v-btn>
                         </v-col>
-                        <v-col cols="12" md="6" lg="5">
-                            <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
+                        <v-col cols="12" md="6" lg="4">
+                            <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -274,15 +275,17 @@ export default {
  
 <style scoped>
 .showUserForm {
-    background-image: url("../../assets/assets/vuejs.jpg");
+    /* background-image: url("../../assets/assets/vuejs.jpg"); */
+    /* background-color: #23b78d; */
     z-index: 999;
 }
 
 .close-button {
     position: absolute;
-    top: 25px;
-    right: 20px;
+    top: 35px;
+    right: 30px;
     z-index: 999;
+    font-size: larger;
 }
 
 .error-messages {

@@ -3,14 +3,14 @@
     <v-container class="section2">
       <v-row justify="end">
         <v-col cols="12" sm="3">
-          <v-btn color="success" block @click="showUserForm">Add User</v-btn>
+          <v-btn color="#23b78d" block @click="showUserForm">Add User</v-btn>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
           <v-data-table :headers="headers" :items="users" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetUsers" fixed-header height="400">
+            @update:options="debouncedGetUsers" fixed-header>
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -36,14 +36,16 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                  :disabled="currentPage === 1">Previous</v-btn>
 
                 <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                  :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
           </v-data-table>

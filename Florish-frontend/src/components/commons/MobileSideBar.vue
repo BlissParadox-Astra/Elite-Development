@@ -70,7 +70,7 @@
           { text: "Sales History", route: "/sales-history", icon: "mdi-currency-usd" },
           { text: "Users", route: "/users", icon: "mdi-account-group" },
         ],
-        drawerWidth: 500, // adjust the width as needed
+        drawerWidth: 700, // adjust the width as needed
       };
     },
   };
@@ -83,7 +83,8 @@
   }
   
   #navigation-mobile {
-    background-image: url("../../assets/assets/vuejs.jpg");
+    /* background-image: url("../../assets/assets/vuejs.jpg"); */
+    background-color:#23b78d;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;

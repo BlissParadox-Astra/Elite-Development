@@ -6,14 +6,14 @@
           <SearchField />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-          <v-btn color="success" block @click="showBrandForm">Add Brand</v-btn>
+          <v-btn color="#23b78d" block @click="showBrandForm">Add Brand</v-btn>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
           <v-data-table :headers="headers" :items="brands" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetBrands" fixed-header height="400">
+            @update:options="debouncedGetBrands" fixed-header>
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -33,14 +33,16 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
+                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1"
+                  color="#23b78d">Previous</v-btn>
 
                 <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages"
+                  color="#23b78d">Next</v-btn>
               </div>
             </template>
           </v-data-table>

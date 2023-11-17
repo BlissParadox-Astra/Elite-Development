@@ -6,14 +6,14 @@
                     <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
-                    <v-btn color="success" block @click="generateAndFetchReferenceNumber"
+                    <v-btn color="#23b78d" block @click="generateAndFetchReferenceNumber"
                         :disabled="isGeneratingReferenceNumber">Generate</v-btn>
                 </v-col>
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
                     <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
                 </v-col>
                 <v-col cols="12" sm="2" class="d-flex justify-center align-center">
-                    <v-btn color="success" block @click="showBrowseProductForm" :disabled="!canBrowseProduct">Browse
+                    <v-btn color="#23b78d" block @click="showBrowseProductForm" :disabled="!canBrowseProduct">Browse
                         Product</v-btn>
                 </v-col>
                 <v-col cols="12" sm="2" md="2" lg="2" xl="2">
@@ -32,7 +32,7 @@
             <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                 :items-per-page="itemsPerPage" density="compact" :reference_number="reference_number"
                 :stock_in_date="stock_in_date" :stock_in_by="stock_in_by" item-value="id" class="elevation-1"
-                hide-default-footer fixed-header height="400">
+                hide-default-footer fixed-header>
                 <template v-slot:custom-sort="{ header }">
                     <span v-if="header.key === 'actions'">Actions</span>
                 </template>
@@ -61,7 +61,7 @@
                 <template v-slot:bottom>
                     <div class="text-center pt-8 pagination">
                         <v-btn class="pagination-button" @click="previousPage"
-                            :disabled="currentPage === 1">Previous</v-btn>
+                            :disabled="currentPage === 1" color="#23b78d">Previous</v-btn>
 
                         <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                             :class="{ active: pageNumber === currentPage }" class="pagination-button">
@@ -69,14 +69,14 @@
                         </v-btn>
 
                         <v-btn class="pagination-button" @click="nextPage"
-                            :disabled="currentPage === totalPages">Next</v-btn>
+                            :disabled="currentPage === totalPages" color="#23b78d">Next</v-btn>
                     </div>
                 </template>
             </v-data-table>
             <!-- <DeleteConfirmationDialog @confirm-delete="deleteProductRow" ref="deleteConfirmationDialog" /> -->
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
-                    <v-btn color="success" @click="showConfirmation" style="width: 150px;"
+                    <v-btn color="#23b78d" @click="showConfirmation" style="width: 150px;"
                         :disabled="isSaveButtonDisabled">Save</v-btn>
                 </v-col>
             </v-row>

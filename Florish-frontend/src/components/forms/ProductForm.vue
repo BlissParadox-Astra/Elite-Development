@@ -1,50 +1,60 @@
 <template>
   <v-container class="mt-2 showProductForm">
-    <v-row justify="center">
+    <v-row>
       <v-col cols="12">
-        <v-btn icon @click="cancelForm" class="close-button" color="transparent">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <v-form @submit.prevent="submitForm">
-          <h2 class="text-center mb-4">{{ editingProduct ? 'Edit Product' : 'Product Module' }}</h2>
-          <v-row justify="center">
+        <div @click="cancelForm" class="close-button">
+          <v-icon color="white">mdi-close</v-icon>
+        </div>
+        <v-form @submit.prevent="submitForm" class="form">
+          <v-row  justify="center" class="bg-teal pa-3">
+            <h2 class="text-center">
+            {{ editingProduct ? 'Edit Product' : 'Product Module' }}
+          </h2>
+          </v-row>
+         
+          <v-row justify="center" class="bg-teal-darken-2 pa-2">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter Barcode" :error-messages="barCodeError"></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
+                @input="clearFieldErrors('barcode')"  :rules="[v => !!v || 'BarCode is required']"></v-text-field>
+
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="description" label="Description" placeholder="Enter Description"
-                @input="clearFieldErrors('description')" :error-messages="descriptionError"
-                :rules="[v => !!v || 'Description is required']"></v-text-field>
+                @input="clearFieldErrors('description')" :error-messages="descriptionError" :rules="[v => !!v || 'Description is required']"></v-text-field>
+
             </v-col>
             <v-col cols="12" md="6">
-              <v-select v-model="category_name" :items="existingCategories.map(category => category.category_name)"
+              <v-select v-model="category_name"
+                :items="existingCategories.length > 0 ? existingCategories.map(category => category.category_name) : []"
                 label="Categories" placeholder="Choose Category" :error-messages="selectedCategoryError"
-                @input="clearFieldErrors('categories')" :rules="[v => !!v || 'Category is required']"
-                autocomplete></v-select>
+                @input="clearFieldErrors('categories')"></v-select>
             </v-col>
             <v-col cols="12" md="6">
-              <v-select v-model="brand_name" label="Brand" :items="existingBrands.map(brand => brand.brand_name)"
-                placeholder="Choose Brand" @input="clearFieldErrors('brands')" :error-messages="brandError"
-                :rules="[v => !!v || 'Brand is required']" autocomplete></v-select>
+              <v-select v-model="brand_name" label="Brand"
+                :items="existingBrands.length > 0 ? existingBrands.map(brand => brand.brand_name) : []"
+                placeholder="Enter Brand Name" @input="clearFieldErrors('brands')"
+                :error-messages="brandError"  :rules="[v => !!v || 'Brand is required']" autocomplete></v-select>
+
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
                 :error-messages="priceError" :rules="[v => !!v || 'Price is required']"></v-text-field>
+
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level"
-                @input="clearFieldErrors('reorderLevel')" :error-messages="reorderLevelError"
-                :rules="[v => !!v || 'Reorder level is required']"></v-text-field>
+              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level" @input="clearFieldErrors('reorderLevel')"
+                :error-messages="reorderLevelError" :rules="[v => !!v || 'Reorder level is required']"></v-text-field>
+
             </v-col>
           </v-row>
-          <v-row class="mt-4">
-            <v-col cols="6">
-              <v-btn type="submit" color="primary" block>
+          <v-row  justify="center" class="bg-teal-darken-1 pa-2">
+            <v-col cols="12" md="4" lg="4" sm="4">
+              <v-btn type="submit" color="#23b78d" block>
                 {{ editingProduct ? "Save" : "Submit" }}
               </v-btn>
             </v-col>
-            <v-col cols="6">
-              <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
+            <v-col cols="12" md="4" lg="4" sm="4">
+              <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -159,15 +169,18 @@ export default {
 
 <style scoped>
 .showProductForm {
-  background-image: url("../../assets/assets/vuejs.jpg");
+  /* background-image: url("../../assets/assets/vuejs.jpg"); */
+  /* background-color: #23b78d; */
   z-index: 999;
 }
 
+
 .close-button {
   position: absolute;
-  top: 25px;
-  right: 20px;
+  top: 35px;
+  right: 30px;
   z-index: 999;
+  font-size: larger;
 }
 
 

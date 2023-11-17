@@ -20,7 +20,7 @@
                 <p class="no-critical-items">No critical items at the moment. Please check back later.</p>  
             </v-col>
         </v-row>
-        <v-btn to="/cashier-dashboard" class="link px-5 rounded-lg" success>BACK TO DASHBOARD</v-btn>
+        <v-btn to="/cashier-dashboard" class="link px-5 rounded-lg" success color="#23b78d">BACK TO DASHBOARD</v-btn>
     </v-container>
 </template>
   
@@ -60,7 +60,7 @@ export default {
 <style scoped>
 .link {
     position: fixed;
-    background-color: #680c07;
+   
     right: -90px;
     top: 50%;
     transform: rotate(-90deg) translate(0, 0) scale(1, 1);
