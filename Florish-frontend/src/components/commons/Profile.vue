@@ -1,7 +1,7 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y >
     <template v-slot:activator="{ props }">
-      <v-avatar v-bind="props" size="40" class="text-center clickable-avatar">
+      <v-avatar v-bind="props" size="40" class="text-center icon-pointer">
         <v-img src="../../assets/assets/profileIcon.png" alt="Profile" contain></v-img>
       </v-avatar>
     </template>
@@ -63,7 +63,7 @@ export default {
   font-size: 14px;
   font-weight: bold;
 }
-.clickable-avatar {
+.icon-pointer {
   cursor: pointer;
 }
 </style>

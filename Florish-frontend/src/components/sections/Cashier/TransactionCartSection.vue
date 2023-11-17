@@ -13,7 +13,7 @@
                             readonly />
                     </v-col>
                     <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <v-btn class="text-blue clickable-text" @click="generateAndFetchInvoiceNumber"
+                        <v-btn class="text clickable-text" color="#23b78d" @click="generateAndFetchInvoiceNumber"
                             :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
                     </v-col>
                     <v-col cols="12" sm="5" lg="3" xl="5">
@@ -29,7 +29,7 @@
                         <SearchField class="ml-n6"></SearchField>
                     </v-col>
                     <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <v-btn class="text-blue clickable-text" block @click="showBrowseProductForm"
+                        <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
                     </v-col>
                     <v-col cols="12" sm="4" lg="3" class="d-flex align-center">
@@ -83,7 +83,7 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage"
+                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                                 :disabled="currentPage === 1">Previous</v-btn>
 
                             <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
@@ -91,7 +91,7 @@
                                 {{ pageNumber }}
                             </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage"
+                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
                                 :disabled="currentPage === totalPages">Next</v-btn>
                         </div>
                     </template>
@@ -132,10 +132,10 @@
         </v-snackbar>
         <v-row class="d-flex justify-space-between">
             <v-col cols="12" sm="6" lg="3" class="text-start">
-                <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
+                <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
             </v-col>
             <v-col cols="12" sm="6" lg="3" class="text-end">
-                <v-btn color="success" @click="showConfirmation" style="width: 150px;"
+                <v-btn color="#23b78d" @click="showConfirmation" style="width: 150px;"
                     :disabled="isSoldButtonDisabled">SOLD</v-btn>
             </v-col>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">

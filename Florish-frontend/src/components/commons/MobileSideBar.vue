@@ -70,7 +70,7 @@
           { text: "Sales History", route: "/sales-history", icon: "mdi-currency-usd" },
           { text: "Users", route: "/users", icon: "mdi-account-group" },
         ],
-        drawerWidth: 500, // adjust the width as needed
+        drawerWidth: 700, // adjust the width as needed
       };
     },
   };
