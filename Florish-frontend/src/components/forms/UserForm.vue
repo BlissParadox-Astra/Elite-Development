@@ -3,7 +3,7 @@
         <v-row justify="center">
             <v-col cols="12">
                 <div @click="cancelForm" class="close-button">
-                    <v-icon color="black">mdi-close</v-icon>
+                    <v-icon color="white">mdi-close</v-icon>
                 </div>
                 <v-form @submit.prevent="submitForm" class="form">
                     <v-row justify="center" class="bg-teal pa-1">
