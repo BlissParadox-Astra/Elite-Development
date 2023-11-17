@@ -5,7 +5,7 @@
                 <SearchField />
             </v-col>
             <v-col cols="12" sm="3">
-                <v-btn color="success" block @click="showProductForm">Add New Product</v-btn>
+                <v-btn color="#23b78d" block @click="showProductForm">Add New Product</v-btn>
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -39,14 +39,14 @@
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
                             <v-btn class="pagination-button" @click="previousPage"
-                                :disabled="currentPage === 1">Previous</v-btn>
+                                :disabled="currentPage === 1" color="#23b78d">Previous</v-btn>
 
                             <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
                             </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage"
+                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
                                 :disabled="currentPage === totalPages">Next</v-btn>
                         </div>
                     </template>

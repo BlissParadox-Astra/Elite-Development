@@ -14,12 +14,14 @@
          
           <v-row justify="center" class="bg-teal-darken-2 pa-2">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter Bar Code" :error-messages="barCodeError"
-                @input="clearFieldErrors('barcode')"></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
+                @input="clearFieldErrors('barcode')"  :rules="[v => !!v || 'BarCode is required']"></v-text-field>
+
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="description" label="Description" placeholder="Enter Description"
-                @input="clearFieldErrors('description')" :error-messages="descriptionError"></v-text-field>
+                @input="clearFieldErrors('description')" :error-messages="descriptionError" :rules="[v => !!v || 'Description is required']"></v-text-field>
+
             </v-col>
             <v-col cols="12" md="6">
               <v-select v-model="category_name"
@@ -31,25 +33,28 @@
               <v-select v-model="brand_name" label="Brand"
                 :items="existingBrands.length > 0 ? existingBrands.map(brand => brand.brand_name) : []"
                 placeholder="Enter Brand Name" @input="clearFieldErrors('brands')"
-                :error-messages="brandError"></v-select>
+                :error-messages="brandError"  :rules="[v => !!v || 'Brand is required']" autocomplete></v-select>
+
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
-                :error-messages="priceError"></v-text-field>
+                :error-messages="priceError" :rules="[v => !!v || 'Price is required']"></v-text-field>
+
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level" @input="clearFieldErrors('reorderLevel')"
-                :error-messages="reorderLevelError"></v-text-field>
+                :error-messages="reorderLevelError" :rules="[v => !!v || 'Reorder level is required']"></v-text-field>
+
             </v-col>
           </v-row>
           <v-row  justify="center" class="bg-teal-darken-1 pa-2">
-            <v-col cols="2">
-              <v-btn type="submit" color="#4CAF50" block>
+            <v-col cols="12" md="4" lg="4" sm="4">
+              <v-btn type="submit" color="#23b78d" block>
                 {{ editingProduct ? "Save" : "Submit" }}
               </v-btn>
             </v-col>
-            <v-col cols="2">
-              <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
+            <v-col cols="12" md="4" lg="4" sm="4">
+              <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
             </v-col>
           </v-row>
         </v-form>

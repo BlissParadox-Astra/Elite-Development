@@ -28,7 +28,7 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage"
+                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                                 :disabled="currentPage === 1">Previous</v-btn>
 
                             <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
@@ -37,7 +37,7 @@
                             </v-btn>
 
                             <v-btn class="pagination-button" @click="nextPage"
-                                :disabled="currentPage === totalPages">Next</v-btn>
+                                :disabled="currentPage === totalPages" color="#23b78d">Next</v-btn>
                         </div>
                     </template>
                 </v-data-table>

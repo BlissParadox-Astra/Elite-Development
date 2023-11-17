@@ -2,7 +2,7 @@
     <v-container class="mt-2 showCategoryForm">
         <v-row class="justify-center">
             <v-col cols="12">
-                <div @click="closeForm" class="close-button">
+                <div @click="cancelForm" class="close-button">
                     <v-icon color="white">mdi-close</v-icon>
                 </div>
                 <v-form @submit.prevent="submitForm">
@@ -18,12 +18,12 @@
                     </v-row>
                     <v-row  justify="center" class="bg-teal-darken-1 pa-2">
                         <v-col cols="12" md="6" lg="5">
-                            <v-btn type="submit" color="#4caf50" block>
+                            <v-btn type="submit" color="#23b78d" block>
                                 {{ editingCategory ? 'Save' : 'Submit' }}
                             </v-btn>
                         </v-col>
                         <v-col cols="12" md="6" lg="5">
-                            <v-btn type="button" color="secondary" block @click="cancelForm">Cancel</v-btn>
+                            <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
                         </v-col>
                     </v-row>
                 </v-form>

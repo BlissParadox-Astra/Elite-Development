@@ -11,7 +11,7 @@
                     <v-col cols="12" sm="12" lg="9" md="12">
                         <FilterByDate></FilterByDate>
                     </v-col>
-                    <v-col cols="12" sm="12" lg="3" md="12">
+                    <v-col cols="12" sm="12" lg="3" md="12" class="pt-10">
                         <v-card class="pa-3 total-card">
                             <v-row class="text-left">
                                 <v-col cols="6">
@@ -54,7 +54,7 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage"
+                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                                 :disabled="currentPage === 1">Previous</v-btn>
 
                             <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
@@ -62,7 +62,7 @@
                                 {{ pageNumber }}
                             </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage"
+                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
                                 :disabled="currentPage === totalPages">Next</v-btn>
                         </div>
                     </template>
@@ -82,7 +82,7 @@
 
         <v-row class="d-flex justify-space-between">
             <v-col cols="12" sm="6" lg="3" class="text-start">
-                <v-btn to="/cashier-dashboard" color="success" block>BACK</v-btn>
+                <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
             </v-col>
         </v-row>
 
@@ -328,8 +328,8 @@ export default {
 }
 
 .pagination-button.active {
-    background-color: #23b78d;
+    /* background-color: #23b78d; */
     color: #fff;
-    border-color: #007bff;
+    background-color: #007bff;
 }
 </style>

@@ -16,13 +16,13 @@
                 </v-card>
             </v-col>
         </v-row>
-        <v-btn to="/cashier-dashboard" class="link px-5 rounded-lg" success>BACK TO DASHBOARD</v-btn>
+        <v-btn to="/cashier-dashboard" class="link px-5 rounded-lg" success color="#23b78d">BACK TO DASHBOARD</v-btn>
     </v-container>
 </template>
 <style scoped>
 .link {
     position: fixed;
-    background-color: #680c07;
+   
     right: -90px;
     top: 50%;
     transform: rotate(-90deg) translate(0, 0) scale(1, 1); /* Update the transform property values */

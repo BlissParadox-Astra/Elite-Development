@@ -5,7 +5,7 @@
         <h2 class="text-center mb-1">Product Module</h2>
       </v-col>
       <div @click="closeForm" class="close-button">
-        <v-icon color="black">mdi-close</v-icon>
+        <v-icon color="white">mdi-close</v-icon>
       </div>
     </v-row>
     <v-row>
@@ -37,14 +37,14 @@
           </template>
           <template v-slot:bottom>
             <div class="text-center pt-8 pagination">
-              <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
+              <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
 
               <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                 {{ pageNumber }}
               </v-btn>
 
-              <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
+              <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
             </div>
           </template>
         </v-data-table>
@@ -198,7 +198,8 @@ export default {
 
 <style scoped>
 .browseProduct {
-  background-image: url("../../assets/assets/vuejs.jpg");
+  /* background-image: url("../../assets/assets/vuejs.jpg"); */
+  background-color:#23b78d;
   z-index: 999;
 }
 
