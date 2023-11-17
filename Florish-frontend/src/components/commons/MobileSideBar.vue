@@ -83,7 +83,8 @@
   }
   
   #navigation-mobile {
-    background-image: url("../../assets/assets/vuejs.jpg");
+    /* background-image: url("../../assets/assets/vuejs.jpg"); */
+    background-color:#23b78d;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;

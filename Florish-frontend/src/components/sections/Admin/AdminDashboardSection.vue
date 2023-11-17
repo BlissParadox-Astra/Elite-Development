@@ -90,18 +90,10 @@ export default {
     async mounted() {
         const response = await axios.get("/user")
         this.user = response.data;
-
-        // Fetch transaction years
         await this.fetchTransactionYears();
-
-        // Fetch the monthly earnings data
         await this.fetchMonthlyEarnings();
-        // Create the bar chart for monthly earnings
         await this.createMonthlyEarningsChart();
-
-        // Create the pie chart based on transaction years
         await this.createPieChart();
-        // await this.createBarChart();
         await this.fetchDailyTransactions();
         await this.fetchProductLineCount();
         await this.fetchTotalStockOnHand();
@@ -110,23 +102,29 @@ export default {
 
     methods: {
         createPieChart() {
-            const ctx = this.$refs.myPieChart.getContext("2d");
+            const canvas = this.$refs.myPieChart;
 
-            new Chart(ctx, {
-                type: "pie",
-                data: {
-                    labels: this.transactionYears.map((item) => item.year),
-                    datasets: [
-                        {
-                            data: this.transactionYears.map((item) => item.earnings),
-                            backgroundColor: this.transactionYears.map(this.getRandomColor),
-                        },
-                    ],
-                },
-                options: {
-                },
-            });
+            if (canvas) {
+                const ctx = canvas.getContext("2d");
+
+                new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: this.transactionYears.map((item) => item.year),
+                        datasets: [
+                            {
+                                data: this.transactionYears.map((item) => item.earnings),
+                                backgroundColor: this.transactionYears.map(this.getRandomColor),
+                            },
+                        ],
+                    },
+                    options: {},
+                });
+            } else {
+                console.error('Canvas element not found for pie chart');
+            }
         },
+
 
         getRandomColor() {
             const letters = "0123456789ABCDEF";
@@ -156,35 +154,41 @@ export default {
         },
 
         createMonthlyEarningsChart() {
-            const ctx = this.$refs.myMonthlyEarningsChart.getContext('2d');
+            const canvas = this.$refs.myMonthlyEarningsChart;
 
-            // Extract the month names and earnings from the fetched data
-            const monthNames = this.monthlyEarnings.map(item => item.month_name);
-            const monthlyEarnings = this.monthlyEarnings.map(item => item.earnings);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: monthNames,
-                    datasets: [
-                        {
-                            label: 'Monthly Earnings',
-                            data: monthlyEarnings,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1,
-                        },
-                    ],
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
+                const monthNames = this.monthlyEarnings.map(item => item.month_name);
+                const monthlyEarnings = this.monthlyEarnings.map(item => item.earnings);
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: monthNames,
+                        datasets: [
+                            {
+                                label: 'Monthly Earnings',
+                                data: monthlyEarnings,
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
                         },
                     },
-                },
-            });
+                });
+            } else {
+                console.error('Canvas element not found for bar chart');
+            }
         },
+
 
         async fetchDailyTransactions() {
             try {
@@ -203,7 +207,7 @@ export default {
 
         async fetchProductLineCount() {
             try {
-                const response = await axios.get('/category/product-line-count'); // Adjust the URL as needed
+                const response = await axios.get('/category/product-line-count');
                 this.productLineCount = response.data.productLineCount;
             } catch (error) {
                 console.error('Error fetching product line count', error);
@@ -212,7 +216,7 @@ export default {
 
         async fetchTotalStockOnHand() {
             try {
-                const response = await axios.get('/product/total-stock'); // Adjust the URL as needed
+                const response = await axios.get('/product/total-stock');
                 this.totalStockOnHand = response.data.totalStockOnHand;
             } catch (error) {
                 console.error('Error fetching total stock on hand', error);
@@ -221,7 +225,7 @@ export default {
 
         async fetchcriticalStockCount() {
             try {
-                const response = await axios.get("/critical-stock-count"); // Replace with your API endpoint
+                const response = await axios.get("/critical-stock-count");
                 this.criticalStockCount = response.data.criticalStockCount;
             } catch (error) {
                 console.error("Error fetching critical item count", error);

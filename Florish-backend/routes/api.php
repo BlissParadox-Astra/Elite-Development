@@ -26,6 +26,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/all-transactions-total', [TransactionController::class, 'calculateTotalOfAllTotals']);
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
@@ -65,7 +66,6 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     });
 
     // Group for product routes
-    Route::get('/critical-stocks', [ProductController::class, 'getCriticalStock'])->name('products.critical_stock');
     Route::get('/critical-stock-count', [ProductController::class, 'getCriticalStockCount'])->name('critical-stock-count.getCriticalStockCount');
     Route::prefix('/product')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
