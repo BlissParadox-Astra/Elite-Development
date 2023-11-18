@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField />
+          <SearchField @search="handleSearch" />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block @click="showBrandForm">Add Brand</v-btn>
@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       showForm: false,
-      itemsPerPage: 10,
+    itemsPerPage: 10,
       totalItems: 0,
       currentPage: 1,
       brands: [],
@@ -99,6 +99,7 @@ export default {
       id: 1,
       snackbar: false,
       snackbarColor: '',
+      searchQuery: '',
       headers: [
         { title: '#', value: 'index' },
         { title: 'Brand Name', key: "brand_name" },
@@ -128,7 +129,13 @@ export default {
   methods: {
     debouncedGetBrands: _debounce(function () {
       this.getBrands();
-    }, 3000),
+    }, 1000),
+
+    handleSearch(query) {
+      this.searchQuery = query;
+      this.currentPage = 1;
+      this.debouncedGetBrands();
+    },
 
     getBrands() {
       this.loading = true;
@@ -137,6 +144,7 @@ export default {
           params: {
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
+            search: this.searchQuery,
           }
         })
         .then((res) => {

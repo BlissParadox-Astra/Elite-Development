@@ -1,7 +1,7 @@
 <template>
   <v-card color="grey-lighten-3" max-width="400">
-    <v-text-field :loading="loading" density="compact" variant="solo" label="Search Product Here"
-      append-inner-icon="mdi-magnify" single-line hide-details @click:append-inner="onClick"></v-text-field>
+    <v-text-field v-model="searchQuery" :loading="loading" density="compact" variant="solo" label="Search Product Here"
+      append-inner-icon="mdi-magnify" single-line hide-details @input="onInput"></v-text-field>
   </v-card>
 </template>
 
@@ -10,16 +10,12 @@ export default {
   data: () => ({
     loaded: false,
     loading: false,
+    searchQuery: '',
   }),
 
   methods: {
-    onClick() {
-      this.loading = true
-
-      setTimeout(() => {
-        this.loading = false
-        this.loaded = true
-      }, 2000)
+    onInput() {
+      this.$emit('search', this.searchQuery);
     },
   },
 }

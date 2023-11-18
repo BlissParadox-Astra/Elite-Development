@@ -2,7 +2,7 @@
     <v-container class="mt-5 section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <SearchField />
+                <SearchField @search="handleSearch" />
             </v-col>
             <v-col cols="12" sm="3">
                 <v-btn color="#23b78d" block @click="showProductForm">Add New Product</v-btn>
@@ -38,8 +38,8 @@
                     </template>
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage"
-                                :disabled="currentPage === 1" color="#23b78d">Previous</v-btn>
+                            <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1"
+                                color="#23b78d">Previous</v-btn>
 
                             <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
@@ -109,6 +109,7 @@ export default {
             existingCategories: [],
             snackbar: false,
             snackbarColor: '',
+            searchQuery: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: 'Product Code', key: 'product_code' },
@@ -145,18 +146,27 @@ export default {
     methods: {
         debouncedGetProducts: _debounce(function () {
             this.getProducts();
-        }, 3000),
+        }, 1000),
+
+        handleSearch(query) {
+            this.searchQuery = query;
+            this.currentPage = 1;
+            this.debouncedGetProducts();
+        },
 
         getProducts() {
             this.loading = true;
+            // console.log('searchQuery:', this.searchQuery);
             axios
                 .get('/products', {
                     params: {
                         page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
+                        search: this.searchQuery,
                     }
                 })
                 .then((res) => {
+                    // console.log('Server response:', res.data);
                     this.products = res.data.products;
                     this.totalItems = res.data.totalItems;
                     this.loading = false;

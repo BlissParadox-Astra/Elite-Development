@@ -20,9 +20,28 @@ class ProductManager
         return Product::create($productData);
     }
 
-    public function getAllProducts($page, $itemsPerPage)
+    public function getAllProducts($page, $itemsPerPage, $searchQuery = null)
     {
-        return Product::with(['productType', 'category.products', 'brand.products'])->paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = Product::with(['productType', 'category.products', 'brand.products']);
+
+        if ($searchQuery) {
+            $query->where(function ($query) use ($searchQuery) {
+                $query->where('product_code', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('barcode', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('description', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhereHas('brand', function ($query) use ($searchQuery) {
+                        $query->where('brand_name', 'LIKE', '%' . $searchQuery . '%');
+                    })
+                    ->orWhereHas('category', function ($query) use ($searchQuery) {
+                        $query->where('category_name', 'LIKE', '%' . $searchQuery . '%');
+                    })
+                    ->orWhere('price', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhere('stock_on_hand', '=', $searchQuery);
+            });
+        }
+
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getTotalStockOnHand()
@@ -70,9 +89,16 @@ class ProductManager
         return $newProductCode;
     }
 
-    public function getCriticalStock($page, $itemsPerPage)
+    public function getPaginatedCriticalStock($page, $itemsPerPage)
     {
         return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->paginate($itemsPerPage, ['*'], 'page', $page);
+    }
+
+    public function getAllCriticalStock()
+    {
+        return Product::with(['category', 'brand'])
+            ->where('stock_on_hand', '<=', DB::raw('reorder_level'))
+            ->get();
     }
 
     public function getCriticalStockCount()

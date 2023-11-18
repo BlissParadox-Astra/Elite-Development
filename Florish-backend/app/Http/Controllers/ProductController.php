@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Managers\ProductManager;
-use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -29,9 +27,10 @@ class ProductController extends Controller
         try {
             $page = $request->input('page');
             $itemsPerPage = $request->input('itemsPerPage', 10);
+            $searchQuery = $request->input('search');
 
-            $products = $this->productManager->getAllProducts($page, $itemsPerPage);
-            
+            $products = $this->productManager->getAllProducts($page, $itemsPerPage, $searchQuery);
+
             return response()->json([
                 'products' => $products->items(),
                 'totalItems' => $products->total(),
@@ -121,7 +120,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product updated successfully']);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-            
+
             return response()->json(['error' => $errorMessage], 500);
         }
     }
@@ -155,16 +154,31 @@ class ProductController extends Controller
         }
     }
 
-    public function getCriticalStock(Request $request)
+    public function getPaginatedCriticalStock(Request $request)
     {
         try {
             $page = $request->input('page');
             $itemsPerPage = $request->input('itemsPerPage', 10);
 
-            $criticalStocks = $this->productManager->getCriticalStock($page, $itemsPerPage);
+            $criticalStocks = $this->productManager->getPaginatedCriticalStock($page, $itemsPerPage);
             return response()->json([
                 'criticalStocks' => $criticalStocks->items(),
                 'totalItems' => $criticalStocks->total(),
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+
+            return response()->json(['error' => $errorMessage], 500);
+        }
+    }
+
+    public function getAllCriticalStock(Request $request)
+    {
+        try {
+            $criticalStocks = $this->productManager->getAllCriticalStock();
+
+            return response()->json([
+                'criticalStocks' => $criticalStocks,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();

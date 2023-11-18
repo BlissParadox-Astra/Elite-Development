@@ -2,7 +2,7 @@
     <v-container class="mt-5 section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <SearchField />
+                <FilterByDate />
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -50,14 +50,14 @@
 </template>
   
 <script>
-import SearchField from '../../commons/SearchField.vue';
+import FilterByDate from '../../commons/FilterByDate.vue';
 import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
     name: 'CancelOrderSection',
     components: {
-        SearchField,
+        FilterByDate,
     },
 
     data() {
@@ -104,7 +104,7 @@ export default {
     methods: {
         debouncedGetCanceledOrders: _debounce(function () {
             this.getCanceledOrders();
-        }, 3000),
+        }, 1000),
 
         getCanceledOrders() {
             this.loading = true;

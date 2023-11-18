@@ -39,9 +39,15 @@ class CategoryManager
         return $this->generateUniqueCategoryCode($newCode, $attempt + 1);
     }
 
-    public function getPaginatedAllCategories($page, $itemsPerPage)
+    public function getPaginatedAllCategories($page, $itemsPerPage, $searchQuery = null)
     {
-        return Category::paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = Category::query();
+
+        if ($searchQuery) {
+            $query->where('category_name', 'LIKE', '%'. $searchQuery . '%');
+        }
+
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getCategoryById(string $id)

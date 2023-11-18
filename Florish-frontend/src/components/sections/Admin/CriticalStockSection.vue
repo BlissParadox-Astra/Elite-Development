@@ -1,10 +1,5 @@
 <template>
     <v-container class="mt-5 section2">
-        <v-row>
-            <v-col cols="12" sm="9">
-                <SearchField />
-            </v-col>
-        </v-row>
         <v-row justify="center">
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
@@ -47,16 +42,11 @@
 </template>
   
 <script>
-import SearchField from '../../commons/SearchField.vue';
 import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
     name: 'CriticalStockSection',
-
-    components: {
-        SearchField,
-    },
 
     data() {
         return {
@@ -98,7 +88,7 @@ export default {
     methods: {
         debouncedGetCriticalStocks: _debounce(function () {
             this.getCriticalStocks();
-        }, 3000),
+        }, 1000),
 
         getCriticalStocks() {
             this.loading = true;

@@ -2,7 +2,7 @@
     <v-container class="mt-5 section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <SearchField />
+                <SearchField @search="handleSearch" />
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -68,6 +68,7 @@ export default {
             showForm: false,
             editingProduct: null,
             editingProductIndex: -1,
+            searchQuery: '',
             products: [],
             headers: [
                 { title: '#', value: 'index' },
@@ -99,7 +100,13 @@ export default {
     methods: {
         debouncedGetProducts: _debounce(function () {
             this.getProducts();
-        }, 3000),
+        }, 1000),
+
+        handleSearch(query) {
+            this.searchQuery = query;
+            this.currentPage = 1;
+            this.debouncedGetProducts();
+        },
 
         getProducts() {
             this.loading = true;
@@ -108,6 +115,7 @@ export default {
                     params: {
                         page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
+                        search: this.searchQuery,
                     }
                 }).then((res) => {
                     this.products = res.data.products;

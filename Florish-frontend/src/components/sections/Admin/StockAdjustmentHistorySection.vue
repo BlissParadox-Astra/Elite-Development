@@ -3,7 +3,7 @@
         <v-container class="mt-5">
             <v-row>
                 <v-col cols="12" sm="9">
-                    <SearchField />
+                    <FilterByDate />
                 </v-col>
             </v-row>
             <v-row justify="center">
@@ -49,14 +49,14 @@
 </template>
 
 <script>
-import SearchField from "../../commons/SearchField.vue";
+import FilterByDate from '../../commons/FilterByDate.vue';
 import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
     name: "StockAdjustmentHistory",
     components: {
-        SearchField,
+        FilterByDate,
     },
     data() {
         return {

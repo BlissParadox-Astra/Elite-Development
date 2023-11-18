@@ -25,8 +25,9 @@ class BrandController extends Controller
         try {
             $page = $request->input('page', 1);
             $itemsPerPage = $request->input('itemsPerPage', 10);
+            $searchQuery = $request->input('search');
 
-            $brands = $this->brandManager->getAllBrands($page, $itemsPerPage);
+            $brands = $this->brandManager->getAllBrands($page, $itemsPerPage, $searchQuery);
             
             return response()->json([
                 'brands' => $brands->items(),

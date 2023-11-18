@@ -21,9 +21,20 @@ class BrandManager
         ])->findOrFail($id);
     }
 
-    public function getAllBrands($page, $itemsPerPage)
+    public function getAllBrands($page, $itemsPerPage, $searchQuery = null)
     {
-        return Brand::with(['category'])->paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = Brand::with(['category']);
+
+        if ($searchQuery) {
+            $query->where(function ($query) use ($searchQuery) {
+                $query->where('brand_name', 'LIKE', '%'. $searchQuery . '%')
+                ->orWhereHas('category', function ($query) use ($searchQuery) {
+                    $query->where('category_name', 'LIKE', '%'. $searchQuery . '%');
+                });
+            });
+        }
+
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getBrandById(string $id)
