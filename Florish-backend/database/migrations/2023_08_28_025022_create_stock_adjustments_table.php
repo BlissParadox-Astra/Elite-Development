@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->string('remarks');
             $table->integer('quantity');
+            $table->date('adjustment_date');
             $table->unsignedBigInteger('user');
             $table->timestamps();
         });

@@ -11,6 +11,7 @@ class StockAdjustmentManager
     public function createStockAdjustment(array $stockAdjustmentData)
     {
         $stockAdjustmentData['user'] = Auth::id();
+        $stockAdjustmentData['adjustment_date'] = $stockAdjustmentData['adjustment_date'] ?? now();
 
         $product = Product::findOrFail($stockAdjustmentData['product_id']);
         if ($stockAdjustmentData['action'] === 'Add to Inventory') {
@@ -22,14 +23,19 @@ class StockAdjustmentManager
             $product->stock_on_hand -= $stockAdjustmentData['quantity'];
         }
 
-        $product->save();
-
         StockAdjustment::create($stockAdjustmentData);
+        $product->save();
     }
 
-    public function getAllStockAdjustment($page, $itemsPerPage)
+    public function getAllStockAdjustment($page, $itemsPerPage,  $fromDate = null, $toDate = null)
     {
-        return StockAdjustment::with(['stockAdjustmentByUser', 'adjustedProduct'])->paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = StockAdjustment::with(['stockAdjustmentByUser', 'adjustedProduct']);
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+        }
+
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function generateReferenceNumber(): string

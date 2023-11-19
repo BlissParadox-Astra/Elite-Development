@@ -8,8 +8,11 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="12" lg="9" md="12">
-                        <FilterByDate></FilterByDate>
+                    <v-col cols="12" sm="6">
+                        <FilterByDate @date-range-change="handleDateRangeChange" />
+                    </v-col>
+                    <v-col cols="12" sm="3">
+                        <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
                     </v-col>
                     <v-col cols="12" sm="12" lg="3" md="12" class="pt-10">
                         <v-card class="pa-3 total-card">
@@ -121,6 +124,8 @@ export default {
             transactions: [],
             snackbar: false,
             snackbarColor: '',
+            fromDate: '',
+            toDate: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Invoice No.", key: 'transaction_number' },
@@ -156,7 +161,7 @@ export default {
     methods: {
         debouncedGetTransactions: _debounce(function () {
             this.getTransactions();
-        }, 3000),
+        }, 1000),
 
         getTransactions() {
             this.loading = true;
@@ -165,6 +170,8 @@ export default {
                     params: {
                         page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
+                        fromDate: this.fromDate,
+                        toDate: this.toDate,
                     }
                 })
                 .then((res) => {
@@ -172,6 +179,15 @@ export default {
                     this.totalItems = res.data.totalItems;
                     this.loading = false;
                 });
+        },
+
+        handleDateRangeChange({ fromDate, toDate }) {
+            this.fromDate = fromDate;
+            this.toDate = toDate;
+        },
+
+        loadRecord() {
+            this.debouncedGetTransactions();
         },
 
         fetchOrder(transaction) {

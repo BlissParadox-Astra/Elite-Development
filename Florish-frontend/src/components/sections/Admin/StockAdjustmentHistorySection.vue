@@ -3,7 +3,10 @@
         <v-container class="mt-5">
             <v-row>
                 <v-col cols="12" sm="9">
-                    <FilterByDate />
+                    <FilterByDate @date-range-change="handleDateRangeChange" />
+                </v-col>
+                <v-col cols="12" sm="3" class="d-flex justify-center align-center">
+                    <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
                 </v-col>
             </v-row>
             <v-row justify="center">
@@ -24,6 +27,7 @@
                                 <td>{{ item.adjusted_product.description }}</td>
                                 <td>{{ item.remarks }}</td>
                                 <td>{{ item.quantity }}</td>
+                                <td>{{ item.adjustment_date }}</td>
                                 <td>{{ item.stock_adjustment_by_user.first_name }}</td>
                             </tr>
                         </template>
@@ -66,6 +70,8 @@ export default {
             totalItems: 0,
             loading: true,
             adjustments: [],
+            fromDate: '',
+            toDate: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Reference No.", key: "reference_number" },
@@ -75,6 +81,7 @@ export default {
                 { title: "Description", key: "adjusted_product.description" },
                 { title: "Remarks", key: "remarks" },
                 { title: 'Quantity', key: 'quantity' },
+                { title: 'Date', key: 'adjustment_date' },
                 { title: 'User', key: 'stock_adjustment_by_user.first_name' },
             ],
         };
@@ -96,8 +103,8 @@ export default {
     methods: {
         debouncedStockAdjustments: _debounce(function () {
             this.getStockAdjustments();
-        }, 3000),
-        
+        }, 1000),
+
         getStockAdjustments() {
             this.loading = true;
             axios
@@ -105,6 +112,8 @@ export default {
                     params: {
                         page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
+                        fromDate: this.fromDate,
+                        toDate: this.toDate,
                     }
                 })
                 .then((res) => {
@@ -116,6 +125,16 @@ export default {
                     console.error('Error fetching stock adjustment records:', error);
                 });
         },
+
+        handleDateRangeChange({ fromDate, toDate }) {
+            this.fromDate = fromDate;
+            this.toDate = toDate;
+        },
+
+        loadRecord() {
+            this.debouncedStockAdjustments();
+        },
+
         previousPage() {
             this.loading = true;
             if (this.currentPage > 1) {

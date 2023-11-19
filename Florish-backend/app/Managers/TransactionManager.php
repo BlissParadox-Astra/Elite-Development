@@ -77,9 +77,15 @@ class TransactionManager
     //         ->insert(['id' => $nextSequentialNumber]);
     // }
 
-    public function getAllTransactions($page, $itemsPerPage)
+    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null)
     {
-        return Transaction::with(['transactedProduct.category', 'user'])->paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = Transaction::with(['transactedProduct.category', 'user']);
+   
+        if ( $fromDate && $toDate ) {
+            $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+        }
+
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getDailyTransactions()

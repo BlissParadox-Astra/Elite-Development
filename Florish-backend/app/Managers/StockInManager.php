@@ -35,8 +35,14 @@ class StockInManager
         return "{$timestamp}{$randomNumber}";
     }
 
-    public function getAllStockIns($page, $itemsPerPage  )
+    public function getAllStockIns($page, $itemsPerPage, $fromDate = null, $toDate = null)
     {
-        return StockIn::with(['adjustedProduct.stockIns', 'stockInByUser'])->paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = StockIn::with(['adjustedProduct.stockIns', 'stockInByUser']);
+
+        if ( $fromDate && $toDate ) {
+            $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+        }
+        
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 }

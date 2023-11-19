@@ -15,6 +15,7 @@ class StockAdjustment extends Model
         'product_id',
         'remarks',
         'quantity',
+        'adjustment_date',
         'user',
     ];
     public function stockAdjustmentByUser()
