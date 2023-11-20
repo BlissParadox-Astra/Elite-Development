@@ -25,4 +25,10 @@ app.use(router);
 app.use(vuetify);
 app.use(store);
 
+// Add a navigation guard to update the browser tab title
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title || 'Your Default Title'; // Update the browser tab title
+  next();
+});
+
 app.mount('#app');
