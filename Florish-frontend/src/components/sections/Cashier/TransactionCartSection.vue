@@ -50,7 +50,7 @@
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
                     :transaction_number="transaction_number" :transact_by="transact_by" item-value="id" class="elevation-1"
-                    hide-default-footer fixed-header height="400">
+                    hide-default-footer fixed-header>
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>

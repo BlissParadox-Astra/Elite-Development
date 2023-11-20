@@ -17,7 +17,7 @@
       <v-col cols="12">
         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-          @update:options="debouncedGetProducts" fixed-header height="400">
+          @update:options="debouncedGetProducts" fixed-header>
           <template v-slot:custom-sort="{ header }">
             <span v-if="header.key === 'actions'">Actions</span>
           </template>
@@ -212,11 +212,6 @@ export default {
   background-color: #23b78d;
   z-index: 999;
 }
-
-.custom-table {
-  height: 445px;
-}
-
 .close-button {
   position: absolute;
   top: 35px;

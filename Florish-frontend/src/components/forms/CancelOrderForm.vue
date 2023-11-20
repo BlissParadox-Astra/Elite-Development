@@ -3,73 +3,76 @@
         <v-row justify="center">
             <v-col cols="12">
                 <v-form @submit.prevent="submitForm">
-                    <v-row>
+                    <v-row class="align-center bg-teal pa-3">
                         <v-col>
                             <h2 class="text-center mb-4">CANCEL ORDER DETAILS</h2>
                         </v-col>
-
-                        <v-btn icon @click="closeForm" class="close-icon text-right">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
+                        <div @click="closeForm" class="close-button">
+                            <v-icon color="white">mdi-close</v-icon>
+                        </div>
                     </v-row>
-
-                    <v-col>
-                        <h3 class="text-start mb-4">SOLD ITEMS</h3>
-                    </v-col>
-                    <v-row justify="center">
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="id" label="ID" readonly></v-text-field>
+                    <v-row class="bg-teal-darken-2 pa-2">
+                        <v-col cols="12">
+                            <h3 class="mb-4">SOLD ITEMS</h3>
+                            <v-row>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="id" label="ID" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="transaction_number" label="Transaction" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="product_code" label="Product Code" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="barcode" label="Bar Code" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="description" label="Description" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="price" label="Price" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="quantity" label="Quantity" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="total" label="Total" readonly></v-text-field>
+                                </v-col>
+                            </v-row>
                         </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="transaction_number" label="Transaction" readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="product_code" label="Product Code" readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="barcode" label="Bar Code" readonly></v-text-field>
-                        </v-col>
-
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="description" label="Description" readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="price" label="Price" readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="quantity" label="Quantity" readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="total" label="Total" readonly></v-text-field>
+                   
+                        <v-col cols="12">
+                            <h3 class="mb-4">CANCEL ITEM(S)</h3>
+                            <v-row>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="cancel_quantity" label="CANCEL QUANTITY"
+                                    @input="clearFieldErrors('quantity')" :error-messages="cancelQuantityError"
+                                    :rules="[v => !!v || 'Quantity is required']" required></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field :model-value="cancel_by" label="CANCEL BY" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="reasons" label="REASON(S)" @input="clearFieldErrors('reason')"
+                                    :error-messages="reasonError" :rules="[v => !!v || 'Reason is required']"
+                                    required></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-select v-model="options" :error-messages="actionTakenError"
+                                    :items="commandOptions"></v-select>
+                                </v-col>
+                            </v-row>
                         </v-col>
                     </v-row>
-                    <v-col>
-                        <h3 class="text-start mb-4">CANCEL ITEM(S)</h3>
-                    </v-col>
-                    <v-row justify="center">
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="cancel_quantity" label="CANCEL QUANTITY"
-                                @input="clearFieldErrors('quantity')" :error-messages="cancelQuantityError"
-                                :rules="[v => !!v || 'Quantity is required']" required></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field :model-value="cancel_by" label="CANCEL BY" readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-text-field v-model="reasons" label="REASON(S)" @input="clearFieldErrors('reason')"
-                                :error-messages="reasonError" :rules="[v => !!v || 'Reason is required']"
-                                required></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <v-select v-model="options" :error-messages="actionTakenError"
-                                :items="commandOptions"></v-select>
-                        </v-col>
-                        <v-col cols="6" class="mt-16">
-                            <v-btn type="submit" color="primary" block :disabled="isCancelButtonDisabled">
+                    <v-row justify="center" class="bg-teal-darken-1 pa-2">
+                        <v-col cols="6" class="mt-5">
+                            <v-btn type="submit" color="#23b78d" block :disabled="isCancelButtonDisabled">
                                 CANCEL ORDER
                             </v-btn>
                         </v-col>
                     </v-row>
+
                 </v-form>
             </v-col>
         </v-row>
@@ -233,8 +236,16 @@ export default {
   
 <style scoped>
 .showUserForm {
-    background-color: rgba(114, 165, 104, 0.9);
+    /* background-color: rgba(114, 165, 104, 0.9); */
     z-index: 999;
+}
+
+.close-button {
+    position: absolute;
+    top: 90px;
+    right: 40px;
+    z-index: 999;
+    font-size: x-large;
 }
 
 .error-message {
