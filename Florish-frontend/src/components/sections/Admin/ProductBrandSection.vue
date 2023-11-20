@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       showForm: false,
-    itemsPerPage: 10,
+      itemsPerPage: 10,
       totalItems: 0,
       currentPage: 1,
       brands: [],

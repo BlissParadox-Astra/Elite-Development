@@ -126,7 +126,6 @@ export default {
 
     getProducts() {
       this.loading = true;
-      console.log('searchQuery:', this.searchQuery);
       axios
         .get('/products', {
           params: {
@@ -135,7 +134,6 @@ export default {
             search: this.searchQuery,
           }
         }).then((res) => {
-          console.log('Server response:', res.data);
           this.products = res.data.products;
           this.totalItems = res.data.totalItems;
           this.loading = false;
