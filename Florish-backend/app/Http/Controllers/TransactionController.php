@@ -26,8 +26,10 @@ class TransactionController extends Controller
         try {
             $page = $request->input('page');
             $itemsPerPage = $request->input('itemsPerPage', 10);
+            $fromDate = $request->input('fromDate');
+            $toDate = $request->input('toDate');
 
-            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage);
+            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate);
 
             return response()->json([
                 'transactions' => $transactions->items(),
@@ -151,10 +153,19 @@ class TransactionController extends Controller
         return response()->json(['transaction_number' => $invoiceNumber]);
     }
 
-    public function calculateTotalOfAllTotals()
+    public function calculateTotalOfAllTotals(Request $request)
     {
         try {
-            $total = DB::table('transactions')->sum('total');
+            $fromDate = $request->input('fromDate');
+            $toDate = $request->input('toDate');
+
+            $query = DB::table('transactions');
+
+            if ($fromDate && $toDate) {
+                $query->whereBetween('transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+            }
+
+            $total = $query->sum('total');
 
             return response()->json(['total' => $total], Response::HTTP_OK);
         } catch (\Exception $e) {

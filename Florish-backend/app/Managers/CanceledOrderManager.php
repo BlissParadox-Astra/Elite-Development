@@ -45,9 +45,14 @@ class CanceledOrderManager
         }
     }
 
-    public function getAllCanceledOrders($page, $itemsPerPage)
+    public function getAllCanceledOrders($page, $itemsPerPage, $fromDate = null, $toDate = null)
     {
-        return CanceledOrder::with(['canceledTransaction.transactedProduct', 'user'])
-            ->paginate($itemsPerPage, ['*'], 'page', $page);
+        $query = CanceledOrder::with(['canceledTransaction.transactedProduct', 'user']);
+
+        if ( $fromDate && $toDate ) {
+            $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+        }
+
+        return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 }

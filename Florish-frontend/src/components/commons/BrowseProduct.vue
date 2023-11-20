@@ -10,11 +10,11 @@
     </v-row>
     <v-row>
       <v-col cols="12" sm="9">
-        <SearchField />
+        <SearchField @search="handleSearch" />
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col cols="12"> 
+      <v-col cols="12">
         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
           @update:options="debouncedGetProducts" fixed-header>
@@ -37,14 +37,16 @@
           </template>
           <template v-slot:bottom>
             <div class="text-center pt-8 pagination">
-              <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
+              <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                :disabled="currentPage === 1">Previous</v-btn>
 
               <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                 {{ pageNumber }}
               </v-btn>
 
-              <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
+              <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                :disabled="currentPage === totalPages">Next</v-btn>
             </div>
           </template>
         </v-data-table>
@@ -85,6 +87,7 @@ export default {
       totalItems: 0,
       snackbar: false,
       snackbarColor: '',
+      searchQuery: '',
       headers: [
         { title: '#', value: 'index' },
         { title: 'Product Code', key: 'product_code' },
@@ -113,7 +116,13 @@ export default {
   methods: {
     debouncedGetProducts: _debounce(function () {
       this.getProducts();
-    }, 3000),
+    }, 1000),
+
+    handleSearch(query) {
+      this.searchQuery = query;
+      this.currentPage = 1;
+      this.debouncedGetProducts();
+    },
 
     getProducts() {
       this.loading = true;
@@ -122,6 +131,7 @@ export default {
           params: {
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
+            search: this.searchQuery,
           }
         }).then((res) => {
           this.products = res.data.products;
@@ -199,7 +209,7 @@ export default {
 <style scoped>
 .browseProduct {
   /* background-image: url("../../assets/assets/vuejs.jpg"); */
-  background-color:#23b78d;
+  background-color: #23b78d;
   z-index: 999;
 }
 .close-button {

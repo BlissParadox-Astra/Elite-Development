@@ -3,14 +3,14 @@
     <v-container class="mt-5">
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField />
+          <SearchField @search="handleSearch" />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
           <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetProducts" fixed-header>
+            @update:options="debouncedGetProducts" fixed-header height="500">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -34,14 +34,16 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                  :disabled="currentPage === 1">Previous</v-btn>
 
                 <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                  :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
 
@@ -149,6 +151,7 @@ export default {
       products: [],
       snackbar: false,
       snackbarColor: '',
+      searchQuery: '',
       selectedRow: {
         product_code: "",
         barcode: "",
@@ -230,7 +233,13 @@ export default {
   methods: {
     debouncedGetProducts: _debounce(function () {
       this.getProducts();
-    }, 3000),
+    }, 1000),
+
+    handleSearch(query) {
+      this.searchQuery = query;
+      this.currentPage = 1;
+      this.debouncedGetProducts();
+    },
 
     getProducts() {
       this.loading = true;
@@ -239,6 +248,7 @@ export default {
           params: {
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
+            search: this.searchQuery,
           }
         })
         .then((res) => {

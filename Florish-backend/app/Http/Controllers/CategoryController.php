@@ -26,8 +26,9 @@ class CategoryController extends Controller
         try {
             $page = $request->input('page', 1);
             $itemsPerPage = $request->input('itemsPerPage', 10);
+            $searhQuery = $request->input('search');
 
-            $categories = $this->categoryManager->getPaginatedAllCategories($page, $itemsPerPage);
+            $categories = $this->categoryManager->getPaginatedAllCategories($page, $itemsPerPage, $searhQuery);
 
             return response()->json([
                 'categories' => $categories->items(),

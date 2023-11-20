@@ -14,8 +14,7 @@
          
           <v-row justify="center" class="bg-teal-darken-2 pa-2">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
-                @input="clearFieldErrors('barcode')"  :rules="[v => !!v || 'BarCode is required']"></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"></v-text-field>
 
             </v-col>
             <v-col cols="12" md="6">

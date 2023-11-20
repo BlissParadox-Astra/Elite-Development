@@ -41,7 +41,7 @@ export default {
     methods: {
         async fetchCriticalStocks() {
             try {
-                const response = await axios.get("/critical-stocks");
+                const response = await axios.get("/all-critical-stocks");
                 this.products = response.data.criticalStocks;
             } catch (error) {
                 console.error("Error fetching critical stocks:", error);

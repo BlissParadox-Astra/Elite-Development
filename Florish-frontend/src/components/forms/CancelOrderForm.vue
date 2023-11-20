@@ -67,7 +67,7 @@
                     </v-row>
                     <v-row justify="center" class="bg-teal-darken-1 pa-2">
                         <v-col cols="6" class="mt-5">
-                            <v-btn type="submit" color="#23b78d" block>
+                            <v-btn type="submit" color="#23b78d" block :disabled="isCancelButtonDisabled">
                                 CANCEL ORDER
                             </v-btn>
                         </v-col>
@@ -133,6 +133,7 @@ export default {
             reasonError: "",
             actionTakenError: "",
             showConfirmationDialog: false,
+            disableCancelButton: false,
         };
     },
 
@@ -147,6 +148,15 @@ export default {
             } else {
                 return '';
             }
+        },
+
+        isCancelButtonDisabled() {
+            return (
+                !this.cancel_quantity ||
+                !this.cancel_by ||
+                !this.reasons ||
+                !this.options || this.options === "ADD TO INVENTORY?"
+            );
         },
     },
 

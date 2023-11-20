@@ -2,7 +2,10 @@
     <v-container class="mt-5 section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <SearchField />
+                <FilterByDate @date-range-change="handleDateRangeChange" />
+            </v-col>
+            <v-col cols="12" sm="3" class="d-flex justify-center align-center">
+                <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -50,14 +53,14 @@
 </template>
   
 <script>
-import SearchField from '../../commons/SearchField.vue';
+import FilterByDate from '../../commons/FilterByDate.vue';
 import _debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export default {
     name: 'CancelOrderSection',
     components: {
-        SearchField,
+        FilterByDate,
     },
 
     data() {
@@ -71,6 +74,8 @@ export default {
             canceled_orders: [],
             editingProduct: null,
             editingProductIndex: -1,
+            fromDate: '',
+            toDate: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: 'Transaction No.', key: 'canceled_transaction.transaction_number' },
@@ -104,7 +109,7 @@ export default {
     methods: {
         debouncedGetCanceledOrders: _debounce(function () {
             this.getCanceledOrders();
-        }, 3000),
+        }, 1000),
 
         getCanceledOrders() {
             this.loading = true;
@@ -113,6 +118,8 @@ export default {
                     params: {
                         page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
+                        fromDate: this.fromDate,
+                        toDate: this.toDate,
                     }
                 })
                 .then((res) => {
@@ -121,6 +128,16 @@ export default {
                     this.loading = false;
                 });
         },
+
+        handleDateRangeChange({ fromDate, toDate }) {
+            this.fromDate = fromDate;
+            this.toDate = toDate;
+        },
+
+        loadRecord() {
+            this.debouncedGetCanceledOrders();
+        },
+
         previousPage() {
             this.loading = true;
             if (this.currentPage > 1) {
@@ -142,7 +159,7 @@ export default {
             this.currentPage = pageNumber;
             this.debouncedGetCanceledOrders();
         },
-        
+
         renderReferenceNUmber(canceled_order) {
             return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.transaction_number : 'Unknown';
         },

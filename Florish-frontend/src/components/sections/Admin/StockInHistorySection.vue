@@ -2,10 +2,10 @@
   <v-container class="mt-5 section2">
     <v-row>
       <v-col cols="12" sm="9">
-        <FilterByDate />
+        <FilterByDate @date-range-change="handleDateRangeChange" />
       </v-col>
       <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-        <v-btn color="#23b78d" block>Load Record</v-btn>
+        <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
       </v-col>
     </v-row>
     <v-row justify="center">
@@ -27,14 +27,16 @@
           </template>
           <template v-slot:bottom>
             <div class="text-center pt-8 pagination">
-              <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
+              <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                :disabled="currentPage === 1">Previous</v-btn>
 
               <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                 {{ pageNumber }}
               </v-btn>
 
-              <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
+              <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                :disabled="currentPage === totalPages">Next</v-btn>
             </div>
           </template>
         </v-data-table>
@@ -61,6 +63,8 @@ export default {
       currentPage: 1,
       id: 1,
       stockIns: [],
+      fromDate: '',
+      toDate: '',
       headers: [
         { title: '#', value: 'index' },
         { title: 'Reference No.', key: 'reference_number' },
@@ -90,7 +94,7 @@ export default {
   methods: {
     debouncedGetStockIns: _debounce(function () {
       this.getStockIns();
-    }, 3000),
+    }, 1000),
 
     getStockIns() {
       this.loading = true;
@@ -99,6 +103,8 @@ export default {
           params: {
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
+            fromDate: this.fromDate,
+            toDate: this.toDate,
           }
         })
         .then((res) => {
@@ -109,6 +115,15 @@ export default {
         .catch((error) => {
           console.error('Error fetching stock in records:', error);
         });
+    },
+
+    handleDateRangeChange({ fromDate, toDate }) {
+      this.fromDate = fromDate;
+      this.toDate = toDate;
+    },
+
+    loadRecord() {
+      this.debouncedGetStockIns();
     },
 
     previousPage() {

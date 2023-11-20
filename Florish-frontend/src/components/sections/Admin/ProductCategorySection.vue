@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField />
+          <SearchField @search="handleSearch" />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block @click="showCategoryForm">Add Category</v-btn>
@@ -33,14 +33,16 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                  :disabled="currentPage === 1">Previous</v-btn>
 
                 <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                  :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
           </v-data-table>
@@ -96,6 +98,7 @@ export default {
       id: 1,
       snackbar: false,
       snackbarColor: '',
+      searchQuery: '',
       headers: [
         { title: '#', value: 'index' },
         { title: 'Category Name', key: 'category_name' },
@@ -120,7 +123,13 @@ export default {
   methods: {
     debouncedGetCategories: _debounce(function () {
       this.getCategories();
-    }, 3000),
+    }, 1000),
+
+    handleSearch(query) {
+      this.searchQuery = query;
+      this.currentPage = 1;
+      this.debouncedGetCategories();
+    },
 
     getCategories() {
       this.loading = true;
@@ -129,6 +138,7 @@ export default {
           params: {
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
+            search: this.searchQuery,
           }
         })
         .then((res) => {

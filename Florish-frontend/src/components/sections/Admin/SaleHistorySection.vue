@@ -3,7 +3,7 @@
     <v-container class="mt-6">
       <v-row>
         <v-col cols="12" sm="9">
-          <FilterByDate />
+          <FilterByDate @date-range-change="handleDateRangeChange" />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block>
@@ -43,14 +43,16 @@
             </template>
             <template v-slot:bottom>
               <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">Previous</v-btn>
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                  :disabled="currentPage === 1">Previous</v-btn>
 
                 <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">Next</v-btn>
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                  :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
           </v-data-table>
@@ -90,6 +92,8 @@ export default {
       showForm: false,
       totalOfAllTotalValue: null,
       transactions: [],
+      fromDate: '',
+      toDate: '',
       sortByOptions: ["Category", "Total", "Alphabetically"],
       headers: [
         { title: '#', value: 'index' },
@@ -130,32 +134,49 @@ export default {
   methods: {
     debouncedGetTransactions: _debounce(function () {
       this.getTransactions();
-    }, 3000),
+    }, 1000),
 
-    getTransactions() {
+    async getTransactions() {
       this.loading = true;
-      axios
-        .get('/transactions', {
+      try {
+        const response = await axios.get('/transactions', {
           params: {
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
+            fromDate: this.fromDate,
+            toDate: this.toDate,
           }
-        })
-        .then((res) => {
-          this.transactions = res.data.transactions;
-          this.totalItems = res.data.totalItems;
-          this.loading = false;
         });
+        this.transactions = response.data.transactions;
+        this.totalItems = response.data.totalItems;
+        this.loading = false;
+
+        await this.fetchTotalOfAllTotal();
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+        this.loading = false;
+      }
     },
 
     async fetchTotalOfAllTotal() {
       try {
-        const response = await axios.get('/all-transactions-total');
+        const response = await axios.get('/all-transactions-total', {
+          params: {
+            fromDate: this.fromDate,
+            toDate: this.toDate,
+          }
+        });
         this.totalOfAllTotalValue = response.data.total;
       } catch (error) {
         console.error('Error fetching total of all total', error);
         this.totalOfAllTotalValue = 0;
       }
+    },
+
+    handleDateRangeChange({ fromDate, toDate }) {
+      this.fromDate = fromDate;
+      this.toDate = toDate;
+      this.debouncedGetTransactions();
     },
 
     previousPage() {
