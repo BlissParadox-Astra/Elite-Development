@@ -8,11 +8,8 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="6">
+                    <v-col cols="12" sm="8">
                         <FilterByDate @date-range-change="handleDateRangeChange" />
-                    </v-col>
-                    <v-col cols="12" sm="3">
-                        <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
                     </v-col>
                     <v-col cols="12" sm="12" lg="3" md="12" class="pt-10">
                         <v-card class="pa-3 total-card">
@@ -117,7 +114,6 @@ export default {
             totalItems: 0,
             soldTransaction: null,
             soldTransactionIndex: -1,
-            // CancelOrderForm: false,
             loading: true,
             totalOfAllTotalValue: null,
             showForm: false,
@@ -163,30 +159,46 @@ export default {
             this.getTransactions();
         }, 1000),
 
-        getTransactions() {
+        async getTransactions() {
             this.loading = true;
-            axios
-                .get('/transactions', {
+            try {
+                const response = await axios.get('/transactions', {
                     params: {
                         page: this.currentPage,
                         itemsPerPage: this.itemsPerPage,
                         fromDate: this.fromDate,
                         toDate: this.toDate,
                     }
-                })
-                .then((res) => {
-                    this.transactions = res.data.transactions;
-                    this.totalItems = res.data.totalItems;
-                    this.loading = false;
                 });
+                this.transactions = response.data.transactions;
+                this.totalItems = response.data.totalItems;
+                this.loading = false;
+
+                await this.fetchTotalOfAllTotal();
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+                this.loading = false;
+            }
+        },
+
+        async fetchTotalOfAllTotal() {
+            try {
+                const response = await axios.get('/all-transactions-total', {
+                    params: {
+                        fromDate: this.fromDate,
+                        toDate: this.toDate,
+                    }
+                });
+                this.totalOfAllTotalValue = response.data.total;
+            } catch (error) {
+                console.error('Error fetching total of all total', error);
+                this.totalOfAllTotalValue = 0;
+            }
         },
 
         handleDateRangeChange({ fromDate, toDate }) {
             this.fromDate = fromDate;
             this.toDate = toDate;
-        },
-
-        loadRecord() {
             this.debouncedGetTransactions();
         },
 
@@ -223,16 +235,6 @@ export default {
                     this.snackbarColor = 'error';
                     this.showSnackbar(error.response.data.message, 'error');
                 }
-            }
-        },
-
-        async fetchTotalOfAllTotal() {
-            try {
-                const response = await axios.get('/all-transactions-total');
-                this.totalOfAllTotalValue = response.data.total;
-            } catch (error) {
-                console.error('Error fetching total of all total', error);
-                this.totalOfAllTotalValue = 0;
             }
         },
 

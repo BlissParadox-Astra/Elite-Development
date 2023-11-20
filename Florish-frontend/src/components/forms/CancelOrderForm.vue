@@ -65,7 +65,7 @@
                                 :items="commandOptions"></v-select>
                         </v-col>
                         <v-col cols="6" class="mt-16">
-                            <v-btn type="submit" color="primary" block>
+                            <v-btn type="submit" color="primary" block :disabled="isCancelButtonDisabled">
                                 CANCEL ORDER
                             </v-btn>
                         </v-col>
@@ -130,6 +130,7 @@ export default {
             reasonError: "",
             actionTakenError: "",
             showConfirmationDialog: false,
+            disableCancelButton: false,
         };
     },
 
@@ -144,6 +145,15 @@ export default {
             } else {
                 return '';
             }
+        },
+
+        isCancelButtonDisabled() {
+            return (
+                !this.cancel_quantity ||
+                !this.cancel_by ||
+                !this.reasons ||
+                !this.options || this.options === "ADD TO INVENTORY?"
+            );
         },
     },
 
