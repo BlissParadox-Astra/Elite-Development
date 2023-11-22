@@ -5,7 +5,7 @@
         <FilterByDate @date-range-change="handleDateRangeChange" />
       </v-col>
       <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-        <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
+        <!-- <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn> -->
       </v-col>
     </v-row>
     <v-row justify="center">

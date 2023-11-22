@@ -2,6 +2,7 @@ import {
   VDataTable,
   VDataTableServer,
   VDataTableVirtual,
+  VDatePicker
 } from "vuetify/labs/VDataTable";
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
@@ -12,5 +13,6 @@ export default createVuetify({
     VDataTable,
     VDataTableServer,
     VDataTableVirtual,
+    VDatePicker
   },
 })
