@@ -29,7 +29,7 @@ export default {
       selectedDay: '',
       fromDate: '',
       toDate: '',
-      days: ['day', 'week', 'Customize']
+      days: ['day', 'week', 'month','Customize']
     };
   },
   watch: {
