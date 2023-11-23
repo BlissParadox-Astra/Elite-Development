@@ -1,18 +1,18 @@
 <template>
-  <v-container class="mt-5 section2">
-    <v-row>
+  <v-container class="section2">
+    <v-row cols="12">
       <v-col cols="12" sm="9">
         <FilterByDate @date-range-change="handleDateRangeChange" />
       </v-col>
       <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-        <!-- <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn> -->
+        <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
         <v-data-table :headers="headers" :items="stockIns" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-          @update:options="debouncedGetStockIns" fixed-header>
+          @update:options="debouncedGetStockIns" fixed-header height="400">
           <template v-slot:item="{ item, index }">
             <tr>
               <td>{{ displayedIndex + index }}</td>

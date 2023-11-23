@@ -1,10 +1,9 @@
 <template>
   <v-navigation-drawer :class="['admin-sidebar', 'custom-bg-color', { 'collapsed': sidebarCollapsed }]"
     :width="sidebarCollapsed ? 70 : 250" floating permanent>
-    <v-img src="../../assets/assets/florish-logo.png" alt="storelogo" class="logo" contain
-      @click="toggleSidebar"></v-img>
+    <v-img src="../../assets/assets/florish-logo.png" alt="storelogo" class="logo" contain @click="toggleSidebar"></v-img>
     <v-list dense class="v-scrollbar icon-pointer" @click="expandSidebar">
-      <v-list-item v-for="item in menuItems" :key="item.text" @click="handleItemClick(item)" >
+      <v-list-item v-for="item in menuItems" :key="item.text" @click="handleItemClick(item)">
         <v-hover>
           <v-row align="center">
             <v-col cols="2">
@@ -104,16 +103,23 @@ export default {
     handleItemClick(item) {
       if (!item.items) {
         if (this.sidebarCollapsed) {
-          // Sidebar is collapsed, expand and redirect to the route
           this.expandSidebar();
-          // this.$nextTick(() => {
-          //   this.$router.push(item.route);
-          // });
+        }
+        this.selectedItem = null;
+        this.$router.push(item.route);
+      } else {
+        if (this.selectedItem === item) {
+          this.selectedItem = null;
         } else {
-          // Sidebar is not collapsed, redirect to the route
-          this.$router.push(item.route);
+          this.selectedItem = item;
         }
       }
+
+      // Close the expanded list group items
+      const listGroups = document.querySelectorAll('.v-list-group--active');
+      listGroups.forEach((el) => {
+        el.classList.remove('v-list-group--active');
+      });
     },
     // Handle click event on sub-item
     handleSubItemClick(subItem, event) {
@@ -134,10 +140,10 @@ a {
 
 .v-navigation-drawer.custom-bg-color {
   /* background-image: url("../../assets/assets/vuejs.jpg"); */
-  background-color:#23b78d;
+  background-color: #23b78d;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
 }
 
 .subitems {

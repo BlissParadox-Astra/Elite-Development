@@ -10,7 +10,7 @@
         <v-col cols="12">
           <v-data-table :headers="headers" :items="users" :loading="loading" :page="currentPage"
             :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetUsers" fixed-header>
+            @update:options="debouncedGetUsers" fixed-header height="400">
             <template v-slot:custom-sort="{ header }">
               <span v-if="header.key === 'actions'">Actions</span>
             </template>
@@ -28,7 +28,7 @@
                   <span>
                     <v-icon @click="editUserRow(item)" color="primary">mdi-pencil</v-icon>
                   </span>
-                  <span style="margin-left: 15px;">
+                  <span>
                     <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
                   </span>
                 </td>

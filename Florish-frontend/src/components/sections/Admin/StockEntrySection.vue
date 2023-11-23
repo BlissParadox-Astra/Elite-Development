@@ -1,7 +1,7 @@
 <template>
     <v-main class="section2">
         <v-container>
-            <v-row class="mt-3">
+            <v-row>
                 <v-col cols="12" sm="5" md="5" lg="3" xl="5">
                     <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>

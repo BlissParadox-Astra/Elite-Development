@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <v-container class="mt-5">
+        <v-container>
             <v-row>
                 <v-col cols="12" sm="9">
                     <FilterByDate @date-range-change="handleDateRangeChange" />
@@ -13,7 +13,7 @@
                 <v-col cols="12">
                     <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
                         :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
-                        hide-default-footer @update:options="debouncedStockAdjustments" fixed-header>
+                        hide-default-footer @update:options="debouncedStockAdjustments" fixed-header height="400">
                         <template v-slot:custom-sort="{ header }">
                             <span v-if="header.key === 'actions'">Actions</span>
                         </template>

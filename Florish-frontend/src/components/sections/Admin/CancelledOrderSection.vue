@@ -1,5 +1,5 @@
 <template>
-    <v-container class="mt-5 section2">
+    <v-container class="section2">
         <v-row>
             <v-col cols="12" sm="9">
                 <FilterByDate @date-range-change="handleDateRangeChange" />
@@ -12,7 +12,7 @@
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="canceled_orders" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="debouncedGetCanceledOrders" fixed-header>
+                    @update:options="debouncedGetCanceledOrders" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>

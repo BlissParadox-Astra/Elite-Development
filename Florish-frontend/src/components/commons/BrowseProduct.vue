@@ -17,7 +17,7 @@
       <v-col cols="12">
         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-          @update:options="debouncedGetProducts" fixed-header>
+          @update:options="debouncedGetProducts" fixed-header height="400">
           <template v-slot:custom-sort="{ header }">
             <span v-if="header.key === 'actions'">Actions</span>
           </template>
