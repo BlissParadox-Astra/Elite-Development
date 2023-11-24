@@ -20,7 +20,7 @@ class ProductManager
         return Product::create($productData);
     }
 
-    public function getAllProducts($page, $itemsPerPage, $searchQuery = null)
+    public function getAllProducts($page, $itemsPerPage, $searchQuery = null, $context = null)
     {
         $query = Product::with(['productType', 'category.products', 'brand.products']);
 
@@ -39,6 +39,12 @@ class ProductManager
                     ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%')
                     ->orWhere('stock_on_hand', '=', $searchQuery);
             });
+        } else if ($context === 'stockIn') {
+            $query->orderBy('stock_on_hand', 'asc');
+        } else if ($context === 'transaction') {
+            $query->where('stock_on_hand', '>', 0);
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

@@ -103,7 +103,7 @@
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="8" md="8" lg="8" xl="10" class="form-container">
-                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" />
+                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" :context="transaction"/>
                     </v-col>
                 </v-row>
             </v-col>

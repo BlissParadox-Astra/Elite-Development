@@ -126,21 +126,58 @@ export default {
 
     getProducts() {
       this.loading = true;
-      axios
-        .get('/products', {
-          params: {
-            page: this.currentPage,
-            itemsPerPage: this.itemsPerPage,
-            search: this.searchQuery,
-          }
-        }).then((res) => {
-          this.products = res.data.products;
-          this.totalItems = res.data.totalItems;
-          this.loading = false;
-        })
-        .catch((error) => {
-          console.error('Error fetching products:', error);
-        });
+      if (this.context === 'transaction') {
+        axios.get('/products', { params: { context: 'transaction' }})
+          .then((res) => {
+            this.products = res.data.products;
+            this.totalItems = res.data.totalItems;
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.error('Error fetching products:', error);
+          });
+      } else if (this.context === 'stockIn') {
+        axios.get('/products', { params: { context: 'stockIn' }})
+          .then((res) => {
+            this.products = res.data.products;
+            this.totalItems = res.data.totalItems;
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.error('Error fetching products:', error);
+          });
+      } else {
+        axios
+          .get('/products', {
+            params: {
+              page: this.currentPage,
+              itemsPerPage: this.itemsPerPage,
+              search: this.searchQuery,
+            }
+          }).then((res) => {
+            this.products = res.data.products;
+            this.totalItems = res.data.totalItems;
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.error('Error fetching products:', error);
+          });
+      }
+      // axios
+      //   .get('/products', {
+      //     params: {
+      //       page: this.currentPage,
+      //       itemsPerPage: this.itemsPerPage,
+      //       search: this.searchQuery,
+      //     }
+      //   }).then((res) => {
+      //     this.products = res.data.products;
+      //     this.totalItems = res.data.totalItems;
+      //     this.loading = false;
+      //   })
+      //   .catch((error) => {
+      //     console.error('Error fetching products:', error);
+      //   });
     },
 
     previousPage() {
@@ -212,6 +249,7 @@ export default {
   background-color: #23b78d;
   z-index: 999;
 }
+
 .close-button {
   position: absolute;
   top: 35px;
