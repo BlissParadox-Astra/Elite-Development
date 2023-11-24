@@ -9,7 +9,7 @@
                 </v-row>
                 <v-row>
                     <v-col cols="12" sm="8">
-                        <FilterByDate @date-range-change="handleDateRangeChange" />
+                        <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
                     </v-col>
                     <v-col cols="12" sm="12" lg="3" md="12" class="pt-10">
                         <v-card class="pa-3 total-card">
@@ -122,6 +122,7 @@ export default {
             snackbarColor: '',
             fromDate: '',
             toDate: '',
+            filterType: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Invoice No.", key: 'transaction_number' },
@@ -162,14 +163,39 @@ export default {
         async getTransactions() {
             this.loading = true;
             try {
-                const response = await axios.get('/transactions', {
-                    params: {
-                        page: this.currentPage,
-                        itemsPerPage: this.itemsPerPage,
-                        fromDate: this.fromDate,
-                        toDate: this.toDate,
+                let params = {
+                    page: this.currentPage,
+                    itemsPerPage: this.itemsPerPage,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                };
+
+                if (this.filterType) {
+                    switch (this.filterType) {
+                        case 'Day':
+                            params.filterType = 'Day';
+                            break;
+                        case 'Week':
+                            params.filterType = 'Week';
+                            break;
+                        case 'Month':
+                            params.filterType = 'Month';
+                            break;
+                        case 'Year':
+                            params.filterType = 'Year';
+                            break;
+                        case 'Customize':
+                            params.filterType = 'Customize';
+                            break;
+                        default:
+                            params.filterType = 'Year';
                     }
-                });
+                } else {
+                    params.filterType = 'Year';
+                }
+
+                const response = await axios.get('/transactions', { params });
+
                 this.transactions = response.data.transactions;
                 this.totalItems = response.data.totalItems;
                 this.loading = false;
@@ -183,12 +209,32 @@ export default {
 
         async fetchTotalOfAllTotal() {
             try {
-                const response = await axios.get('/all-transactions-total', {
-                    params: {
-                        fromDate: this.fromDate,
-                        toDate: this.toDate,
-                    }
-                });
+                let params = {
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                };
+
+                switch (this.filterType) {
+                    case 'Day':
+                        params.filterType = 'Day';
+                        break;
+                    case 'Week':
+                        params.filterType = 'Week';
+                        break;
+                    case 'Month':
+                        params.filterType = 'Month';
+                        break;
+                    case 'Year':
+                        params.filterType = 'Year';
+                        break;
+                    case 'Customize':
+                        params.filterType = 'Customize';
+                        break;
+                    default:
+                        params.filterType = 'Year';
+                }
+
+                const response = await axios.get('/all-transactions-total', { params });
                 this.totalOfAllTotalValue = response.data.total;
             } catch (error) {
                 console.error('Error fetching total of all total', error);
@@ -196,8 +242,15 @@ export default {
             }
         },
 
+        handleFilterTypeChange(newFilterType) {
+            this.filterType = newFilterType;
+            this.currentPage = 1;
+            this.debouncedGetTransactions();
+        },
+
         handleDateRangeChange({ fromDate, toDate }) {
             this.fromDate = fromDate;
+            this.currentPage = 1;
             this.toDate = toDate;
             this.debouncedGetTransactions();
         },

@@ -3,10 +3,7 @@
         <v-container>
             <v-row>
                 <v-col cols="12" sm="9">
-                    <FilterByDate @date-range-change="handleDateRangeChange" />
-                </v-col>
-                <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-                    <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
+                    <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
                 </v-col>
             </v-row>
             <v-row justify="center">
@@ -72,6 +69,7 @@ export default {
             adjustments: [],
             fromDate: '',
             toDate: '',
+            filterType: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Reference No.", key: "reference_number" },
@@ -105,79 +103,107 @@ export default {
             this.getStockAdjustments();
         }, 1000),
 
-        getStockAdjustments() {
+        async getStockAdjustments() {
             this.loading = true;
-            axios
-                .get('/stock-adjustments', {
-                    params: {
-                        page: this.currentPage,
-                        itemsPerPage: this.itemsPerPage,
-                        fromDate: this.fromDate,
-                        toDate: this.toDate,
-                    }
-                })
-                .then((res) => {
-                    this.adjustments = res.data.stockAdjustments;
-                    this.totalItems = res.data.totalItems;
-                    this.loading = false;
-                })
-                .catch((error) => {
-                    console.error('Error fetching stock adjustment records:', error);
-                });
-        },
+            try {
+                let params = {
+                    page: this.currentPage,
+                    itemsPerPage: this.itemsPerPage,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                };
 
-        handleDateRangeChange({ fromDate, toDate }) {
-            this.fromDate = fromDate;
-            this.toDate = toDate;
-        },
+                if (this.filterType) {
+                    switch (this.filterType) {
+                        case 'Day':
+                            params.filterType = 'Day';
+                            break;
+                        case 'Week':
+                            params.filterType = 'Week';
+                            break;
+                        case 'Month':
+                            params.filterType = 'Month';
+                            break;
+                        case 'Year':
+                            params.filterType = 'Year';
+                            break;
+                        case 'Customize':
+                            params.filterType = 'Customize';
+                            break;
+                        default:
+                            params.filterType = 'Year';
+                    } 
+                } else {
+                    params.filterType = 'Year';
+                }
 
-        loadRecord() {
-            this.debouncedStockAdjustments();
-        },
+                const response = await axios.get('/stock-adjustments', { params });
 
-        previousPage() {
-            this.loading = true;
-            if (this.currentPage > 1) {
-                this.currentPage--;
-                this.debouncedStockAdjustments();
+                this.adjustments = response.data.stockAdjustments;
+                this.totalItems = response.data.totalItems;
+                this.loading = false;
+            } catch (error) {
+                console.error('Error fetching stock adjustment records:', error);
+                this.loading = false;
             }
-        },
-
-        nextPage() {
-            this.loading = true;
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-                this.debouncedStockAdjustments();
-            }
-        },
-
-        gotoPage(pageNumber) {
-            this.loading = true;
-            this.currentPage = pageNumber;
-            this.debouncedStockAdjustments();
-        },
-
-        renderProductCode(adjusted_product) {
-            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
-        },
-
-        renderProductBarcode(adjusted_product) {
-            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
-        },
-
-        renderProductDescription(adjusted_product) {
-            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
-        },
-
-        renderUser(stock_adjustment_by_user) {
-            if (stock_adjustment_by_user.stock_adjustment_by_user) {
-                const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
-                return `${first_name} ${last_name}`;
-            } else {
-                return 'Unknown';
-            }
-        },
     },
+
+    handleFilterTypeChange(newFilterType) {
+        this.filterType = newFilterType;
+        this.currentPage = 1;
+        this.debouncedStockAdjustments();
+    },
+
+    handleDateRangeChange({ fromDate, toDate }) {
+        this.fromDate = fromDate;
+        this.currentPage = 1;
+        this.toDate = toDate;
+        this.debouncedStockAdjustments();
+    },
+
+    previousPage() {
+        this.loading = true;
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.debouncedStockAdjustments();
+        }
+    },
+
+    nextPage() {
+        this.loading = true;
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+            this.debouncedStockAdjustments();
+        }
+    },
+
+    gotoPage(pageNumber) {
+        this.loading = true;
+        this.currentPage = pageNumber;
+        this.debouncedStockAdjustments();
+    },
+
+    renderProductCode(adjusted_product) {
+        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
+    },
+
+    renderProductBarcode(adjusted_product) {
+        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
+    },
+
+    renderProductDescription(adjusted_product) {
+        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
+    },
+
+    renderUser(stock_adjustment_by_user) {
+        if (stock_adjustment_by_user.stock_adjustment_by_user) {
+            const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
+            return `${first_name} ${last_name}`;
+        } else {
+            return 'Unknown';
+        }
+    },
+},
 };
 </script>
 

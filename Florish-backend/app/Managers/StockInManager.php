@@ -35,14 +35,36 @@ class StockInManager
         return "{$timestamp}{$randomNumber}";
     }
 
-    public function getAllStockIns($page, $itemsPerPage, $fromDate = null, $toDate = null)
+    public function getAllStockIns($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null)
     {
         $query = StockIn::with(['adjustedProduct.stockIns', 'stockInByUser']);
 
-        if ( $fromDate && $toDate ) {
-            $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+        if ($filterType) {
+            switch ($filterType) {
+                case 'Day':
+                    $query->whereDate('created_at', now()->toDateString());
+                    break;
+                case 'Week':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'Month':
+                    $query->whereYear('created_at', now()->year)
+                        ->whereMonth('created_at', now()->month);
+                    break;
+                case 'Year':
+                    $query->whereYear('created_at', now()->year);
+                    break;
+                case 'Customize':
+                    $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    break;
+                default:
+                    $query->whereYear('created_at', now()->year);
+                    break;
+            } // end switch
+        } else {
+            $query->whereYear('created_at', now()->year);
         }
-        
+
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 }

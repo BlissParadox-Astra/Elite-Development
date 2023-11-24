@@ -28,8 +28,9 @@ class StockAdjustmentController extends Controller
             $itemsPerPage = $request->input('itemsPerPage', 10);
             $fromDate = $request->input('fromDate');
             $toDate = $request->input('toDate');
+            $filterType = $request->input('filterType');
 
-            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page, $itemsPerPage, $fromDate, $toDate);
+            $stockAdjustments = $this->stockAdjustmentManager->getAllStockAdjustment($page, $itemsPerPage, $fromDate, $toDate, $filterType);
             return response()->json([
                 'stockAdjustments' => $stockAdjustments->items(),
                 'totalItems' => $stockAdjustments->total(),

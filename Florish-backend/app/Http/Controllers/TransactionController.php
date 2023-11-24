@@ -28,8 +28,9 @@ class TransactionController extends Controller
             $itemsPerPage = $request->input('itemsPerPage', 10);
             $fromDate = $request->input('fromDate');
             $toDate = $request->input('toDate');
+            $filterType = $request->input('filterType');
 
-            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate);
+            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType);
 
             return response()->json([
                 'transactions' => $transactions->items(),
@@ -158,11 +159,34 @@ class TransactionController extends Controller
         try {
             $fromDate = $request->input('fromDate');
             $toDate = $request->input('toDate');
+            $filterType = $request->input('filterType');
 
             $query = DB::table('transactions');
 
-            if ($fromDate && $toDate) {
-                $query->whereBetween('transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+            if ($filterType) {
+                switch ($filterType) {
+                    case 'Day':
+                        $query->whereDate('created_at', now()->toDateString());
+                        break;
+                    case 'Week':
+                        $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        break;
+                    case 'Month':
+                        $query->whereYear('created_at', now()->year)
+                            ->whereMonth('created_at', now()->month);
+                        break;
+                    case 'Year':
+                        $query->whereYear('created_at', now()->year);
+                        break;
+                    case 'Customize':
+                        $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                        break;
+                    default:
+                        $query->whereYear('created_at', now()->year);
+                        break;
+                } // end switch
+            } else {
+                $query->whereYear('created_at', now()->year);
             }
 
             $total = $query->sum('total');
