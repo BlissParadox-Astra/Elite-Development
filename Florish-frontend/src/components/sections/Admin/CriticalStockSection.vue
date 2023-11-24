@@ -1,10 +1,10 @@
 <template>
-    <v-container class="mt-5 section2">
+    <v-container class="mt-2 section2">
         <v-row justify="center">
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="debouncedGetCriticalStocks" fixed-header>
+                    @update:options="debouncedGetCriticalStocks" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>

@@ -1,18 +1,15 @@
 <template>
-    <v-container class="mt-5 section2">
+    <v-container class="section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <FilterByDate @date-range-change="handleDateRangeChange" />
-            </v-col>
-            <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-                <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
+                <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
             </v-col>
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="canceled_orders" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="debouncedGetCanceledOrders" fixed-header>
+                    @update:options="debouncedGetCanceledOrders" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
@@ -76,6 +73,7 @@ export default {
             editingProductIndex: -1,
             fromDate: '',
             toDate: '',
+            filterType: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: 'Transaction No.', key: 'canceled_transaction.transaction_number' },
@@ -111,92 +109,124 @@ export default {
             this.getCanceledOrders();
         }, 1000),
 
-        getCanceledOrders() {
+        async getCanceledOrders() {
             this.loading = true;
-            axios
-                .get('/canceled-orders', {
-                    params: {
-                        page: this.currentPage,
-                        itemsPerPage: this.itemsPerPage,
-                        fromDate: this.fromDate,
-                        toDate: this.toDate,
+            try {
+                let params = {
+                    page: this.currentPage,
+                    itemsPerPage: this.itemsPerPage,
+                    fromDate: this.fromDate,
+                    toDate: this.toDate,
+                };
+
+                if (this.filterType) {
+                    switch (this.filterType) {
+                        case 'Day':
+                            params.filterType = 'Day';
+                            break;
+                        case 'Week':
+                            params.filterType = 'Week';
+                            break;
+                        case 'Month':
+                            params.filterType = 'Month';
+                            break;
+                        case 'Year':
+                            params.filterType = 'Year';
+                            break;
+                        case 'Customize':
+                            params.filterType = 'Customize';
+                            break;
+                        default:
+                            params.filterType = 'Year';
                     }
-                })
-                .then((res) => {
-                    this.canceled_orders = res.data.canceled_orders;
-                    this.totalItems = res.data.totalItems;
-                    this.loading = false;
-                });
-        },
+                } else {
+                    params.filterType = 'Year';
+                }
 
-        handleDateRangeChange({ fromDate, toDate }) {
-            this.fromDate = fromDate;
-            this.toDate = toDate;
-        },
+                const response = await axios.get('/canceled-orders', { params });
 
-        loadRecord() {
-            this.debouncedGetCanceledOrders();
-        },
+                this.canceled_orders = response.data.canceled_orders;
+                this.totalItems = response.data.totalItems;
+                this.loading = false;
 
-        previousPage() {
-            this.loading = true;
-            if (this.currentPage > 1) {
-                this.currentPage--;
-                this.debouncedGetCanceledOrders();
+            } catch (error) {
+                console.error('Error getting canceled orders: ', error);
+                this.loading = false;
             }
-        },
-
-        nextPage() {
-            this.loading = true;
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-                this.debouncedGetCanceledOrders();
-            }
-        },
-
-        gotoPage(pageNumber) {
-            this.loading = true;
-            this.currentPage = pageNumber;
-            this.debouncedGetCanceledOrders();
-        },
-
-        renderReferenceNUmber(canceled_order) {
-            return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.transaction_number : 'Unknown';
-        },
-
-        renderProductCode(canceled_order) {
-            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-                ? canceled_order.canceled_transaction.transacted_product.product_code
-                : 'Unknown';
-        },
-
-        renderBarCode(canceled_order) {
-            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-                ? canceled_order.canceled_transaction.transacted_product.barcode
-                : 'Unknown';
-        },
-
-        renderPrice(canceled_order) {
-            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-                ? canceled_order.canceled_transaction.transacted_product.price
-                : 'Unknown';
-        },
-
-        renderDescription(canceled_order) {
-            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-                ? canceled_order.canceled_transaction.transacted_product.description
-                : 'Unknown';
-        },
-
-        renderUser(user) {
-            if (user.user) {
-                const { first_name, last_name } = user.user;
-                return `${first_name} ${last_name}`;
-            } else {
-                return 'Unknown';
-            }
-        },
     },
+
+    handleFilterTypeChange(newFilterType) {
+        this.filterType = newFilterType;
+        this.currentPage = 1;
+        this.debouncedGetCanceledOrders();
+    },
+
+    handleDateRangeChange({ fromDate, toDate }) {
+        this.fromDate = fromDate;
+        this.currentPage = 1;
+        this.toDate = toDate;
+        this.debouncedGetCanceledOrders();
+    },
+
+    previousPage() {
+        this.loading = true;
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.debouncedGetCanceledOrders();
+        }
+    },
+
+    nextPage() {
+        this.loading = true;
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+            this.debouncedGetCanceledOrders();
+        }
+    },
+
+    gotoPage(pageNumber) {
+        this.loading = true;
+        this.currentPage = pageNumber;
+        this.debouncedGetCanceledOrders();
+    },
+
+    renderReferenceNUmber(canceled_order) {
+        return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.transaction_number : 'Unknown';
+    },
+
+    renderProductCode(canceled_order) {
+        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+            ? canceled_order.canceled_transaction.transacted_product.product_code
+            : 'Unknown';
+    },
+
+    renderBarCode(canceled_order) {
+        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+            ? canceled_order.canceled_transaction.transacted_product.barcode
+            : 'Unknown';
+    },
+
+    renderPrice(canceled_order) {
+        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+            ? canceled_order.canceled_transaction.transacted_product.price
+            : 'Unknown';
+    },
+
+    renderDescription(canceled_order) {
+        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+            ? canceled_order.canceled_transaction.transacted_product.description
+            : 'Unknown';
+    },
+
+    renderUser(user) {
+        if (user.user) {
+            const { first_name, last_name } = user.user;
+            return `${first_name} ${last_name}`;
+        } else {
+            return 'Unknown';
+        }
+    },
+},
 };
 </script>
 <style scoped>

@@ -16,16 +16,22 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import 'resize-observer-polyfill';
 
 const admindrawer = ref(null);
 const isMobileSidebarOpen = ref(false);
+const resizeTimeout = ref(null);
 
 const handleResize = () => {
-  if (window.innerWidth <= 700) { // Adjust the value according to your desired mobile size
-    isMobileSidebarOpen.value = false;
-  } else {
-    isMobileSidebarOpen.value = true;
-  }
+  clearTimeout(resizeTimeout.value);
+  resizeTimeout.value = setTimeout(() => {
+    if (window.innerWidth <= 700) {
+      isMobileSidebarOpen.value = false;
+    } else {
+      isMobileSidebarOpen.value = true;
+    }
+  }, 100);
+  requestAnimationFrame(handleResize); // Adjust the debounce time (in milliseconds) as needed
 };
 
 onMounted(() => {
@@ -56,7 +62,7 @@ export default {
     return {
       mobiledrawer: null,
       admindrawer: null,
-      isMobileSize: window.innerWidth <= 700, // Adjust the value according to your desired mobile size
+      isMobileSize: window.innerWidth <= 700,
       isMobileSidebarOpen: false
     };
   },
@@ -89,15 +95,13 @@ export default {
   },
   methods: {
     handleResize() {
-      this.isMobileSize = window.innerWidth <= 700; // Adjust the value according to your desired mobile size
+      this.isMobileSize = window.innerWidth <= 700;
     },
   },
 };
 </script>
 
 <style>
-
-
 .app-bar-title {
   text-align: center;
   justify-content: center;

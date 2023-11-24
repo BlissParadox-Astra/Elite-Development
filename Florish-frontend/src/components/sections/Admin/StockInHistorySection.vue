@@ -1,18 +1,15 @@
 <template>
-  <v-container class="mt-5 section2">
-    <v-row>
+  <v-container class="section2">
+    <v-row cols="12">
       <v-col cols="12" sm="9">
-        <FilterByDate @date-range-change="handleDateRangeChange" />
-      </v-col>
-      <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-        <v-btn @click="loadRecord" color="#23b78d" block>Load Record</v-btn>
+        <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
         <v-data-table :headers="headers" :items="stockIns" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-          @update:options="debouncedGetStockIns" fixed-header>
+          @update:options="debouncedGetStockIns" fixed-header height="400">
           <template v-slot:item="{ item, index }">
             <tr>
               <td>{{ displayedIndex + index }}</td>
@@ -65,6 +62,7 @@ export default {
       stockIns: [],
       fromDate: '',
       toDate: '',
+      filterType: '',
       headers: [
         { title: '#', value: 'index' },
         { title: 'Reference No.', key: 'reference_number' },
@@ -96,79 +94,107 @@ export default {
       this.getStockIns();
     }, 1000),
 
-    getStockIns() {
+    async getStockIns() {
       this.loading = true;
-      axios
-        .get('/stock-ins', {
-          params: {
-            page: this.currentPage,
-            itemsPerPage: this.itemsPerPage,
-            fromDate: this.fromDate,
-            toDate: this.toDate,
+      try {
+        let params = {
+          page: this.currentPage,
+          itemsPerPage: this.itemsPerPage,
+          fromDate: this.fromDate,
+          toDate: this.toDate,
+        };
+
+        if (this.filterType) {
+          switch (this.filterType) {
+            case 'Day':
+              params.filterType = 'Day';
+              break;
+            case 'Week':
+              params.filterType = 'Week';
+              break;
+            case 'Month':
+              params.filterType = 'Month';
+              break;
+            case 'Year':
+              params.filterType = 'Year';
+              break;
+            case 'Customize':
+              params.filterType = 'Customize';
+              break;
+            default:
+              params.filterType = 'Year';
           }
-        })
-        .then((res) => {
-          this.stockIns = res.data.stockIns;
-          this.totalItems = res.data.totalItems;
-          this.loading = false;
-        })
-        .catch((error) => {
-          console.error('Error fetching stock in records:', error);
-        });
-    },
+        } else {
+          params.filterType = 'Year';
+        }
 
-    handleDateRangeChange({ fromDate, toDate }) {
-      this.fromDate = fromDate;
-      this.toDate = toDate;
-    },
+        const response = await axios.get('/stock-ins', { params });
 
-    loadRecord() {
-      this.debouncedGetStockIns();
-    },
-
-    previousPage() {
-      this.loading = true;
-      if (this.currentPage > 1) {
-        this.currentPage--;
-        this.debouncedGetStockIns();
+        this.stockIns = response.data.stockIns;
+        this.totalItems = response.data.totalItems;
+        this.loading = false;
+      } catch (error) {
+        console.error('Error fetching stock in records:', error);
+        this.loading = false;
       }
-    },
-
-    nextPage() {
-      this.loading = true;
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-        this.debouncedGetStockIns();
-      }
-    },
-
-    gotoPage(pageNumber) {
-      this.loading = true;
-      this.currentPage = pageNumber;
-      this.debouncedGetStockIns();
-    },
-
-    renderProductCode(adjusted_product) {
-      return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
-    },
-
-    renderProductBarcode(adjusted_product) {
-      return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
-    },
-
-    renderProductDescription(adjusted_product) {
-      return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
-    },
-
-    renderStockInBy(stock_in_by_user) {
-      if (stock_in_by_user.first_name) {
-        return `${stock_in_by_user.first_name} ${stock_in_by_user.last_name}`;
-      } else {
-        return 'Unknown';
-      }
-    },
-
   },
+
+  handleFilterTypeChange(newFilterType) {
+    this.filterType = newFilterType;
+    this.currentPage = 1;
+    this.debouncedGetStockIns();
+  },
+
+  handleDateRangeChange({ fromDate, toDate }) {
+    this.fromDate = fromDate;
+    this.currentPage = 1;
+    this.toDate = toDate;
+    this.debouncedGetStockIns();
+  },
+
+  previousPage() {
+    this.loading = true;
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.debouncedGetStockIns();
+    }
+  },
+
+  nextPage() {
+    this.loading = true;
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.debouncedGetStockIns();
+    }
+  },
+
+  gotoPage(pageNumber) {
+    this.loading = true;
+    this.currentPage = pageNumber;
+    this.debouncedGetStockIns();
+  },
+
+  renderProductCode(adjusted_product) {
+    return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
+  },
+
+  renderProductBarcode(adjusted_product) {
+    return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
+  },
+
+  renderProductDescription(adjusted_product) {
+    return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
+  },
+
+  renderStockInBy(stock_in_by_user) {
+    if (stock_in_by_user.first_name) {
+      return `${stock_in_by_user.first_name} ${stock_in_by_user.last_name}`;
+    } else {
+      return 'Unknown';
+    }
+  },
+
+},
 };
 </script>
 
