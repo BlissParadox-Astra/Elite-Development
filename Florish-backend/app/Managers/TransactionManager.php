@@ -94,25 +94,25 @@ class TransactionManager
             });
         }
 
-        if ($sortBy) {
-            switch ($sortBy) {
-                case 'Category':
-                    $query->join('products', 'transactions.product_id', '=', 'products.id')
-                        ->join('categories', 'products.category_id', '=', 'categories.id')
-                        ->orderBy('categories.category_name', 'asc');
-                    break;
-                case 'Total':
-                    $query->orderBy('total', 'desc');
-                    break;
-                case 'Alphabetically':
-                    $query->join('products', 'transactions.product_id', '=', 'products.id')
-                        ->orderBy('products.description', 'asc');
-                    break;
-                default:
-                    $query->orderBy('total', 'asc');
-                    break;
-            }
-        }
+        // if ($sortBy) {
+        //     switch ($sortBy) {
+        //         case 'Category':
+        //             $query->join('products', 'transactions.product_id', '=', 'products.id')
+        //                 ->join('categories', 'products.category_id', '=', 'categories.id')
+        //                 ->orderBy('categories.category_name', 'asc');
+        //             break;
+        //         case 'Total':
+        //             $query->orderBy('total', 'desc');
+        //             break;
+        //         case 'Alphabetically':
+        //             $query->join('products', 'transactions.product_id', '=', 'products.id')
+        //                 ->orderBy('products.description', 'asc');
+        //             break;
+        //         default:
+        //             $query->orderBy('total', 'asc');
+        //             break;
+        //     }
+        // }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }

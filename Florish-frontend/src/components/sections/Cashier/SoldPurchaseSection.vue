@@ -15,7 +15,7 @@
                     <v-col cols="12" sm="9">
                         <SearchField @search="handleSearch" />
                     </v-col>
-                    <v-col cols="12" sm="4">
+                    <!-- <v-col cols="12" sm="4">
                         <v-btn color="#23b78d" block>
                             SORT BY
                             <v-menu activator="parent">
@@ -27,7 +27,7 @@
                                 </v-list>
                             </v-menu>
                         </v-btn>
-                    </v-col>
+                    </v-col> -->
                     <v-col cols="12" sm="2">
                         <v-card class="pa-3 total-card">
                             <v-row class="text-left">
@@ -144,7 +144,7 @@ export default {
             toDate: '',
             filterType: '',
             searchQuery: '',
-            selectedSort: 'Alphabetically',
+            // selectedSort: 'Alphabetically',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Invoice No.", key: 'transaction_number' },
@@ -159,25 +159,25 @@ export default {
                 { title: "Transacted By", key: 'user.first_name' },
                 { title: 'Actions', key: 'actions', sortable: false }
             ],
-            items: [
-                { title: 'Category' },
-                { title: 'Total' },
-                { title: 'Alphabetically' },
-            ],
+            // items: [
+            //     { title: 'Category' },
+            //     { title: 'Total' },
+            //     { title: 'Alphabetically' },
+            // ],
         };
     },
 
-    watch: {
-        selectedSort: {
-            handler: function (newSort, oldSort) {
-                if (newSort !== oldSort) {
-                    this.currentPage = 1;
-                    this.debouncedGetTransactions();
-                }
-            },
-            immediate: true,
-        },
-    },
+    // watch: {
+    //     selectedSort: {
+    //         handler: function (newSort, oldSort) {
+    //             if (newSort !== oldSort) {
+    //                 this.currentPage = 1;
+    //                 this.debouncedGetTransactions();
+    //             }
+    //         },
+    //         immediate: true,
+    //     },
+    // },
 
     computed: {
         displayedIndex() {
@@ -213,7 +213,7 @@ export default {
                     itemsPerPage: this.itemsPerPage,
                     fromDate: this.fromDate,
                     toDate: this.toDate,
-                    sortBy: this.selectedSort,
+                    // sortBy: this.selectedSort,
                     search: this.searchQuery,
                 };
 
@@ -295,9 +295,9 @@ export default {
             this.debouncedGetTransactions();
         },
 
-        updateSort(sortType) {
-            this.selectedSort = sortType;
-        },
+        // updateSort(sortType) {
+        //     this.selectedSort = sortType;
+        // },
 
         handleDateRangeChange({ fromDate, toDate }) {
             this.fromDate = fromDate;
