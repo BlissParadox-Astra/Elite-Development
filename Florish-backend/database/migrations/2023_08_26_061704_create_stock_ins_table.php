@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('stock_in_date');
             $table->unsignedBigInteger('stock_in_by');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Define foreign key relationship outside the create method

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('contact_number');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
+
         });
     
         // Define foreign key relationship outside the create method

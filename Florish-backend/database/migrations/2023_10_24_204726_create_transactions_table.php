@@ -18,9 +18,10 @@ return new class extends Migration
             $table->float('price', 10, 2);
             $table->integer('quantity');
             $table->decimal('total', 10, 2);
-            $table->date('transaction_date');
+            $table->timestamp('transaction_date');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Define foreign key relationship outside the create method

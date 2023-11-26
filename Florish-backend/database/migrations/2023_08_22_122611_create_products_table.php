@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('brand_id');
             $table->timestamps();
+            $table->softDeletes();
+
         });
         
         Schema::table('products', function (Blueprint $table) {

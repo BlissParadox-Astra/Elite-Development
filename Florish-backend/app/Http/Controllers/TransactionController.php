@@ -29,8 +29,10 @@ class TransactionController extends Controller
             $fromDate = $request->input('fromDate');
             $toDate = $request->input('toDate');
             $filterType = $request->input('filterType');
+            $searchQuery = $request->input('search');
+            $sortBy = $request->input('sortBy');
 
-            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType);
+            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType, $searchQuery, $sortBy);
 
             return response()->json([
                 'transactions' => $transactions->items(),
@@ -125,7 +127,7 @@ class TransactionController extends Controller
      */
     public function getTransactionYearsAndEarnings()
     {
-        $yearsData = Transaction::selectRaw('YEAR(transaction_date) as year')
+        $yearsData = Transaction::selectRaw('YEAR(created_at) as year')
             ->selectRaw('SUM(total) as earnings')
             ->groupBy('year')
             ->orderBy('year')
@@ -139,8 +141,8 @@ class TransactionController extends Controller
         $currentYear = date('Y');
 
         $monthlyEarnings = DB::table('transactions')
-            ->select(DB::raw('DATE_FORMAT(transaction_date, "%M") as month_name'), DB::raw('SUM(total) as earnings'))
-            ->whereYear('transaction_date', $currentYear)
+            ->select(DB::raw('DATE_FORMAT(created_at, "%M") as month_name'), DB::raw('SUM(total) as earnings'))
+            ->whereYear('created_at', $currentYear)
             ->groupBy('month_name')
             ->get();
 
@@ -184,7 +186,7 @@ class TransactionController extends Controller
                     default:
                         $query->whereYear('created_at', now()->year);
                         break;
-                } // end switch
+                }
             } else {
                 $query->whereYear('created_at', now()->year);
             }

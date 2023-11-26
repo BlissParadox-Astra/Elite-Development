@@ -16,11 +16,13 @@ return new class extends Migration
             $table->unsignedBigInteger('transaction_id');
             $table->integer('quantity');
             $table->float('total', 10, 2);
-            $table->date('canceled_date');
+            $table->timestamp('canceled_date');
             $table->unsignedBigInteger('user_id');
             $table->string('reason');
             $table->string('action_taken');
             $table->timestamps();
+            $table->softDeletes();
+
         });
 
         // Define foreign key relationship outside the create method

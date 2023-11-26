@@ -103,7 +103,7 @@
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="8" md="8" lg="8" xl="10" class="form-container">
-                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" :context="transaction"/>
+                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" :context="'transaction'"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -117,7 +117,7 @@
                 </v-card-text>
                 <v-card-actions class="d-flex justify-center">
                     <v-btn color="primary" @click="saveEditedQuantity"
-                        :disabled="isEditQuantitySaveButtonDisabled">Save</v-btn>
+                        :disabled="isEditQuantitySaveButtonDisabled">Update</v-btn>
                     <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
@@ -141,17 +141,15 @@
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
                     <v-card-title>
-                        <v-icon left>mdi-alert-circle-outline</v-icon>
-                        Confirm Save
+                        Confirm Transaction
                     </v-card-title>
                     <v-card-text class="text-center">
-                        <v-icon left>mdi-comment-question</v-icon>
-                        ARE YOU SURE YOU WANT TO SOLD THIS TRANSACTION?
+                        ARE YOU SURE YOU WANT TO COMPLETE THIS TRANSACTION?
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Save</v-btn>
-                            <v-btn @click="cancelSave">Cancel</v-btn>
+                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn @click="cancelSave">No</v-btn>
                         </div>
                     </v-card-actions>
                 </v-card>
@@ -420,13 +418,13 @@ export default {
                     this.isGeneratingInvoiceNumber = false;
                     this.totalItems = this.products.length;
                     this.snackbarColor = 'success';
-                    this.showSnackbar('Transacted successfully', 'success');
+                    this.showSnackbar('Transaction Successful', 'success');
                 })
                 .catch((error) => {
                     console.error("Transaction errored", error);
                     this.isGeneratingInvoiceNumber = true;
                     this.snackbarColor = 'error';
-                    this.showSnackbar('Failed to transact. Please try again later.', 'error');
+                    this.showSnackbar('Transaction Failed. Please try again later.', 'error');
                 });
         },
 

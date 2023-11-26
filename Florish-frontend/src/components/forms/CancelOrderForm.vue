@@ -82,7 +82,7 @@
                     Confirm Cancel Order
                 </v-card-title>
                 <v-card-text>
-                    Are you sure you want to cancel this order?
+                    ARE YOU SURE YOU WANT CANCEL THIS ORDER?
                 </v-card-text>
                 <v-card-actions>
                     <v-btn @click="cancelOrderConfirmed" color="primary">

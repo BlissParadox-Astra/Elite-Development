@@ -9,9 +9,26 @@
                 </v-row>
                 <v-row>
                     <v-col cols="12" sm="8">
-                        <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
+                        <FilterByDate @date-range-change="handleDateRangeChange"
+                            @filter-type-change="handleFilterTypeChange" />
                     </v-col>
-                    <v-col cols="12" sm="12" lg="3" md="12" class="pt-10">
+                    <v-col cols="12" sm="9">
+                        <SearchField @search="handleSearch" />
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                        <v-btn color="#23b78d" block>
+                            SORT BY
+                            <v-menu activator="parent">
+                                <v-list>
+                                    <v-list-item v-for="(item, index) in items" :key="index" :value="index"
+                                        @click="updateSort(item.title)">
+                                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="12" sm="2">
                         <v-card class="pa-3 total-card">
                             <v-row class="text-left">
                                 <v-col cols="6">
@@ -40,6 +57,7 @@
                             <td>{{ item.transacted_product.product_code }}</td>
                             <td>{{ item.transacted_product.barcode }}</td>
                             <td>{{ item.transacted_product.description }}</td>
+                            <td>{{ item.transacted_product.category.category_name }}</td>
                             <td>{{ item.price }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.total }}</td>
@@ -98,12 +116,14 @@
 </template>
 <script>
 import FilterByDate from "../../commons/FilterByDate.vue";
+import SearchField from '../../commons/SearchField.vue';
 import CancelOrderForm from "../../forms/CancelOrderForm.vue";
 import _debounce from 'lodash/debounce';
 import axios from "axios";
 export default {
     name: 'soldPurchased',
     components: {
+        SearchField,
         FilterByDate,
         CancelOrderForm,
     },
@@ -123,12 +143,15 @@ export default {
             fromDate: '',
             toDate: '',
             filterType: '',
+            searchQuery: '',
+            selectedSort: 'Alphabetically',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Invoice No.", key: 'transaction_number' },
                 { title: "Product Code", key: 'transacted_product.product_code' },
                 { title: "Barcode", key: 'transacted_product.barcode' },
                 { title: "Description", key: 'transacted_product.description' },
+                { title: "Category", key: 'transacted_product.category.category_name' },
                 { title: "Price", key: 'price' },
                 { title: "Quantity", key: 'quantity' },
                 { title: "Total", key: 'total' },
@@ -136,8 +159,24 @@ export default {
                 { title: "Transacted By", key: 'user.first_name' },
                 { title: 'Actions', key: 'actions', sortable: false }
             ],
+            items: [
+                { title: 'Category' },
+                { title: 'Total' },
+                { title: 'Alphabetically' },
+            ],
         };
+    },
 
+    watch: {
+        selectedSort: {
+            handler: function (newSort, oldSort) {
+                if (newSort !== oldSort) {
+                    this.currentPage = 1;
+                    this.debouncedGetTransactions();
+                }
+            },
+            immediate: true,
+        },
     },
 
     computed: {
@@ -160,6 +199,12 @@ export default {
             this.getTransactions();
         }, 1000),
 
+        handleSearch(query) {
+            this.searchQuery = query;
+            this.currentPage = 1;
+            this.debouncedGetTransactions();
+        },
+
         async getTransactions() {
             this.loading = true;
             try {
@@ -168,6 +213,8 @@ export default {
                     itemsPerPage: this.itemsPerPage,
                     fromDate: this.fromDate,
                     toDate: this.toDate,
+                    sortBy: this.selectedSort,
+                    search: this.searchQuery,
                 };
 
                 if (this.filterType) {
@@ -248,6 +295,10 @@ export default {
             this.debouncedGetTransactions();
         },
 
+        updateSort(sortType) {
+            this.selectedSort = sortType;
+        },
+
         handleDateRangeChange({ fromDate, toDate }) {
             this.fromDate = fromDate;
             this.currentPage = 1;
@@ -323,6 +374,14 @@ export default {
 
         renderDescription(transacted_product) {
             return transacted_product.transacted_product ? transacted_product.transacted_product.description : 'Unknown';
+        },
+
+        renderProductCategory(transactions) {
+            if (transactions.transacted_product && transactions.transacted_product.category) {
+                return transactions.transacted_product.category.category_name;
+            } else {
+                return 'Unknown';
+            }
         },
 
         renderUser(user) {

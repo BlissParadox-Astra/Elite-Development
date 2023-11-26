@@ -24,9 +24,6 @@
 
             <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
               Password
-              <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
-                Forgot password?
-              </a>
             </v-label>
 
             <v-text-field v-model="password" label="Password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"

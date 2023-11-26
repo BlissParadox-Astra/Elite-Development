@@ -5,12 +5,15 @@
         <v-col cols="12" sm="9">
           <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
         </v-col>
+        <v-col cols="12" sm="9">
+          <SearchField @search="handleSearch" />
+        </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block>
             SORT BY
             <v-menu activator="parent">
               <v-list>
-                <v-list-item v-for="(item, index) in items" :key="index" :value="index">
+                <v-list-item v-for="(item, index) in items" :key="index" :value="index" @click="updateSort(item.title)">
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -73,12 +76,14 @@
   
 <script>
 import FilterByDate from "../../commons/FilterByDate.vue";
+import SearchField from '../../commons/SearchField.vue';
 import _debounce from 'lodash/debounce';
 import axios from "axios";
 
 export default {
   name: "SalesHistory",
   components: {
+    SearchField,
     FilterByDate,
   },
 
@@ -95,7 +100,8 @@ export default {
       fromDate: '',
       toDate: '',
       filterType: '',
-      sortByOptions: ["Category", "Total", "Alphabetically"],
+      searchQuery: '',
+      selectedSort: 'Alphabetically',
       headers: [
         { title: '#', value: 'index' },
         { title: "Invoice No.", key: 'transaction_number' },
@@ -115,6 +121,18 @@ export default {
         { title: 'Alphabetically' },
       ],
     };
+  },
+
+  watch: {
+    selectedSort: {
+      handler: function (newSort, oldSort) {
+        if (newSort !== oldSort) {
+          this.currentPage = 1;
+          this.debouncedGetTransactions();
+        }
+      },
+      immediate: true,
+    },
   },
 
   computed: {
@@ -137,6 +155,12 @@ export default {
       this.getTransactions();
     }, 1000),
 
+    handleSearch(query) {
+      this.searchQuery = query;
+      this.currentPage = 1;
+      this.debouncedGetTransactions();
+    },
+
     async getTransactions() {
       this.loading = true;
       try {
@@ -145,6 +169,8 @@ export default {
           itemsPerPage: this.itemsPerPage,
           fromDate: this.fromDate,
           toDate: this.toDate,
+          sortBy: this.selectedSort,
+          search: this.searchQuery,
         };
 
         if (this.filterType) {
@@ -223,6 +249,10 @@ export default {
       this.filterType = newFilterType;
       this.currentPage = 1;
       this.debouncedGetTransactions();
+    },
+
+    updateSort(sortType) {
+      this.selectedSort = sortType;
     },
 
     handleDateRangeChange({ fromDate, toDate }) {

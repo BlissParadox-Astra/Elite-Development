@@ -36,15 +36,14 @@ class ProductManager
                         $query->where('category_name', 'LIKE', '%' . $searchQuery . '%');
                     })
                     ->orWhere('price', 'LIKE', '%' . $searchQuery . '%')
-                    ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%')
-                    ->orWhere('stock_on_hand', '=', $searchQuery);
+                    ->orWhere('reorder_level', 'LIKE', '%' . $searchQuery . '%');
             });
         } else if ($context === 'stockIn') {
             $query->orderBy('stock_on_hand', 'asc');
         } else if ($context === 'transaction') {
             $query->where('stock_on_hand', '>', 0);
         } else {
-            $query->orderBy('created_at', 'desc');
+            $query->orderBy('created_at', 'asc');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

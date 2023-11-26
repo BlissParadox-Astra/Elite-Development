@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('product_type');
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

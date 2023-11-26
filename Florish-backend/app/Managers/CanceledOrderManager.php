@@ -70,7 +70,7 @@ class CanceledOrderManager
                 default:
                     $query->whereYear('created_at', now()->year);
                     break;
-            } // end switch
+            }
         } else {
             $query->whereYear('created_at', now()->year);
         }
