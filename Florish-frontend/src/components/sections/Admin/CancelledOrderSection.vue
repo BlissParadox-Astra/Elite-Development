@@ -136,11 +136,7 @@ export default {
                         case 'Customize':
                             params.filterType = 'Customize';
                             break;
-                        default:
-                            params.filterType = 'Year';
                     }
-                } else {
-                    params.filterType = 'Year';
                 }
 
                 const response = await axios.get('/canceled-orders', { params });

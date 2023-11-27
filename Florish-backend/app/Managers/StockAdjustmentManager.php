@@ -34,27 +34,27 @@ class StockAdjustmentManager
         if ($filterType) {
             switch ($filterType) {
                 case 'Day':
-                    $query->whereDate('stock_adjustments.created_at', now()->toDateString());
+                    $query->whereDate('stock_adjustments.adjustment_date', now()->toDateString());
                     break;
                 case 'Week':
-                    $query->whereBetween('stock_adjustments.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $query->whereBetween('stock_adjustments.adjustment_date', [now()->startOfWeek(), now()->endOfWeek()]);
                     break;
                 case 'Month':
-                    $query->whereYear('stock_adjustments.created_at', now()->year)
-                        ->whereMonth('stock_adjustments.created_at', now()->month);
+                    $query->whereYear('stock_adjustments.adjustment_date', now()->year)
+                        ->whereMonth('stock_adjustments.adjustment_date', now()->month);
                     break;
                 case 'Year':
-                    $query->whereYear('stock_adjustments.created_at', now()->year);
+                    $query->whereYear('stock_adjustments.adjustment_date', now()->year);
                     break;
                 case 'Customize':
-                    $query->whereBetween('stock_adjustments.created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('stock_adjustments.adjustment_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;
                 default:
-                    $query->whereYear('stock_adjustments.created_at', now()->year);
+                    $query->whereNull('deleted_at');
                     break;
             }
         } else {
-            $query->whereYear('stock_adjustments.created_at', now()->year);
+            $query->whereNull('deleted_at');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);
