@@ -8,31 +8,31 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="4" lg="3">
+                    <v-col cols="12" md="4" lg="4" sm="12">
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
                             readonly />
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <v-btn class="text clickable-text" color="#23b78d" @click="generateAndFetchInvoiceNumber"
+                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center">
+                        <v-btn class="text clickable-text" color="#23b78d" block @click="generateAndFetchInvoiceNumber"
                             :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
                     </v-col>
-                    <v-col cols="12" sm="5" lg="3" xl="5">
-                        <v-text-field class="ml-15" label="Transaction Date" type="date" variant="plain"
+                    <v-col  cols="12" md="5" lg="4" sm="12">
+                        <v-text-field  label="Transaction Date" type="date" variant="plain"
                             v-model="transaction_date" />
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="6" lg="2" class="d-flex align-center">
+                    <v-col cols="12" md="6" lg="3" sm="12" class="d-flex align-center">
                         <v-label>BARCODE:</v-label>
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3">
-                        <SearchField class="ml-n6"></SearchField>
+                    <v-col cols="12" md="6" lg="3" sm="12">
+                        <SearchField></SearchField>
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
+                    <v-col cols="12" md="6" lg="3" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
                     </v-col>
-                    <v-col cols="12" sm="4" lg="3" class="d-flex align-center">
+                    <v-col cols="12" sm="12" lg="3" class="d-flex align-center">
                         <v-card class="pa-3 total-card" style="height: 50px; width: 80%;">
                             <v-row class="text-left" style="height: 80%;">
                                 <v-col cols="12">

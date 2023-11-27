@@ -59,7 +59,7 @@ class CanceledOrderController extends Controller
 
             $this->canceledOrderManager->cancelOrder($validatedData);
 
-            return response()->json(['message' => 'Canceled order created successfully']);
+            return response()->json(['message' => 'Successfully canceled the order']);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
 

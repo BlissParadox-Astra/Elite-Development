@@ -48,6 +48,16 @@ class Product extends Model
         return $this->hasMany(StockIn::class, 'product_id', 'id');
     }
 
+    public function stockAdjustments()
+    {
+        return $this->hasMany(StockAdjustment::class, 'product_id', 'id');
+    }
+
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class, 'product_id', 'id');
+    }
+
     public function incrementStockOnHand($quantity)
     {
         $this->stock_on_hand += $quantity;

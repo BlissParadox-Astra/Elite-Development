@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-row class="col-sm-5">
-      <v-col cols="12" lg="5" md="5" sm="5">
-        <v-select v-model="selectedFiltering" :items="choices" label="FILTER BY" outlined
+    <v-row class="col-sm-6">
+      <v-col cols="12" lg="6" md="5" sm="5">
+        <v-select v-model="selectedFiltering" :items="choices" label="FILTER BY: " outlined
           @change="updateFilterType"></v-select>
       </v-col>
       <v-col cols="12" lg="6" md="6" sm="6" v-if="selectedFiltering === 'Customize'">

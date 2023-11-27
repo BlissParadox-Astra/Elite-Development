@@ -1,5 +1,5 @@
 <template>
-  <v-card color="grey-lighten-3" max-width="400">
+  <v-card color="grey-lighten-3" max-width="430">
     <v-text-field v-model="searchQuery" :loading="loading" density="compact" variant="solo" :label="searchLabel"
       append-inner-icon="mdi-magnify" single-line hide-details @input="onInput"></v-text-field>
   </v-card>

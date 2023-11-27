@@ -8,7 +8,7 @@
     </v-app-bar>
     <MessageAlert :message="alertMessage" v-if="alertMessage" />
     <v-main>
-      <MobileSidebar v-model="isMobileSidebarOpen" v-if="isMobileSize && isMobileSidebarOpen" />
+      <MobileSidebar v-model="isMobileSidebarOpen" v-if="isMobileSize && isMobileSidebarOpen &&isAdmin" />
       <router-view v-if="showMainContent" />
     </v-main>
   </v-app>
@@ -31,11 +31,11 @@ const handleResize = () => {
       isMobileSidebarOpen.value = true;
     }
   }, 100);
-  requestAnimationFrame(handleResize); // Adjust the debounce time (in milliseconds) as needed
+  requestAnimationFrame(handleResize);
 };
 
 onMounted(() => {
-  handleResize(); // Call the function when mounted to set the initial value
+  handleResize();
   window.addEventListener('resize', handleResize);
 });
 

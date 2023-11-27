@@ -44,9 +44,13 @@ class TransactionManager
         return "{$timestamp}{$randomNumber}";
     }
 
-    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $searchQuery = null, $sortBy = null)
+    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $searchQuery = null)
     {
         $query = Transaction::with(['transactedProduct.category', 'user']);
+
+        if (auth()->user()->userType->user_type === 'Cashier') {
+            $query->where('user_id', auth()->id());
+        }
 
         if ($filterType) {
             switch ($filterType) {
@@ -67,11 +71,11 @@ class TransactionManager
                     $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;
                 default:
-                    $query->whereYear('transactions.transaction_date', now()->year);
+                    $query->whereNull('deleted_at');
                     break;
             }
         } else {
-            $query->whereYear('transactions.transaction_date', now()->year);
+            $query->whereNull('deleted_at');
         }
 
         if ($searchQuery) {
@@ -89,7 +93,8 @@ class TransactionManager
                             });
                     })
                     ->orWhereHas('user', function ($query) use ($searchQuery) {
-                        $query->where('first_name', 'LIKE', '%' . $searchQuery . '%');
+                        $query->where('first_name', 'LIKE', '%' . $searchQuery . '%')
+                            ->orWhere('last_name', 'LIKE', '%' . $searchQuery . '%');
                     });
             });
         }
@@ -122,8 +127,8 @@ class TransactionManager
         $currentDate = Carbon::now();
         $currentDay = $currentDate->toDateString();
 
-        return Transaction::selectRaw('DATE(created_at) as date, SUM(total) as total_amount')
-            ->whereDate('created_at', $currentDay)
+        return Transaction::selectRaw('DATE(transaction_date) as date, SUM(total) as total_amount')
+            ->whereDate('transaction_date', $currentDay)
             ->groupBy('date')
             ->get();
     }

@@ -19,7 +19,7 @@ class StockIn extends Model
 
     public function stockInByUser()
     {
-        return $this->belongsTo(User::class, 'stock_in_by', 'id');
+        return $this->belongsTo(User::class, 'stock_in_by', 'id')->withTrashed();
     }
     public function adjustedProduct()
     {

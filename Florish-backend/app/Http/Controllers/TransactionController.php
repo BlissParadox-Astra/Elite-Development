@@ -162,33 +162,59 @@ class TransactionController extends Controller
             $fromDate = $request->input('fromDate');
             $toDate = $request->input('toDate');
             $filterType = $request->input('filterType');
+            $searchQuery = $request->input('search');
 
-            $query = DB::table('transactions');
+            $query = Transaction::query();
+
+            if (auth()->user()->userType->user_type === 'Cashier') {
+                $query->where('user_id', auth()->id());
+            }
 
             if ($filterType) {
                 switch ($filterType) {
                     case 'Day':
-                        $query->whereDate('created_at', now()->toDateString());
+                        $query->whereDate('transactions.transaction_date', now()->toDateString());
                         break;
                     case 'Week':
-                        $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        $query->whereBetween('transactions.transaction_date', [now()->startOfWeek(), now()->endOfWeek()]);
                         break;
                     case 'Month':
-                        $query->whereYear('created_at', now()->year)
-                            ->whereMonth('created_at', now()->month);
+                        $query->whereYear('transactions.transaction_date', now()->year)
+                            ->whereMonth('transactions.transaction_date', now()->month);
                         break;
                     case 'Year':
-                        $query->whereYear('created_at', now()->year);
+                        $query->whereYear('transactions.transaction_date', now()->year);
                         break;
                     case 'Customize':
-                        $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                        $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                         break;
                     default:
-                        $query->whereYear('created_at', now()->year);
+                        $query->whereNull('deleted_at');
                         break;
                 }
             } else {
-                $query->whereYear('created_at', now()->year);
+                $query->whereNull('deleted_at');
+            }
+
+            if ($searchQuery) {
+                $query->where(function ($query) use ($searchQuery) {
+                    $query->where('transaction_number', 'LIKE', '%' . $searchQuery . '%')
+                        ->orWhereHas('transactedProduct', function ($query) use ($searchQuery) {
+                            $query->where('barcode', 'LIKE', '%' . $searchQuery . '%')
+                                ->orWhere('description', 'LIKE', '%' . $searchQuery . '%');
+
+                            $query->orWhereHas('brand', function ($query) use ($searchQuery) {
+                                $query->where('brand_name', 'LIKE', '%' . $searchQuery . '%');
+                            })
+                                ->orWhereHas('category', function ($query) use ($searchQuery) {
+                                    $query->where('category_name', 'LIKE', '%' . $searchQuery . '%');
+                                });
+                        })
+                        ->orWhereHas('user', function ($query) use ($searchQuery) {
+                            $query->where('first_name', 'LIKE', '%' . $searchQuery . '%')
+                                ->orWhere('last_name', 'LIKE', '%' . $searchQuery . '%');
+                        });
+                });
             }
 
             $total = $query->sum('total');

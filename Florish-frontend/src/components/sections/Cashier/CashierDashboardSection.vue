@@ -2,7 +2,7 @@
     <v-container class="dashboard" fluid>
         <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
         <v-row>
-            <v-col cols="12" sm="8" md="6" xl="6" lg="6" class="d-flex justify-center">
+            <v-col cols="12" sm="12" md="6" xl="6" lg="6" class="d-flex justify-center">
                 <div class="logo" justify="space-between">
                     <v-img src="../../../assets/assets/florish-logo.png" alt="storelogo" contain></v-img>
                 </div>

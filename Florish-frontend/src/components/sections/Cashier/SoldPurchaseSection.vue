@@ -30,13 +30,11 @@
                     </v-col> -->
                     <v-col cols="12" sm="2">
                         <v-card class="pa-3 total-card">
-                            <v-row class="text-left">
-                                <v-col cols="6">
-                                    <span class="total-value" v-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue
-                                    }}</span>
-                                    <span class="loading-message" v-else>Loading...</span>
-                                </v-col>
-                            </v-row>
+                            <span class="total-label">Total: </span>
+                            <span class="loading-message" v-if="loadingTotal">Loading...</span>
+                            <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue
+                            }}</span>
+                            <span class="loading-message" v-else>Loading...</span>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -135,6 +133,7 @@ export default {
             soldTransaction: null,
             soldTransactionIndex: -1,
             loading: true,
+            loadingTotal: false,
             totalOfAllTotalValue: null,
             showForm: false,
             transactions: [],
@@ -207,6 +206,7 @@ export default {
 
         async getTransactions() {
             this.loading = true;
+            this.loadingTotal = true;
             try {
                 let params = {
                     page: this.currentPage,
@@ -215,6 +215,7 @@ export default {
                     toDate: this.toDate,
                     // sortBy: this.selectedSort,
                     search: this.searchQuery,
+                    userId: this.$store.state.user.id,
                 };
 
                 if (this.filterType) {
@@ -234,11 +235,7 @@ export default {
                         case 'Customize':
                             params.filterType = 'Customize';
                             break;
-                        default:
-                            params.filterType = 'Year';
                     }
-                } else {
-                    params.filterType = 'Year';
                 }
 
                 const response = await axios.get('/transactions', { params });
@@ -251,14 +248,19 @@ export default {
             } catch (error) {
                 console.error('Error fetching transactions:', error);
                 this.loading = false;
+            } finally {
+                this.loadingTotal = false;
             }
         },
 
         async fetchTotalOfAllTotal() {
             try {
+                this.loadingTotal = true;
                 let params = {
                     fromDate: this.fromDate,
                     toDate: this.toDate,
+                    userId: this.$store.state.user.id,
+                    search: this.searchQuery,
                 };
 
                 switch (this.filterType) {
@@ -277,8 +279,6 @@ export default {
                     case 'Customize':
                         params.filterType = 'Customize';
                         break;
-                    default:
-                        params.filterType = 'Year';
                 }
 
                 const response = await axios.get('/all-transactions-total', { params });
@@ -286,6 +286,8 @@ export default {
             } catch (error) {
                 console.error('Error fetching total of all total', error);
                 this.totalOfAllTotalValue = 0;
+            } finally {
+                this.loadingTotal = false;
             }
         },
 

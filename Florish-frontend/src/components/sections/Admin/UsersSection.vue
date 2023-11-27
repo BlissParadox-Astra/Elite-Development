@@ -18,7 +18,6 @@
               <tr>
                 <td>{{ displayedIndex + index }}</td>
                 <td>{{ item.user_type.user_type }}</td>
-                <td>{{ item.user_credential.username }}</td>
                 <td>{{ item.first_name }}</td>
                 <td>{{ item.last_name }}</td>
                 <td>{{ item.gender }}</td>
@@ -104,7 +103,6 @@ export default {
       headers: [
         { title: '#', value: 'index' },
         { title: 'User Type', key: 'user_type.user_type' },
-        { title: 'User Name', key: 'user_credential.username' },
         { title: 'First Name', key: 'first_name' },
         { title: 'Last Name', key: 'last_name' },
         { title: 'Gender', key: 'gender' },
@@ -203,9 +201,6 @@ export default {
         this.snackbarColor = 'error';
         this.showSnackbar(error.response.data.message, 'error');
       }
-      // this.users.push(userData);
-      // this.hideUserForm();
-      // this.getUsers();
     },
 
     editUserRow(user) {
@@ -261,10 +256,6 @@ export default {
           this.showSnackbar(this.snackbarText, 'error');
         }
       }
-      // this.users[index] = updatedUser;
-      // this.editingUser = null;
-      // this.hideUserForm();
-      // this.getUsers();
     },
 
     async deleteUser() {
@@ -315,10 +306,6 @@ export default {
 
     renderUserType(user) {
       return user.user_type ? user.user_type.user_type : 'Unknown';
-    },
-
-    renderUserName(user) {
-      return user.user_credential ? user.user_credential.username : 'Unknown';
     },
 
     showSnackbar(text, color, timeout = 3000) {
