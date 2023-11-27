@@ -24,7 +24,8 @@
                 <v-col cols="12">
                     <v-row class="d-flex justify-center">
                         <v-col cols="12" sm="10" md="10" lg="10" xl="10" class="form-container">
-                            <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" />
+                            <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct"
+                                :context="'stockIn'" />
                         </v-col>
                     </v-row>
                 </v-col>
@@ -60,46 +61,41 @@
                 </template>
                 <template v-slot:bottom>
                     <div class="text-center pt-8 pagination">
-                        <v-btn class="pagination-button" @click="previousPage"
-                            :disabled="currentPage === 1" color="#23b78d">Previous</v-btn>
+                        <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1"
+                            color="#23b78d">Previous</v-btn>
 
                         <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
                             :class="{ active: pageNumber === currentPage }" class="pagination-button">
                             {{ pageNumber }}
                         </v-btn>
 
-                        <v-btn class="pagination-button" @click="nextPage"
-                            :disabled="currentPage === totalPages" color="#23b78d">Next</v-btn>
+                        <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages"
+                            color="#23b78d">Next</v-btn>
                     </div>
                 </template>
             </v-data-table>
-            <!-- <DeleteConfirmationDialog @confirm-delete="deleteProductRow" ref="deleteConfirmationDialog" /> -->
             <v-row class="mt-5 save-btn">
                 <v-col cols="2" offset-md="10">
                     <v-btn color="#23b78d" @click="showConfirmation" style="width: 150px;"
                         :disabled="isSaveButtonDisabled">Save</v-btn>
                 </v-col>
             </v-row>
-            <!-- For save button warning modal -->
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
                     <v-card-title>
-                        <v-icon left>mdi-alert-circle-outline</v-icon>
                         Confirm Save
                     </v-card-title>
                     <v-card-text class="text-center">
-                        <v-icon left>mdi-comment-question</v-icon>
-                        ARE YOU SURE YOU WANT TO SAVE THIS RECORDS?
+                        ARE YOU SURE YOU WANT TO SAVE THESE STOCK-IN RECORDS?
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Save</v-btn>
-                            <v-btn @click="cancelSave">Cancel</v-btn>
+                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn @click="cancelSave">No</v-btn>
                         </div>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-            <!-- Edit Quantity Dialog -->
             <v-dialog v-model="showEditQuantityDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
                     <v-card-title>Edit Quantity</v-card-title>
@@ -108,7 +104,7 @@
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <v-btn color="primary" @click="saveEditedQuantity"
-                            :disabled="isEditQuantitySaveButtonDisabled">Save</v-btn>
+                            :disabled="isEditQuantitySaveButtonDisabled">Update</v-btn>
                         <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -126,15 +122,14 @@
 </template>
 
 <script>
-// import DeleteConfirmationDialog from '../../commons/DeleteConfirmationDialog.vue';
 import BrowseProduct from '../../commons/BrowseProduct.vue';
 import { VIcon } from "vuetify/lib/components";
 import { mapState } from 'vuex';
 import axios from 'axios';
 export default {
+    name: "StockEntry",
     components: {
         BrowseProduct,
-        // DeleteConfirmationDialog,
         VIcon,
     },
     data() {

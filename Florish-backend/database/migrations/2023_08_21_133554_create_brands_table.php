@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('brand_name');
             $table->unsignedBigInteger('category_id');
             $table->timestamps();
+            $table->softDeletes();
+
         });
 
         Schema::table('brands', function (Blueprint $table) {

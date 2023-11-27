@@ -22,8 +22,17 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'barcode' => 'nullable|string|max:39|unique:products,barcode',
-            'description' => 'required|string|max:1000|min:5|unique:products,description',
+            'barcode' => [
+                'nullable',
+                'string',
+                'max:39',
+            ],
+            'description' => [
+                'required',
+                'string',
+                'max:60',
+                'min:5',
+            ],
             'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0',
             'reorder_level' => 'required|integer|min:1',
             'stock_on_hand' => 'nullable|integer|min:0',
@@ -31,14 +40,11 @@ class ProductRequest extends FormRequest
             'brand_id' => 'required|integer|exists:brands,id',
         ];
 
-        if ($this->isMethod('PUT')) {
-            $rules = array_merge($rules, [
-                'barcode' => 'nullable', 'string', 'max:39'
-            ]);
-            $rules = array_merge($rules, [
-                'description' => 'required', 'string', ' max:1000', 'min:5'
-            ]);
+        if ($this->isMethod('POST')) {
+            $rules['barcode'][] = 'unique:products,barcode';
+            $rules['description'][] = 'unique:products,description';
         }
+
         return $rules;
     }
 }

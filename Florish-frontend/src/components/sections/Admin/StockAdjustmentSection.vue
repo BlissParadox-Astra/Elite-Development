@@ -95,17 +95,15 @@
       <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
         <v-card>
           <v-card-title>
-            <v-icon left>mdi-alert-circle-outline</v-icon>
             Confirm Save
           </v-card-title>
           <v-card-text class="text-center">
-            <v-icon left>mdi-comment-question</v-icon>
-            ARE YOU SURE YOU WANT TO SAVE THIS RECORDS?
+            ARE YOU SURE YOU WANT TO SAVE THIS STOCK ADJUSTMENT RECORDS?
           </v-card-text>
           <v-card-actions class="d-flex justify-center">
             <div>
-              <v-btn color="success" @click="saveStockAdjustment" style="width: 150px;">Save</v-btn>
-              <v-btn @click="cancelSave">Cancel</v-btn>
+              <v-btn color="success" @click="saveStockAdjustment" style="width: 150px;">Yes</v-btn>
+              <v-btn @click="cancelSave">No</v-btn>
             </div>
           </v-card-actions>
         </v-card>

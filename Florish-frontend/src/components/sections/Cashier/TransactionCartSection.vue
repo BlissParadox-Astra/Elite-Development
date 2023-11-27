@@ -8,31 +8,31 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="4" lg="3">
+                    <v-col cols="12" md="4" lg="4" sm="12">
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
                             readonly />
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
-                        <v-btn class="text clickable-text" color="#23b78d" @click="generateAndFetchInvoiceNumber"
+                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center">
+                        <v-btn class="text clickable-text" color="#23b78d" block @click="generateAndFetchInvoiceNumber"
                             :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
                     </v-col>
-                    <v-col cols="12" sm="5" lg="3" xl="5">
-                        <v-text-field class="ml-15" label="Transaction Date" type="date" variant="plain"
+                    <v-col  cols="12" md="5" lg="4" sm="12">
+                        <v-text-field  label="Transaction Date" type="date" variant="plain"
                             v-model="transaction_date" />
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" sm="6" lg="2" class="d-flex align-center">
+                    <v-col cols="12" md="6" lg="3" sm="12" class="d-flex align-center">
                         <v-label>BARCODE:</v-label>
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3">
-                        <SearchField class="ml-n6"></SearchField>
+                    <v-col cols="12" md="6" lg="3" sm="12">
+                        <SearchField></SearchField>
                     </v-col>
-                    <v-col cols="12" sm="6" lg="3" class="d-flex align-center">
+                    <v-col cols="12" md="6" lg="3" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
                     </v-col>
-                    <v-col cols="12" sm="4" lg="3" class="d-flex align-center">
+                    <v-col cols="12" sm="12" lg="3" class="d-flex align-center">
                         <v-card class="pa-3 total-card" style="height: 50px; width: 80%;">
                             <v-row class="text-left" style="height: 80%;">
                                 <v-col cols="12">
@@ -103,7 +103,7 @@
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="8" md="8" lg="8" xl="10" class="form-container">
-                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" />
+                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" :context="'transaction'"/>
                     </v-col>
                 </v-row>
             </v-col>
@@ -117,7 +117,7 @@
                 </v-card-text>
                 <v-card-actions class="d-flex justify-center">
                     <v-btn color="primary" @click="saveEditedQuantity"
-                        :disabled="isEditQuantitySaveButtonDisabled">Save</v-btn>
+                        :disabled="isEditQuantitySaveButtonDisabled">Update</v-btn>
                     <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
@@ -141,17 +141,15 @@
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
                     <v-card-title>
-                        <v-icon left>mdi-alert-circle-outline</v-icon>
-                        Confirm Save
+                        Confirm Transaction
                     </v-card-title>
                     <v-card-text class="text-center">
-                        <v-icon left>mdi-comment-question</v-icon>
-                        ARE YOU SURE YOU WANT TO SOLD THIS TRANSACTION?
+                        ARE YOU SURE YOU WANT TO COMPLETE THIS TRANSACTION?
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Save</v-btn>
-                            <v-btn @click="cancelSave">Cancel</v-btn>
+                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn @click="cancelSave">No</v-btn>
                         </div>
                     </v-card-actions>
                 </v-card>
@@ -420,13 +418,13 @@ export default {
                     this.isGeneratingInvoiceNumber = false;
                     this.totalItems = this.products.length;
                     this.snackbarColor = 'success';
-                    this.showSnackbar('Transacted successfully', 'success');
+                    this.showSnackbar('Transaction Successful', 'success');
                 })
                 .catch((error) => {
                     console.error("Transaction errored", error);
                     this.isGeneratingInvoiceNumber = true;
                     this.snackbarColor = 'error';
-                    this.showSnackbar('Failed to transact. Please try again later.', 'error');
+                    this.showSnackbar('Transaction Failed. Please try again later.', 'error');
                 });
         },
 

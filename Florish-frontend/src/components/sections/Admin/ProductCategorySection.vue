@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" />
+          <SearchField @search="handleSearch" :searchLabel="searchLabel" />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block @click="showCategoryForm">Add Category</v-btn>
@@ -99,6 +99,7 @@ export default {
       snackbar: false,
       snackbarColor: '',
       searchQuery: '',
+      searchLabel: 'Search Category Here',
       headers: [
         { title: '#', value: 'index' },
         { title: 'Category Name', key: 'category_name' },

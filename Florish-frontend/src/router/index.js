@@ -46,7 +46,14 @@ const routes = [
     component: StockEntryView,
     meta: { title: 'Stock In Page', requiresAuth: true, role: 'admin' },
     beforeEnter: (to, from, next) => {
-      const currentDate = new Date().toISOString().split('T')[0];
+      const today = new Date();
+      const asiaManilaTime = new Date(today.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+      const year = asiaManilaTime.getFullYear();
+      const month = String(asiaManilaTime.getMonth() + 1).padStart(2, '0');
+      const day = String(asiaManilaTime.getDate()).padStart(2, '0');
+
+      const currentDate = `${year}-${month}-${day}`;
+
       to.query.date = currentDate;
       next();
     }
@@ -126,16 +133,23 @@ const routes = [
     path: '/cashier-dashboard',
     name: 'Cashier Dashboard Page',
     component: CashierDashboardView,
-    meta: {title: 'Cashier Dashboard', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Cashier Dashboard', requiresAuth: true, role: 'cashier' },
 
   },
   {
     path: '/transaction-cart',
     name: 'Transaction Cart Page',
     component: TransactionCartView,
-    meta: {title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Transaction Cart Page', requiresAuth: true, role: 'cashier' },
     beforeEnter: (to, from, next) => {
-      const currentDate = new Date().toISOString().split('T')[0];
+      const today = new Date();
+      const asiaManilaTime = new Date(today.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+      const year = asiaManilaTime.getFullYear();
+      const month = String(asiaManilaTime.getMonth() + 1).padStart(2, '0');
+      const day = String(asiaManilaTime.getDate()).padStart(2, '0');
+
+      const currentDate = `${year}-${month}-${day}`;
+
       to.query.date = currentDate;
       next();
     }
@@ -144,13 +158,13 @@ const routes = [
     path: '/low-stock',
     name: 'Low Stock Page',
     component: LowStockView,
-    meta: {title: 'Low Stocks Page', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Low Stocks Page', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/sold-purchase',
     name: 'Sold Purchase Page',
     component: SoldPurchaseView,
-    meta: {title: 'Sold Or Purchased Page', requiresAuth: true, role: 'cashier' },
+    meta: { title: 'Sold Or Purchased Page', requiresAuth: true, role: 'cashier' },
   },
   {
     path: '/login',
@@ -177,7 +191,7 @@ router.beforeEach((to, from, next) => {
   const userRole = store.getters.getUserRole;
 
   if (to.matched.some((route) => route.meta.requiresAuth)) {
-    if (!token || !store.getters.isAuthenticated){
+    if (!token || !store.getters.isAuthenticated) {
       store.commit('setAlertMessage', `Please log in to access ${to.meta.title}.`);
       setTimeout(() => {
         store.commit('clearAlertMessage');

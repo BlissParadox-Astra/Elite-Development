@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_type_id'); // Create the column
+            $table->unsignedBigInteger('user_type_id');
             $table->string('first_name');
             $table->string('last_name');
             $table->enum('gender', ['male', 'female', 'other']);
@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('contact_number');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
+
         });
     
         // Define foreign key relationship outside the create method

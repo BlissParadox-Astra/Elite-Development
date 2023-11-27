@@ -28,8 +28,9 @@ class ProductController extends Controller
             $page = $request->input('page');
             $itemsPerPage = $request->input('itemsPerPage', 10);
             $searchQuery = $request->input('search');
+            $context = $request->input('context');
 
-            $products = $this->productManager->getAllProducts($page, $itemsPerPage, $searchQuery);
+            $products = $this->productManager->getAllProducts($page, $itemsPerPage, $searchQuery, $context);
 
             return response()->json([
                 'products' => $products->items(),

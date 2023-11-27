@@ -20,10 +20,10 @@ class StockAdjustment extends Model
     ];
     public function stockAdjustmentByUser()
     {
-        return $this->belongsTo(User::class, 'user', 'id');
+        return $this->belongsTo(User::class, 'user', 'id')->withTrashed();
     }
     public function adjustedProduct()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'id')->withTrashed();
     }
 }

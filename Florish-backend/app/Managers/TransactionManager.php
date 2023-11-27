@@ -12,7 +12,7 @@ class TransactionManager
     public function createTransaction(array $transactionRequest)
     {
         $transactionBy = Auth::id();
-        $transactionDate = now()->format("Y-m-d H:i:s");
+        $transactionDate = Carbon::now()->format("Y-m-d H:i:s");
 
         $product = Product::findOrFail($transactionRequest['product_id']);
         $total = $product->price * $transactionRequest['quantity'];
@@ -39,75 +39,89 @@ class TransactionManager
 
     public function generateInvoiceNumber(): string
     {
-        $timestamp = now()->format('YmdHis');
+        $timestamp = Carbon::now()->format('YmdHis');
         $randomNumber = mt_rand(10, 99);
         return "{$timestamp}{$randomNumber}";
     }
 
-    // public function generateInvoiceNumber(): string
-    // {
-    //     $timestamp = now()->format('YmdHis');
-    //     $lastSequentialNumber = $this->getLastSequentialNumberFromDatabase();
-    //     $nextSequentialNumber = $lastSequentialNumber + 1;
-    //     $paddedSequentialNumber = str_pad($nextSequentialNumber, 2, '0', STR_PAD_LEFT);
-    //     $this->saveSequentialNumberToDatabase($nextSequentialNumber);
-    //     $invoiceNumber = "{$timestamp}{$paddedSequentialNumber}";
-    //     return $invoiceNumber;
-    // }
-
-    // public function getLastSequentialNumberFromDatabase()
-    // {
-    //     $lastRecord = DB::connection('mysql')
-    //         ->table('transactions')
-    //         ->orderBy('id', 'desc')
-    //         ->first();
-
-    //     if ($lastRecord) {
-    //         return $lastRecord->id;
-    //     }
-
-    //     return 0;
-    // }
-
-    // public function saveSequentialNumberToDatabase($nextSequentialNumber)
-    // {
-    //     DB::connection('mysql')
-    //         ->table('transactions')
-    //         ->insert(['id' => $nextSequentialNumber]);
-    // }
-
-    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null)
+    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $searchQuery = null)
     {
         $query = Transaction::with(['transactedProduct.category', 'user']);
+
+        if (auth()->user()->userType->user_type === 'Cashier') {
+            $query->where('user_id', auth()->id());
+        }
 
         if ($filterType) {
             switch ($filterType) {
                 case 'Day':
-                    $query->whereDate('created_at', now()->toDateString());
+                    $query->whereDate('transactions.transaction_date', now()->toDateString());
                     break;
                 case 'Week':
-                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $query->whereBetween('transactions.transaction_date', [now()->startOfWeek(), now()->endOfWeek()]);
                     break;
                 case 'Month':
-                    $query->whereYear('created_at', now()->year)
-                        ->whereMonth('created_at', now()->month);
+                    $query->whereYear('transactions.transaction_date', now()->year)
+                        ->whereMonth('transactions.transaction_date', now()->month);
                     break;
                 case 'Year':
-                    $query->whereYear('created_at', now()->year);
+                    $query->whereYear('transactions.transaction_date', now()->year);
                     break;
                 case 'Customize':
-                    $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;
                 default:
-                    $query->whereYear('created_at', now()->year);
+                    $query->whereNull('deleted_at');
                     break;
-            } // end switch
+            }
         } else {
-            $query->whereYear('created_at', now()->year);
+            $query->whereNull('deleted_at');
         }
+
+        if ($searchQuery) {
+            $query->where(function ($query) use ($searchQuery) {
+                $query->where('transaction_number', 'LIKE', '%' . $searchQuery . '%')
+                    ->orWhereHas('transactedProduct', function ($query) use ($searchQuery) {
+                        $query->where('barcode', 'LIKE', '%' . $searchQuery . '%')
+                            ->orWhere('description', 'LIKE', '%' . $searchQuery . '%');
+
+                        $query->orWhereHas('brand', function ($query) use ($searchQuery) {
+                            $query->where('brand_name', 'LIKE', '%' . $searchQuery . '%');
+                        })
+                            ->orWhereHas('category', function ($query) use ($searchQuery) {
+                                $query->where('category_name', 'LIKE', '%' . $searchQuery . '%');
+                            });
+                    })
+                    ->orWhereHas('user', function ($query) use ($searchQuery) {
+                        $query->where('first_name', 'LIKE', '%' . $searchQuery . '%')
+                            ->orWhere('last_name', 'LIKE', '%' . $searchQuery . '%');
+                    });
+            });
+        }
+
+        // if ($sortBy) {
+        //     switch ($sortBy) {
+        //         case 'Category':
+        //             $query->join('products', 'transactions.product_id', '=', 'products.id')
+        //                 ->join('categories', 'products.category_id', '=', 'categories.id')
+        //                 ->orderBy('categories.category_name', 'asc');
+        //             break;
+        //         case 'Total':
+        //             $query->orderBy('total', 'desc');
+        //             break;
+        //         case 'Alphabetically':
+        //             $query->join('products', 'transactions.product_id', '=', 'products.id')
+        //                 ->orderBy('products.description', 'asc');
+        //             break;
+        //         default:
+        //             $query->orderBy('total', 'asc');
+        //             break;
+        //     }
+        // }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }
+
     public function getDailyTransactions()
     {
         $currentDate = Carbon::now();

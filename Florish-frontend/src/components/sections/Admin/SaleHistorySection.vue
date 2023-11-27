@@ -5,17 +5,28 @@
         <v-col cols="12" sm="9">
           <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
         </v-col>
-        <v-col cols="12" sm="3" class="d-flex justify-center align-center">
+        <v-col cols="12" sm="9">
+          <SearchField @search="handleSearch" />
+        </v-col>
+        <!-- <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block>
             SORT BY
             <v-menu activator="parent">
               <v-list>
-                <v-list-item v-for="(item, index) in items" :key="index" :value="index">
+                <v-list-item v-for="(item, index) in items" :key="index" :value="index" @click="updateSort(item.title)">
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
           </v-btn>
+        </v-col> -->
+        <v-col cols="12" xl="5" lg="3">
+          <v-card class="pa-3 total-card">
+            <span class="total-label">Total of All Total: </span>
+            <span class="loading-message" v-if="loadingTotal">Loading...</span>
+            <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
+            <span class="loading-message" v-else>Loading...</span>
+          </v-card>
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -58,7 +69,7 @@
           </v-data-table>
         </v-col>
       </v-row>
-      <v-row>
+      <!-- <v-row>
         <v-col cols="12" xl="5" lg="3">
           <v-card class="pa-3 total-card">
             <span class="total-label">Total of All Total: </span>
@@ -66,19 +77,21 @@
             <span class="loading-message" v-else>Loading...</span>
           </v-card>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-container>
   </v-main>
 </template>
   
 <script>
 import FilterByDate from "../../commons/FilterByDate.vue";
+import SearchField from '../../commons/SearchField.vue';
 import _debounce from 'lodash/debounce';
 import axios from "axios";
 
 export default {
   name: "SalesHistory",
   components: {
+    SearchField,
     FilterByDate,
   },
 
@@ -89,13 +102,15 @@ export default {
       id: 1,
       totalItems: 0,
       loading: true,
+      loadingTotal: false,
       showForm: false,
       totalOfAllTotalValue: null,
       transactions: [],
       fromDate: '',
       toDate: '',
       filterType: '',
-      sortByOptions: ["Category", "Total", "Alphabetically"],
+      searchQuery: '',
+      // selectedSort: 'Alphabetically',
       headers: [
         { title: '#', value: 'index' },
         { title: "Invoice No.", key: 'transaction_number' },
@@ -109,13 +124,25 @@ export default {
         { title: "Transacted Date", key: 'transaction_date' },
         { title: "Transacted By", key: 'user.first_name' },
       ],
-      items: [
-        { title: 'Category' },
-        { title: 'Total' },
-        { title: 'Alphabetically' },
-      ],
+      // items: [
+      //   { title: 'Category' },
+      //   { title: 'Total' },
+      //   { title: 'Alphabetically' },
+      // ],
     };
   },
+
+  // watch: {
+  //   selectedSort: {
+  //     handler: function (newSort, oldSort) {
+  //       if (newSort !== oldSort) {
+  //         this.currentPage = 1;
+  //         this.debouncedGetTransactions();
+  //       }
+  //     },
+  //     immediate: true,
+  //   },
+  // },
 
   computed: {
     displayedIndex() {
@@ -137,14 +164,23 @@ export default {
       this.getTransactions();
     }, 1000),
 
+    handleSearch(query) {
+      this.searchQuery = query;
+      this.currentPage = 1;
+      this.debouncedGetTransactions();
+    },
+
     async getTransactions() {
       this.loading = true;
+      this.loadingTotal = true;
       try {
         let params = {
           page: this.currentPage,
           itemsPerPage: this.itemsPerPage,
           fromDate: this.fromDate,
           toDate: this.toDate,
+          // sortBy: this.selectedSort,
+          search: this.searchQuery,
         };
 
         if (this.filterType) {
@@ -164,11 +200,7 @@ export default {
             case 'Customize':
               params.filterType = 'Customize';
               break;
-            default:
-              params.filterType = 'Year';
           }
-        } else {
-          params.filterType = 'Year';
         }
 
         const response = await axios.get('/transactions', { params });
@@ -181,14 +213,18 @@ export default {
       } catch (error) {
         console.error('Error fetching transactions:', error);
         this.loading = false;
+      } finally {
+        this.loadingTotal = false;
       }
     },
 
     async fetchTotalOfAllTotal() {
       try {
+        this.loadingTotal = true;
         let params = {
           fromDate: this.fromDate,
           toDate: this.toDate,
+          search: this.searchQuery,
         };
 
         switch (this.filterType) {
@@ -207,8 +243,6 @@ export default {
           case 'Customize':
             params.filterType = 'Customize';
             break;
-          default:
-            params.filterType = 'Year';
         }
 
         const response = await axios.get('/all-transactions-total', { params });
@@ -216,6 +250,8 @@ export default {
       } catch (error) {
         console.error('Error fetching total of all total', error);
         this.totalOfAllTotalValue = 0;
+      } finally {
+        this.loadingTotal = false;
       }
     },
 
@@ -224,6 +260,10 @@ export default {
       this.currentPage = 1;
       this.debouncedGetTransactions();
     },
+
+    // updateSort(sortType) {
+    //   this.selectedSort = sortType;
+    // },
 
     handleDateRangeChange({ fromDate, toDate }) {
       this.fromDate = fromDate;
@@ -292,7 +332,7 @@ export default {
   background-color: #d8d3d3;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-top: 20px;
+  /* margin-top: 20px; */
 }
 
 .total-value {

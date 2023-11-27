@@ -132,7 +132,7 @@ export default {
                             break;
                         default:
                             params.filterType = 'Year';
-                    } 
+                    }
                 } else {
                     params.filterType = 'Year';
                 }
@@ -146,64 +146,64 @@ export default {
                 console.error('Error fetching stock adjustment records:', error);
                 this.loading = false;
             }
-    },
+        },
 
-    handleFilterTypeChange(newFilterType) {
-        this.filterType = newFilterType;
-        this.currentPage = 1;
-        this.debouncedStockAdjustments();
-    },
-
-    handleDateRangeChange({ fromDate, toDate }) {
-        this.fromDate = fromDate;
-        this.currentPage = 1;
-        this.toDate = toDate;
-        this.debouncedStockAdjustments();
-    },
-
-    previousPage() {
-        this.loading = true;
-        if (this.currentPage > 1) {
-            this.currentPage--;
+        handleFilterTypeChange(newFilterType) {
+            this.filterType = newFilterType;
+            this.currentPage = 1;
             this.debouncedStockAdjustments();
-        }
-    },
+        },
 
-    nextPage() {
-        this.loading = true;
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
+        handleDateRangeChange({ fromDate, toDate }) {
+            this.fromDate = fromDate;
+            this.currentPage = 1;
+            this.toDate = toDate;
             this.debouncedStockAdjustments();
-        }
-    },
+        },
 
-    gotoPage(pageNumber) {
-        this.loading = true;
-        this.currentPage = pageNumber;
-        this.debouncedStockAdjustments();
-    },
+        previousPage() {
+            this.loading = true;
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.debouncedStockAdjustments();
+            }
+        },
 
-    renderProductCode(adjusted_product) {
-        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
-    },
+        nextPage() {
+            this.loading = true;
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.debouncedStockAdjustments();
+            }
+        },
 
-    renderProductBarcode(adjusted_product) {
-        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
-    },
+        gotoPage(pageNumber) {
+            this.loading = true;
+            this.currentPage = pageNumber;
+            this.debouncedStockAdjustments();
+        },
 
-    renderProductDescription(adjusted_product) {
-        return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
-    },
+        renderProductCode(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
+        },
 
-    renderUser(stock_adjustment_by_user) {
-        if (stock_adjustment_by_user.stock_adjustment_by_user) {
-            const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
-            return `${first_name} ${last_name}`;
-        } else {
-            return 'Unknown';
-        }
+        renderProductBarcode(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
+        },
+
+        renderProductDescription(adjusted_product) {
+            return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
+        },
+
+        renderUser(stock_adjustment_by_user) {
+            if (stock_adjustment_by_user.stock_adjustment_by_user) {
+                const { first_name, last_name } = stock_adjustment_by_user.stock_adjustment_by_user;
+                return `${first_name} ${last_name}`;
+            } else {
+                return 'Unknown';
+            }
+        },
     },
-},
 };
 </script>
 

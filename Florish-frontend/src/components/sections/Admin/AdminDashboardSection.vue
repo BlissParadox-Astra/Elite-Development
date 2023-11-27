@@ -70,20 +70,7 @@ export default {
             totalStockOnHand: 0,
             criticalStockCount: 0,
             transactionYears: [],
-            monthlySales: [
-                { month: "January", value: 300 },
-                { month: "February", value: 450 },
-                { month: "March", value: 600 },
-                { month: "April", value: 300 },
-                { month: "May", value: 450 },
-                { month: "June", value: 600 },
-                { month: "July", value: 300 },
-                { month: "August", value: 450 },
-                { month: "September", value: 600 },
-                { month: "October", value: 300 },
-                { month: "November", value: 450 },
-                { month: "December", value: 600 },
-            ],
+            monthlySales: [],
         };
     },
 
@@ -125,7 +112,6 @@ export default {
             }
         },
 
-
         getRandomColor() {
             const letters = "0123456789ABCDEF";
             let color = "#";
@@ -137,8 +123,8 @@ export default {
 
         async fetchTransactionYears() {
             try {
-                const response = await axios.get("/transaction-years-earnings"); // Replace with your API endpoint to fetch transaction years and earnings
-                this.transactionYears = response.data; // Assuming the API returns an array of objects with 'year' and 'earnings'
+                const response = await axios.get("/transaction-years-earnings");
+                this.transactionYears = response.data;
             } catch (error) {
                 console.error("Error fetching transaction years data", error);
             }
@@ -162,14 +148,30 @@ export default {
                 const monthNames = this.monthlyEarnings.map(item => item.month_name);
                 const monthlyEarnings = this.monthlyEarnings.map(item => item.earnings);
 
+                const orderedMonths = [
+                    'January', 'February', 'March', 'April',
+                    'May', 'June', 'July', 'August',
+                    'September', 'October', 'November', 'December'
+                ];
+
+                const sortedMonthlyEarnings = [];
+                for (const month of orderedMonths) {
+                    const index = monthNames.indexOf(month);
+                    if (index !== -1) {
+                        sortedMonthlyEarnings.push(monthlyEarnings[index]);
+                    } else {
+                        sortedMonthlyEarnings.push(0);
+                    }
+                }
+
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: monthNames,
+                        labels: orderedMonths,
                         datasets: [
                             {
                                 label: 'Monthly Earnings',
-                                data: monthlyEarnings,
+                                data: sortedMonthlyEarnings,
                                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
                                 borderColor: 'rgba(54, 162, 235, 1)',
                                 borderWidth: 1,
@@ -188,7 +190,6 @@ export default {
                 console.error('Canvas element not found for bar chart');
             }
         },
-
 
         async fetchDailyTransactions() {
             try {

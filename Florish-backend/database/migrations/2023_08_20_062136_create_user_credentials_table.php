@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->timestamps();
+            $table->softDeletes();
+
         });
         
         // Define foreign key relationship outside the create method

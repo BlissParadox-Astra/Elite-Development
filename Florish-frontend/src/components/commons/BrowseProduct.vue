@@ -75,6 +75,7 @@ export default {
 
   props: {
     addToCart: Function,
+    context: String,
   },
 
   data() {
@@ -126,21 +127,57 @@ export default {
 
     getProducts() {
       this.loading = true;
-      axios
-        .get('/products', {
+      if (this.context === 'transaction') {
+        axios.get('/products', {
           params: {
+            context: 'transaction',
             page: this.currentPage,
             itemsPerPage: this.itemsPerPage,
             search: this.searchQuery,
           }
-        }).then((res) => {
-          this.products = res.data.products;
-          this.totalItems = res.data.totalItems;
-          this.loading = false;
         })
-        .catch((error) => {
-          console.error('Error fetching products:', error);
-        });
+          .then((res) => {
+            this.products = res.data.products;
+            this.totalItems = res.data.totalItems;
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.error('Error fetching products:', error);
+          });
+      } else if (this.context === 'stockIn') {
+        axios.get('/products', {
+          params: {
+            context: 'stockIn',
+            page: this.currentPage, 
+            itemsPerPage: this.itemsPerPage,
+            search: this.searchQuery,
+          }
+        })
+          .then((res) => {
+            this.products = res.data.products;
+            this.totalItems = res.data.totalItems;
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.error('Error fetching products:', error);
+          });
+      } else {
+        axios
+          .get('/products', {
+            params: {
+              page: this.currentPage,
+              itemsPerPage: this.itemsPerPage,
+              search: this.searchQuery,
+            }
+          }).then((res) => {
+            this.products = res.data.products;
+            this.totalItems = res.data.totalItems;
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.error('Error fetching products:', error);
+          });
+      }
     },
 
     previousPage() {
@@ -208,10 +245,10 @@ export default {
 
 <style scoped>
 .browseProduct {
-  /* background-image: url("../../assets/assets/vuejs.jpg"); */
   background-color: #23b78d;
   z-index: 999;
 }
+
 .close-button {
   position: absolute;
   top: 35px;
