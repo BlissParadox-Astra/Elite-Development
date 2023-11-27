@@ -12,7 +12,7 @@ class TransactionManager
     public function createTransaction(array $transactionRequest)
     {
         $transactionBy = Auth::id();
-        $transactionDate = Carbon::now()->format("Y-m-d H:i:s");
+        $transactionDate = Carbon::parse($transactionRequest['transaction_date'])->format('Y-m-d');
 
         $product = Product::findOrFail($transactionRequest['product_id']);
         $total = $product->price * $transactionRequest['quantity'];

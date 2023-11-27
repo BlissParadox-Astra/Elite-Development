@@ -52,27 +52,27 @@ class CanceledOrderManager
         if ($filterType) {
             switch ($filterType) {
                 case 'Day':
-                    $query->whereDate('created_at', now()->toDateString());
+                    $query->whereDate('canceled_orders.canceled_date', now()->toDateString());
                     break;
                 case 'Week':
-                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $query->whereBetween('canceled_orders.canceled_date', [now()->startOfWeek(), now()->endOfWeek()]);
                     break;
                 case 'Month':
-                    $query->whereYear('created_at', now()->year)
-                        ->whereMonth('created_at', now()->month);
+                    $query->whereYear('canceled_orders.canceled_date', now()->year)
+                        ->whereMonth('canceled_orders.canceled_date', now()->month);
                     break;
                 case 'Year':
-                    $query->whereYear('created_at', now()->year);
+                    $query->whereYear('canceled_orders.canceled_date', now()->year);
                     break;
                 case 'Customize':
-                    $query->whereBetween('created_at', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('canceled_orders.canceled_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;
                 default:
-                    $query->whereYear('created_at', now()->year);
+                    $query->whereNull('deleted_at');
                     break;
             }
         } else {
-            $query->whereYear('created_at', now()->year);
+            $query->whereNull('deleted_at');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

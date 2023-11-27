@@ -27,7 +27,7 @@ class StockInManager
 
         $product->save();
     }
-    
+
     public function generateReferenceNumber(): string
     {
         $timestamp = now()->format('YmdHis');
@@ -58,11 +58,11 @@ class StockInManager
                     $query->whereBetween('stock_ins.stock_in_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;
                 default:
-                    $query->whereYear('stock_ins.stock_in_date', now()->year);
+                    $query->whereNull('deleted_at');
                     break;
             }
         } else {
-            $query->whereYear('stock_ins.stock_in_date', now()->year);
+            $query->whereNull('deleted_at');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

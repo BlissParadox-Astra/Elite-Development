@@ -121,7 +121,7 @@ export default {
         { title: "Price", key: 'price' },
         { title: "Quantity", key: 'quantity' },
         { title: "Total", key: 'total' },
-        { title: "Transacted Date", key: 'transaction_date' },
+        { title: "Transaction Date", key: 'transaction_date' },
         { title: "Transacted By", key: 'user.first_name' },
       ],
       // items: [

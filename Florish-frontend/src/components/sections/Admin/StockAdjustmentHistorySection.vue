@@ -79,7 +79,7 @@ export default {
                 { title: "Description", key: "adjusted_product.description" },
                 { title: "Remarks", key: "remarks" },
                 { title: 'Quantity', key: 'quantity' },
-                { title: 'Date', key: 'adjustment_date' },
+                { title: 'Adjustment Date', key: 'adjustment_date' },
                 { title: 'User', key: 'stock_adjustment_by_user.first_name' },
             ],
         };
@@ -130,11 +130,7 @@ export default {
                         case 'Customize':
                             params.filterType = 'Customize';
                             break;
-                        default:
-                            params.filterType = 'Year';
                     }
-                } else {
-                    params.filterType = 'Year';
                 }
 
                 const response = await axios.get('/stock-adjustments', { params });

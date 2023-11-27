@@ -127,7 +127,7 @@ class TransactionController extends Controller
      */
     public function getTransactionYearsAndEarnings()
     {
-        $yearsData = Transaction::selectRaw('YEAR(created_at) as year')
+        $yearsData = Transaction::selectRaw('YEAR(transaction_date) as year')
             ->selectRaw('SUM(total) as earnings')
             ->groupBy('year')
             ->orderBy('year')
@@ -141,8 +141,8 @@ class TransactionController extends Controller
         $currentYear = date('Y');
 
         $monthlyEarnings = DB::table('transactions')
-            ->select(DB::raw('DATE_FORMAT(created_at, "%M") as month_name'), DB::raw('SUM(total) as earnings'))
-            ->whereYear('created_at', $currentYear)
+            ->select(DB::raw('DATE_FORMAT(transaction_date, "%M") as month_name'), DB::raw('SUM(total) as earnings'))
+            ->whereYear('transaction_date', $currentYear)
             ->groupBy('month_name')
             ->get();
 
