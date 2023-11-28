@@ -1,5 +1,5 @@
 <template>
-  <v-container class="content-container fill-height">
+  <v-container class="content-container fill-height ">
     <v-row>
       <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
         <div class="logo">
@@ -115,14 +115,15 @@ export default {
 
 <style scoped>
 .fill-height {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .content-container {
   background-image: url("../../../assets/assets/mekus (3).png");
   background-size: cover;
   background-position: center;
-  margin-top: 95px;
+  margin-top: 64px;
+  height: 100vh !important;
 }
 
 .login-card {
