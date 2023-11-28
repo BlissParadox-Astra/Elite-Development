@@ -122,6 +122,7 @@ export default {
   background-image: url("../../../assets/assets/mekus (3).png");
   background-size: cover;
   background-position: center;
+  margin-top: 95px;
 }
 
 .login-card {
