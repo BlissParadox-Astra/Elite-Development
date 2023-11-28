@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="mt-12">
         <v-row justify="center">
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
@@ -50,7 +50,7 @@
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
                     :transaction_number="transaction_number" :transact_by="transact_by" item-value="id" class="elevation-1"
-                    hide-default-footer fixed-header>
+                    hide-default-footer fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>

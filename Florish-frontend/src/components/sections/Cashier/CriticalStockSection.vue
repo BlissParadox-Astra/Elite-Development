@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid>
+    <v-container class="mt-12" fluid>
         <h1 class="text-center mb-4">CRITICAL STOCK</h1>
         <v-row v-if="products.length > 0">
             <v-col v-for="product in products" :key="product.id" cols="12" sm="12" md="12" lg="4">
