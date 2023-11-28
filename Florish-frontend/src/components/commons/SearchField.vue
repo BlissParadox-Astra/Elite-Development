@@ -1,7 +1,7 @@
 <template>
   <v-card color="grey-lighten-3" max-width="430">
     <v-text-field v-model="searchQuery" :loading="loading" density="compact" variant="solo" :label="searchLabel"
-      append-inner-icon="mdi-magnify" single-line hide-details @input="onInput"></v-text-field>
+      append-inner-icon="mdi-magnify" single-line hide-details @input="onInput" @keydown.enter="onEnter"></v-text-field>
   </v-card>
 </template>
 
@@ -12,6 +12,11 @@ export default {
       type: String,
       default: 'Search Product Here',
     },
+    searchType: {
+      type: String,
+      default: 'regular',
+    },
+
   },
   data: () => ({
     loaded: false,
@@ -22,6 +27,12 @@ export default {
   methods: {
     onInput() {
       this.$emit('search', this.searchQuery);
+    },
+
+    onEnter() {
+      if (this.searchType === 'barcode') {
+        this.$emit('searchBarcode', this.searchQuery);
+      }
     },
   },
 }

@@ -2,7 +2,7 @@
     <v-container class="mt-14">
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" :searchLabel="searchLabel" />
+          <SearchField @search="handleSearch" :searchLabel="searchLabel" :searchType="'regular'" />
         </v-col>
         <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block @click="showBrandForm">Add Brand</v-btn>

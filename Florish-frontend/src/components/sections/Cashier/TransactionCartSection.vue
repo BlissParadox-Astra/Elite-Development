@@ -7,27 +7,27 @@
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
                             readonly />
                     </v-col>
-                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center">
+
+                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="generateAndFetchInvoiceNumber"
                             :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
                     </v-col>
-                    <v-col  cols="12" md="5" lg="4" sm="12">
-                        <v-text-field  label="Transaction Date" type="date" variant="plain"
-                            v-model="transaction_date" />
+
+                    <v-col cols="12" md="5" lg="2" sm="12" class="ml-15">
+                        <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date" />
                     </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12" md="6" lg="3" sm="12" class="d-flex align-center">
-                        <v-label>BARCODE:</v-label>
+
+                    <v-col cols="12" md="4" lg="4" sm="12">
+                        <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
+                            :searchType="'barcode'" />
                     </v-col>
-                    <v-col cols="12" md="6" lg="3" sm="12">
-                        <SearchField></SearchField>
-                    </v-col>
-                    <v-col cols="12" md="6" lg="3" sm="12" class="d-flex align-center">
+
+                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
                     </v-col>
-                    <v-col cols="12" sm="12" lg="3" class="d-flex align-center">
+
+                    <v-col cols="12" md="5" sm="12" lg="3" class="d-flex align-center ml-15">
                         <v-card class="pa-3 total-card" style="height: 50px; width: 80%;">
                             <v-row class="text-left" style="height: 80%;">
                                 <v-col cols="12">
@@ -98,7 +98,8 @@
             <v-col cols="12">
                 <v-row class="d-flex justify-center">
                     <v-col cols="12" sm="8" md="8" lg="8" xl="10" class="form-container">
-                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct" :context="'transaction'"/>
+                        <BrowseProduct @close="closeBrowseProductForm" :addToCart="addToCartProduct"
+                            :context="'transaction'" />
                     </v-col>
                 </v-row>
             </v-col>
@@ -155,6 +156,7 @@
 <script>
 import BrowseProduct from '../../commons/BrowseProduct.vue';
 import SearchField from '../../commons/SearchField.vue';
+import debounce from 'lodash/debounce';
 import { mapState } from 'vuex';
 import axios from 'axios';
 export default {
@@ -178,7 +180,9 @@ export default {
             editingIndex: -1,
             snackbar: false,
             isTransactionPage: true,
+            searchLabel: 'Search Barcode Here',
             snackbarColor: '',
+            scannedData: '',
             loading: false,
             products: [],
             headers: [
@@ -242,7 +246,54 @@ export default {
         this.totalItems = this.products.length;
     },
 
+    mounted() {
+        window.addEventListener('keydown', this.handleKeyDown);
+    },
+
+    beforeUnmount() {
+        window.removeEventListener('keydown', this.handleKeyDown);
+    },
+
     methods: {
+        handleKeyDown: debounce(function (event) {
+            this.scannedData = '';
+            if (event.key === 'Enter') {
+                this.handleBarcodeScan(this.scannedData);
+            } else {
+                this.scannedData += event.key;
+            }
+        }, 300),
+
+        handleBarcodeScan(data) {
+
+            if (!data.trim()) {
+                return;
+            }
+
+            this.$refs.barcodeSearchField.searchQuery = '';
+
+            axios.get(`/product/by-barcode?barcode=${data}`)
+                .then(response => {
+                    const product = response.data.product;
+                    if (product) {
+                        this.addToCartProduct(product);
+                    } else {
+                        this.showSnackbar('Product not found', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching product by barcode', error);
+
+                    if (error.response && error.response.data && error.response.data.error) {
+                        this.showSnackbar(error.response.data.error, 'error');
+                    } else {
+                        this.showSnackbar('Error fetching product details', 'error');
+                    }
+                });
+
+            this.scannedData = '';
+        },
+
         generateAndFetchInvoiceNumber() {
             this.isGeneratingInvoiceNumber = true;
             axios.get('/transaction/generate-transaction-number')
@@ -258,7 +309,9 @@ export default {
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
 
             if (existingProduct) {
-                if (existingProduct.quantity + 1 > product.stock_on_hand) {
+                const totalQuantity = existingProduct.quantity + 1;
+
+                if (totalQuantity > product.stock_on_hand) {
                     this.showSnackbar('Not enough stock available for this product', 'error');
                     return;
                 }

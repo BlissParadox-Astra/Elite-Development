@@ -10,7 +10,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" sm="9">
-        <SearchField @search="handleSearch" />
+        <SearchField @search="handleSearch" :searchType="'regular'" />
       </v-col>
     </v-row>
     <v-row justify="center">

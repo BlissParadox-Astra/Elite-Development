@@ -5,7 +5,7 @@
           <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
         </v-col>
         <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" />
+          <SearchField @search="handleSearch" :searchType="'regular'" />
         </v-col>
         <!-- <v-col cols="12" sm="3" class="d-flex justify-center align-center">
           <v-btn color="#23b78d" block>

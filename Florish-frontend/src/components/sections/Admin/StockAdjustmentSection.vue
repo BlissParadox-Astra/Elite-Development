@@ -3,7 +3,7 @@
     <v-container class="mt-15">
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" />
+          <SearchField @search="handleSearch" :searchLabel="searchLabel" :searchType="'regular'" />
         </v-col>
       </v-row>
       <v-row justify="center">

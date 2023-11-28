@@ -12,7 +12,7 @@
       <div class="text-center mt-2" v-if="user">{{ user.first_name }} {{ user.last_name }}</div>
       <v-card-text>
         <v-card-subtitle class="caption">
-          Login this day of {{ formatDate(user.created_at) }}
+          Member since {{ formatDate(user.created_at) }}
         </v-card-subtitle>
       </v-card-text>
       <v-card-actions class="justify-center">
@@ -47,7 +47,7 @@ export default {
       }
     },
     formatDate(dateString) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const options = { year: 'numeric', month: 'long', day: 'numeric'};
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
   }
