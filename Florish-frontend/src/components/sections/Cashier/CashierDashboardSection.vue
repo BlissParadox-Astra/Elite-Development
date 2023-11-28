@@ -47,6 +47,7 @@ export default {
     background-color: #07a278;
     /* background-color:#23b78d; */
     position: fixed;
+    overflow: auto;
 }
 
 .dashboard h2 {
