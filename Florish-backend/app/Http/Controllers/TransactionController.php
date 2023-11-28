@@ -130,6 +130,7 @@ class TransactionController extends Controller
         $yearsData = Transaction::selectRaw('YEAR(transaction_date) as year')
             ->selectRaw('SUM(total) as earnings')
             ->groupBy('year')
+            ->whereNull('deleted_at')
             ->orderBy('year')
             ->get();
 
@@ -143,6 +144,7 @@ class TransactionController extends Controller
         $monthlyEarnings = DB::table('transactions')
             ->select(DB::raw('DATE_FORMAT(transaction_date, "%M") as month_name'), DB::raw('SUM(total) as earnings'))
             ->whereYear('transaction_date', $currentYear)
+            ->whereNull('deleted_at')
             ->groupBy('month_name')
             ->get();
 

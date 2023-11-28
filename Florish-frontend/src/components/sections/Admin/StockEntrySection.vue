@@ -2,21 +2,30 @@
     <v-main class="section2">
         <v-container>
             <v-row>
-                <v-col cols="12" sm="5" md="5" lg="3" xl="5">
+                <v-col cols="12" sm="5" md="5" lg="4" xl="5">
                     <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>
-                <v-col cols="12" sm="2" class="d-flex justify-center align-center">
+
+                <v-col cols="12" sm="3" class="d-flex justify-center align-center mt-n5">
                     <v-btn color="#23b78d" block @click="generateAndFetchReferenceNumber"
                         :disabled="isGeneratingReferenceNumber">Generate</v-btn>
                 </v-col>
-                <v-col cols="12" sm="5" md="5" lg="3" xl="5">
+
+                <v-col cols="12" sm="5" md="5" lg="3" xl="5" class="ml-15">
                     <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
                 </v-col>
-                <v-col cols="12" sm="2" class="d-flex justify-center align-center">
+
+                <v-col cols="12" sm="3" md="6" lg="4" xl="2">
+                    <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
+                        :searchType="'barcode'" />
+                </v-col>
+
+                <v-col cols="12" sm="3" class="d-flex justify-center align-center mt-n6">
                     <v-btn color="#23b78d" block @click="showBrowseProductForm" :disabled="!canBrowseProduct">Browse
                         Product</v-btn>
                 </v-col>
-                <v-col cols="12" sm="2" md="2" lg="2" xl="2">
+
+                <v-col cols="12" sm="3" class="d-flex justify-center align-center mt-n3 ml-15">
                     <v-text-field label="Stock In By" readonly :model-value="stock_in_by" />
                 </v-col>
             </v-row>
@@ -123,13 +132,16 @@
 
 <script>
 import BrowseProduct from '../../commons/BrowseProduct.vue';
+import SearchField from '../../commons/SearchField.vue';
 import { VIcon } from "vuetify/lib/components";
+import debounce from 'lodash/debounce';
 import { mapState } from 'vuex';
 import axios from 'axios';
 export default {
     name: "StockEntry",
     components: {
         BrowseProduct,
+        SearchField,
         VIcon,
     },
     data() {
@@ -149,8 +161,10 @@ export default {
             reference_number: '',
             stock_in_date: '',
             isStockEntryPage: true,
+            searchLabel: 'Search Barcode Here',
             snackbar: false,
             snackbarColor: '',
+            scannedData: '',
             headers: [
                 { title: '#', value: 'index' },
                 { title: 'Reference No.', key: 'reference_number' },
@@ -212,7 +226,54 @@ export default {
         this.totalItems = this.products.length;
     },
 
+    mounted() {
+        window.addEventListener('keydown', this.handleKeyDown);
+    },
+
+    beforeUnmount() {
+        window.removeEventListener('keydown', this.handleKeyDown);
+    },
+
     methods: {
+        handleKeyDown: debounce(function (event) {
+            this.scannedData = '';
+            if (event.key === 'Enter') {
+                this.handleBarcodeScan(this.scannedData);
+            } else {
+                this.scannedData += event.key;
+            }
+        }, 300),
+
+        handleBarcodeScan(data) {
+
+            if (!data.trim()) {
+                return;
+            }
+
+            this.$refs.barcodeSearchField.searchQuery = '';
+
+            axios.get(`/product/by-barcode?barcode=${data}`)
+                .then(response => {
+                    const product = response.data.product;
+                    if (product) {
+                        this.addToCartProduct(product);
+                    } else {
+                        this.showSnackbar('Product not found', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching product by barcode', error);
+
+                    if (error.response && error.response.data && error.response.data.error) {
+                        this.showSnackbar(error.response.data.error, 'error');
+                    } else {
+                        this.showSnackbar('Error fetching product details', 'error');
+                    }
+                });
+
+            this.scannedData = '';
+        },
+
         generateAndFetchReferenceNumber() {
             this.isGeneratingReferenceNumber = true;
             axios.get('/stock-in/generate-reference-number')

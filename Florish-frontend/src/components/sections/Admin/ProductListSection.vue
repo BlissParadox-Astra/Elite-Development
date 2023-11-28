@@ -2,7 +2,7 @@
     <v-container class="mt-2 section2">
         <v-row>
             <v-col cols="12" sm="9">
-                <SearchField @search="handleSearch" />
+                <SearchField @search="handleSearch" :searchType="'regular'" />
             </v-col>
             <v-col cols="12" sm="3">
                 <v-btn color="#23b78d" block @click="showProductForm">Add New Product</v-btn>

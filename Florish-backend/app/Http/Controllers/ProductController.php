@@ -43,6 +43,27 @@ class ProductController extends Controller
         }
     }
 
+        /**
+     * Display product by barcode.
+     */
+    public function getByBarcode(Request $request)
+    {
+        try {
+            $barcode = $request->input('barcode');
+
+            $product = $this->productManager->getProductByBarcode($barcode);
+
+            if ($product) {
+                return response()->json(['product' => $product], Response::HTTP_OK);
+            } else {
+                return response()->json(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            }
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+            return response()->json(['error' => $errorMessage], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Display total stock on hand.
      */

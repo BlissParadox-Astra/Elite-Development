@@ -12,6 +12,7 @@ const store = createStore({
     isCashier: false,
     alertMessage: null,
     isSidebarCollapsed: false,
+    user: null,
   },
   mutations: {
     setIsAdmin(state, value) {
@@ -45,7 +46,7 @@ const store = createStore({
       commit('setIsCashier', value);
     },
     logout({ commit }) {
-      commit('setToken', { token: null, userType: null });
+      commit('setToken', { token: null, userType: null, user: null });
       Cookies.remove('token');
       router.push({ name: 'Login Page' });
     },
