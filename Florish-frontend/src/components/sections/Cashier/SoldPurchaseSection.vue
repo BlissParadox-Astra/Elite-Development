@@ -1,12 +1,7 @@
 <template>
-    <v-container>
+    <v-container class="mt-14">
         <v-row justify="center">
             <v-col cols="12">
-                <v-row class="d-flex justify-center">
-                    <v-col cols="12">
-                        <h2 class="text-center">SOLD PURCHASE</h2>
-                    </v-col>
-                </v-row>
                 <v-row>
                     <v-col cols="12" sm="8">
                         <FilterByDate @date-range-change="handleDateRangeChange"
@@ -44,7 +39,7 @@
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="transactions" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="debouncedGetTransactions" fixed-header>
+                    @update:options="debouncedGetTransactions" fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>

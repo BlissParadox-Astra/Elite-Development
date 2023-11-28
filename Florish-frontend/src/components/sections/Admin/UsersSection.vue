@@ -1,6 +1,6 @@
 <template>
   <v-main>
-    <v-container class="section2">
+    <v-container class="section2 mt-14">
       <v-row justify="end">
         <v-col cols="12" sm="3">
           <v-btn color="#23b78d" block @click="showUserForm">Add User</v-btn>

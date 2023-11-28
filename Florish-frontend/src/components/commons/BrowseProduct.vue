@@ -1,5 +1,5 @@
 <template>
-  <v-container class="browseProduct">
+  <v-container class="browseProduct mt-14">
     <v-row>
       <v-col>
         <h2 class="text-center mb-1">Product Module</h2>
@@ -251,7 +251,7 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 35px;
+  top: 90px;
   right: 30px;
   z-index: 999;
   font-size: larger;

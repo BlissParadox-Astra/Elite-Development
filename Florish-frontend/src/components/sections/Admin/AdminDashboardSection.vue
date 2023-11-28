@@ -1,5 +1,5 @@
 <template>
-    <v-container class="section2">
+    <v-container class="section2 mt-8">
         <v-container>
             <v-row class="d-flex justify-center">
                 <v-col cols="12">

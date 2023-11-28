@@ -1,6 +1,5 @@
 <template>
-  <v-main>
-    <v-container>
+    <v-container class="mt-14">
       <v-row>
         <v-col cols="12" sm="9">
           <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
@@ -79,7 +78,6 @@
         </v-col>
       </v-row> -->
     </v-container>
-  </v-main>
 </template>
   
 <script>

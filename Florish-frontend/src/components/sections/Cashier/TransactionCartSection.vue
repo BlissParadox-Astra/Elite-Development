@@ -1,12 +1,7 @@
 <template>
-    <v-container>
+    <v-container class="mt-12">
         <v-row justify="center">
             <v-col cols="12">
-                <v-row class="d-flex justify-center">
-                    <v-col cols="12">
-                        <h2 class="text-center">TRANSACTION CART</h2>
-                    </v-col>
-                </v-row>
                 <v-row>
                     <v-col cols="12" md="4" lg="4" sm="12">
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
@@ -50,7 +45,7 @@
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
                     :transaction_number="transaction_number" :transact_by="transact_by" item-value="id" class="elevation-1"
-                    hide-default-footer fixed-header>
+                    hide-default-footer fixed-header height="400">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>

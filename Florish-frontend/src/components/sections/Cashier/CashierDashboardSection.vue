@@ -1,5 +1,5 @@
 <template>
-    <v-container class="dashboard" fluid>
+    <v-container class="dashboard mt-12" fluid>
         <h2 class="text-center">FLORISH CONVENIENCE STORE</h2>
         <v-row>
             <v-col cols="12" sm="12" md="6" xl="6" lg="6" class="d-flex justify-center">
@@ -46,6 +46,8 @@ export default {
     text-align: center;
     background-color: #07a278;
     /* background-color:#23b78d; */
+    position: fixed;
+    overflow: auto;
 }
 
 .dashboard h2 {

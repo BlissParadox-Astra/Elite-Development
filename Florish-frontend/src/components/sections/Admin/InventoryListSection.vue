@@ -1,5 +1,5 @@
 <template>
-    <v-container class="section2">
+    <v-container class="section2 mt-14">
         <v-row>
             <v-col cols="12" sm="9">
                 <SearchField @search="handleSearch" />

@@ -1,5 +1,5 @@
 <template>
-    <v-container class="mt-2 section2">
+    <v-container class="mt-15 section2">
         <v-row justify="center">
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
