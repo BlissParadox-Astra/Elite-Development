@@ -1,12 +1,7 @@
 <template>
-    <v-container class="mt-12">
+    <v-container class="mt-14">
         <v-row justify="center">
             <v-col cols="12">
-                <v-row class="d-flex justify-center">
-                    <v-col cols="12">
-                        <h2 class="text-center">SOLD PURCHASE</h2>
-                    </v-col>
-                </v-row>
                 <v-row>
                     <v-col cols="12" sm="8">
                         <FilterByDate @date-range-change="handleDateRangeChange"

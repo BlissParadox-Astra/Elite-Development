@@ -2,11 +2,6 @@
     <v-container class="mt-12">
         <v-row justify="center">
             <v-col cols="12">
-                <v-row class="d-flex justify-center">
-                    <v-col cols="12">
-                        <h2 class="text-center">TRANSACTION CART</h2>
-                    </v-col>
-                </v-row>
                 <v-row>
                     <v-col cols="12" md="4" lg="4" sm="12">
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
