@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-2 showProductForm">
+  <v-container class="mt-15 showProductForm">
     <v-row>
       <v-col cols="12">
         <div @click="cancelForm" class="close-button">

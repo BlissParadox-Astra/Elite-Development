@@ -1,6 +1,5 @@
 <template>
-  <v-main>
-    <v-container>
+    <v-container class="mt-13">
       <v-row>
         <v-col cols="12" sm="9">
           <SearchField @search="handleSearch" :searchLabel="searchLabel" />
@@ -68,7 +67,6 @@
         </template>
       </v-snackbar>
     </v-container>
-  </v-main>
 </template>
  
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="section2">
+  <v-container class="section2 mt-14">
     <v-row cols="12">
       <v-col cols="12" sm="9">
         <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
@@ -23,7 +23,7 @@
             </tr>
           </template>
           <template v-slot:bottom>
-            <div class="text-center pt-8 pagination">
+            <div class="text-center pt-5 pagination">
               <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                 :disabled="currentPage === 1">Previous</v-btn>
 

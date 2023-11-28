@@ -7,7 +7,7 @@
       <Profile></Profile>
     </v-app-bar>
     <MessageAlert :message="alertMessage" v-if="alertMessage" />
-    <v-main>
+    <v-main class="mt-n16" >
       <MobileSidebar v-model="isMobileSidebarOpen" v-if="isMobileSize && isMobileSidebarOpen &&isAdmin" />
       <router-view v-if="showMainContent" />
     </v-main>
