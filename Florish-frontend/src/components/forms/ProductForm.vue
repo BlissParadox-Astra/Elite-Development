@@ -176,8 +176,8 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 35px;
-  right: 30px;
+  top: 90px;
+  right: 35px;
   z-index: 999;
   font-size: larger;
 }
