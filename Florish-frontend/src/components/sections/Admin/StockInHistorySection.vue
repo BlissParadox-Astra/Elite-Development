@@ -9,7 +9,7 @@
       <v-col cols="12">
         <v-data-table :headers="headers" :items="stockIns" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-          @update:options="debouncedGetStockIns" fixed-header height="400">
+          @update:options="debouncedGetStockIns" fixed-header height="450">
           <template v-slot:item="{ item, index }">
             <tr>
               <td>{{ displayedIndex + index }}</td>
@@ -23,11 +23,11 @@
             </tr>
           </template>
           <template v-slot:bottom>
-            <div class="text-center pt-5 pagination">
+            <div class="text-center pt-8 pagination">
               <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                 :disabled="currentPage === 1">Previous</v-btn>
 
-              <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+              <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                 {{ pageNumber }}
               </v-btn>
@@ -80,8 +80,23 @@ export default {
     displayedIndex() {
       return (this.currentPage - 1) * this.itemsPerPage + 1;
     },
+
     totalPages() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+
+    visiblePageRange() {
+      const maxVisiblePages = 5;
+      const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+      const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+      const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+      const range = [];
+      for (let i = firstPage; i <= lastPage; i++) {
+        range.push(i);
+      }
+
+      return range;
     },
   },
 
@@ -133,64 +148,64 @@ export default {
         console.error('Error fetching stock in records:', error);
         this.loading = false;
       }
-  },
+    },
 
-  handleFilterTypeChange(newFilterType) {
-    this.filterType = newFilterType;
-    this.currentPage = 1;
-    this.debouncedGetStockIns();
-  },
-
-  handleDateRangeChange({ fromDate, toDate }) {
-    this.fromDate = fromDate;
-    this.currentPage = 1;
-    this.toDate = toDate;
-    this.debouncedGetStockIns();
-  },
-
-  previousPage() {
-    this.loading = true;
-    if (this.currentPage > 1) {
-      this.currentPage--;
+    handleFilterTypeChange(newFilterType) {
+      this.filterType = newFilterType;
+      this.currentPage = 1;
       this.debouncedGetStockIns();
-    }
-  },
+    },
 
-  nextPage() {
-    this.loading = true;
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+    handleDateRangeChange({ fromDate, toDate }) {
+      this.fromDate = fromDate;
+      this.currentPage = 1;
+      this.toDate = toDate;
       this.debouncedGetStockIns();
-    }
-  },
+    },
 
-  gotoPage(pageNumber) {
-    this.loading = true;
-    this.currentPage = pageNumber;
-    this.debouncedGetStockIns();
-  },
+    previousPage() {
+      this.loading = true;
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.debouncedGetStockIns();
+      }
+    },
 
-  renderProductCode(adjusted_product) {
-    return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
-  },
+    nextPage() {
+      this.loading = true;
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.debouncedGetStockIns();
+      }
+    },
 
-  renderProductBarcode(adjusted_product) {
-    return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
-  },
+    gotoPage(pageNumber) {
+      this.loading = true;
+      this.currentPage = pageNumber;
+      this.debouncedGetStockIns();
+    },
 
-  renderProductDescription(adjusted_product) {
-    return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
-  },
+    renderProductCode(adjusted_product) {
+      return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.product_code : 'Unknown';
+    },
 
-  renderStockInBy(stock_in_by_user) {
-    if (stock_in_by_user.first_name) {
-      return `${stock_in_by_user.first_name} ${stock_in_by_user.last_name}`;
-    } else {
-      return 'Unknown';
-    }
-  },
+    renderProductBarcode(adjusted_product) {
+      return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.barcode : 'Unknown';
+    },
 
-},
+    renderProductDescription(adjusted_product) {
+      return adjusted_product.adjusted_product ? adjusted_product.adjusted_product.description : 'Unknown';
+    },
+
+    renderStockInBy(stock_in_by_user) {
+      if (stock_in_by_user.first_name) {
+        return `${stock_in_by_user.first_name} ${stock_in_by_user.last_name}`;
+      } else {
+        return 'Unknown';
+      }
+    },
+
+  },
 };
 </script>
 

@@ -19,7 +19,7 @@
 
                     <v-col cols="12" md="4" lg="4" sm="12">
                         <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
-                            :searchType="'barcode'" />
+                            :searchType="'barcode'" :disabled="!isTransactionNumberPresent" />
                     </v-col>
 
                     <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
@@ -45,7 +45,7 @@
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
                     :transaction_number="transaction_number" :transact_by="transact_by" item-value="id" class="elevation-1"
-                    hide-default-footer fixed-header height="400">
+                    hide-default-footer fixed-header height="350">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
@@ -81,7 +81,7 @@
                             <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                                 :disabled="currentPage === 1">Previous</v-btn>
 
-                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
                             </v-btn>
@@ -126,7 +126,7 @@
                 </v-btn>
             </template>
         </v-snackbar>
-        <v-row class="d-flex justify-space-between">
+        <v-row class="d-flex justify-space-between mt-n4">
             <v-col cols="12" sm="6" lg="3" class="text-start">
                 <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
             </v-col>
@@ -223,12 +223,30 @@ export default {
             return this.transaction_number === '' || this.transaction_date === '' || this.products.length === 0;
         },
 
+        isTransactionNumberPresent() {
+            return !!this.transaction_number;
+        },
+
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
 
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+
+        visiblePageRange() {
+            const maxVisiblePages = 5;
+            const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+            const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+            const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+            const range = [];
+            for (let i = firstPage; i <= lastPage; i++) {
+                range.push(i);
+            }
+
+            return range;
         },
     },
 

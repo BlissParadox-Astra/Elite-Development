@@ -9,7 +9,7 @@
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="canceled_orders" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="debouncedGetCanceledOrders" fixed-header height="400">
+                    @update:options="debouncedGetCanceledOrders" fixed-header height="450">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
@@ -30,11 +30,11 @@
                         </tr>
                     </template>
                     <template v-slot:bottom>
-                        <div class="text-center pt-5 pagination">
+                        <div class="text-center pt-8 pagination">
                             <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                                 :disabled="currentPage === 1">Previous</v-btn>
 
-                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
                             </v-btn>
@@ -95,8 +95,23 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+
+        visiblePageRange() {
+            const maxVisiblePages = 5;
+            const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+            const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+            const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+            const range = [];
+            for (let i = firstPage; i <= lastPage; i++) {
+                range.push(i);
+            }
+
+            return range;
         },
     },
 
@@ -149,80 +164,80 @@ export default {
                 console.error('Error getting canceled orders: ', error);
                 this.loading = false;
             }
-    },
+        },
 
-    handleFilterTypeChange(newFilterType) {
-        this.filterType = newFilterType;
-        this.currentPage = 1;
-        this.debouncedGetCanceledOrders();
-    },
-
-    handleDateRangeChange({ fromDate, toDate }) {
-        this.fromDate = fromDate;
-        this.currentPage = 1;
-        this.toDate = toDate;
-        this.debouncedGetCanceledOrders();
-    },
-
-    previousPage() {
-        this.loading = true;
-        if (this.currentPage > 1) {
-            this.currentPage--;
+        handleFilterTypeChange(newFilterType) {
+            this.filterType = newFilterType;
+            this.currentPage = 1;
             this.debouncedGetCanceledOrders();
-        }
-    },
+        },
 
-    nextPage() {
-        this.loading = true;
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
+        handleDateRangeChange({ fromDate, toDate }) {
+            this.fromDate = fromDate;
+            this.currentPage = 1;
+            this.toDate = toDate;
             this.debouncedGetCanceledOrders();
-        }
-    },
+        },
 
-    gotoPage(pageNumber) {
-        this.loading = true;
-        this.currentPage = pageNumber;
-        this.debouncedGetCanceledOrders();
-    },
+        previousPage() {
+            this.loading = true;
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.debouncedGetCanceledOrders();
+            }
+        },
 
-    renderReferenceNUmber(canceled_order) {
-        return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.transaction_number : 'Unknown';
-    },
+        nextPage() {
+            this.loading = true;
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.debouncedGetCanceledOrders();
+            }
+        },
 
-    renderProductCode(canceled_order) {
-        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-            ? canceled_order.canceled_transaction.transacted_product.product_code
-            : 'Unknown';
-    },
+        gotoPage(pageNumber) {
+            this.loading = true;
+            this.currentPage = pageNumber;
+            this.debouncedGetCanceledOrders();
+        },
 
-    renderBarCode(canceled_order) {
-        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-            ? canceled_order.canceled_transaction.transacted_product.barcode
-            : 'Unknown';
-    },
+        renderReferenceNUmber(canceled_order) {
+            return canceled_order.canceled_transaction ? canceled_order.canceled_transaction.transaction_number : 'Unknown';
+        },
 
-    renderPrice(canceled_order) {
-        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-            ? canceled_order.canceled_transaction.transacted_product.price
-            : 'Unknown';
-    },
+        renderProductCode(canceled_order) {
+            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+                ? canceled_order.canceled_transaction.transacted_product.product_code
+                : 'Unknown';
+        },
 
-    renderDescription(canceled_order) {
-        return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
-            ? canceled_order.canceled_transaction.transacted_product.description
-            : 'Unknown';
-    },
+        renderBarCode(canceled_order) {
+            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+                ? canceled_order.canceled_transaction.transacted_product.barcode
+                : 'Unknown';
+        },
 
-    renderUser(user) {
-        if (user.user) {
-            const { first_name, last_name } = user.user;
-            return `${first_name} ${last_name}`;
-        } else {
-            return 'Unknown';
-        }
+        renderPrice(canceled_order) {
+            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+                ? canceled_order.canceled_transaction.transacted_product.price
+                : 'Unknown';
+        },
+
+        renderDescription(canceled_order) {
+            return canceled_order.canceled_transaction && canceled_order.canceled_transaction.transacted_product
+                ? canceled_order.canceled_transaction.transacted_product.description
+                : 'Unknown';
+        },
+
+        renderUser(user) {
+            if (user.user) {
+                const { first_name, last_name } = user.user;
+                return `${first_name} ${last_name}`;
+            } else {
+                return 'Unknown';
+            }
+        },
     },
-},
 };
 </script>
 <style scoped>

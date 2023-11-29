@@ -1,74 +1,62 @@
 <template>
-    <v-container class="mt-14">
-      <v-row>
-        <v-col cols="12" sm="9">
-          <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
-        </v-col>
-        <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" :searchType="'regular'" />
-        </v-col>
-        <!-- <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-          <v-btn color="#23b78d" block>
-            SORT BY
-            <v-menu activator="parent">
-              <v-list>
-                <v-list-item v-for="(item, index) in items" :key="index" :value="index" @click="updateSort(item.title)">
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-btn>
-        </v-col> -->
-        <v-col cols="12" xl="5" lg="3">
-          <v-card class="pa-3 total-card">
-            <span class="total-label">Total of All Total: </span>
-            <span class="loading-message" v-if="loadingTotal">Loading...</span>
-            <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
-            <span class="loading-message" v-else>Loading...</span>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="12">
-          <v-data-table :headers="headers" :items="transactions" :loading="loading" :page="currentPage"
-            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetTransactions" fixed-header height="400">
-            <template v-slot:custom-sort="{ header }">
-              <span v-if="header.key === 'actions'">Actions</span>
-            </template>
-            <template v-slot:item="{ item, index }">
-              <tr>
-                <td>{{ displayedIndex + index }}</td>
-                <td>{{ item.transaction_number }}</td>
-                <td>{{ item.transacted_product.product_code }}</td>
-                <td>{{ item.transacted_product.barcode }}</td>
-                <td>{{ item.transacted_product.description }}</td>
-                <td>{{ item.transacted_product.category.category_name }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.total }}</td>
-                <td>{{ item.transaction_date }}</td>
-                <td>{{ item.user.first_name }}</td>
-              </tr>
-            </template>
-            <template v-slot:bottom>
-              <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                  :disabled="currentPage === 1">Previous</v-btn>
+  <v-container class="mt-14">
+    <v-row>
+      <v-col cols="12" sm="6" md="4" class="mt-5">
+        <SearchField @search="handleSearch" :searchType="'regular'" />
+      </v-col>
+      <v-col cols="12" sm="6" md="5" class="mt-3">
+        <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
+      </v-col>
+      <v-col cols="12" sm="6" md="3" class="mt-4">
+        <v-card class="pa-3 total-card">
+          <span class="total-label">Total of All Total: </span>
+          <span class="loading-message" v-if="loadingTotal">Loading...</span>
+          <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
+          <span class="loading-message" v-else>Loading...</span>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="12">
+        <v-data-table :headers="headers" :items="transactions" :loading="loading" :page="currentPage"
+          :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
+          @update:options="debouncedGetTransactions" fixed-header height="420">
+          <template v-slot:custom-sort="{ header }">
+            <span v-if="header.key === 'actions'">Actions</span>
+          </template>
+          <template v-slot:item="{ item, index }">
+            <tr>
+              <td>{{ displayedIndex + index }}</td>
+              <td>{{ item.transaction_number }}</td>
+              <td>{{ item.transacted_product.product_code }}</td>
+              <td>{{ item.transacted_product.barcode }}</td>
+              <td>{{ item.transacted_product.description }}</td>
+              <td>{{ item.transacted_product.category.category_name }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.total }}</td>
+              <td>{{ item.transaction_date }}</td>
+              <td>{{ item.user.first_name }}</td>
+            </tr>
+          </template>
+          <template v-slot:bottom>
+            <div class="text-center pt-8 pagination">
+              <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                :disabled="currentPage === 1">Previous</v-btn>
 
-                <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
-                  :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                  {{ pageNumber }}
-                </v-btn>
+              <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
+                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                {{ pageNumber }}
+              </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                  :disabled="currentPage === totalPages">Next</v-btn>
-              </div>
-            </template>
-          </v-data-table>
-        </v-col>
-      </v-row>
-      <!-- <v-row>
+              <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                :disabled="currentPage === totalPages">Next</v-btn>
+            </div>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+    <!-- <v-row>
         <v-col cols="12" xl="5" lg="3">
           <v-card class="pa-3 total-card">
             <span class="total-label">Total of All Total: </span>
@@ -77,7 +65,7 @@
           </v-card>
         </v-col>
       </v-row> -->
-    </v-container>
+  </v-container>
 </template>
   
 <script>
@@ -149,6 +137,20 @@ export default {
 
     totalPages() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+
+    visiblePageRange() {
+      const maxVisiblePages = 5;
+      const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+      const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+      const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+      const range = [];
+      for (let i = firstPage; i <= lastPage; i++) {
+        range.push(i);
+      }
+
+      return range;
     },
   },
 

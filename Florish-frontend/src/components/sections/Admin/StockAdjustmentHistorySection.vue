@@ -1,50 +1,50 @@
 <template>
-        <v-container class="mt-14">
-            <v-row>
-                <v-col cols="12" sm="9">
-                    <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
-                </v-col>
-            </v-row>
-            <v-row justify="center">
-                <v-col cols="12">
-                    <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
-                        :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1"
-                        hide-default-footer @update:options="debouncedStockAdjustments" fixed-header height="400">
-                        <template v-slot:custom-sort="{ header }">
-                            <span v-if="header.key === 'actions'">Actions</span>
-                        </template>
-                        <template v-slot:item="{ item, index }">
-                            <tr>
-                                <td>{{ displayedIndex + index }}</td>
-                                <td>{{ item.reference_number }}</td>
-                                <td>{{ item.action }}</td>
-                                <td>{{ item.adjusted_product.product_code }}</td>
-                                <td>{{ item.adjusted_product.barcode }}</td>
-                                <td>{{ item.adjusted_product.description }}</td>
-                                <td>{{ item.remarks }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>{{ item.adjustment_date }}</td>
-                                <td>{{ item.stock_adjustment_by_user.first_name }}</td>
-                            </tr>
-                        </template>
-                        <template v-slot:bottom>
-                            <div class="text-center pt-5 pagination">
-                                <button class="pagination-button" @click="previousPage" color="#23b78d"
-                                    :disabled="currentPage === 1">Previous</button>
+    <v-container class="mt-14">
+        <v-row>
+            <v-col cols="12" sm="9">
+                <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
+            </v-col>
+        </v-row>
+        <v-row justify="center">
+            <v-col cols="12">
+                <v-data-table :headers="headers" :items="adjustments" :loading="loading" :page="currentPage"
+                    :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
+                    @update:options="debouncedStockAdjustments" fixed-header height="450">
+                    <template v-slot:custom-sort="{ header }">
+                        <span v-if="header.key === 'actions'">Actions</span>
+                    </template>
+                    <template v-slot:item="{ item, index }">
+                        <tr>
+                            <td>{{ displayedIndex + index }}</td>
+                            <td>{{ item.reference_number }}</td>
+                            <td>{{ item.action }}</td>
+                            <td>{{ item.adjusted_product.product_code }}</td>
+                            <td>{{ item.adjusted_product.barcode }}</td>
+                            <td>{{ item.adjusted_product.description }}</td>
+                            <td>{{ item.remarks }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.adjustment_date }}</td>
+                            <td>{{ item.stock_adjustment_by_user.first_name }}</td>
+                        </tr>
+                    </template>
+                    <template v-slot:bottom>
+                        <div class="text-center pt-8 pagination">
+                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                                :disabled="currentPage === 1">Previous</v-btn>
 
-                                <button v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
-                                    :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                                    {{ pageNumber }}
-                                </button>
+                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
+                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                                {{ pageNumber }}
+                            </v-btn>
 
-                                <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                    :disabled="currentPage === totalPages">Next</v-btn>
-                            </div>
-                        </template>
-                    </v-data-table>
-                </v-col>
-            </v-row>
-        </v-container>
+                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                                :disabled="currentPage === totalPages">Next</v-btn>
+                        </div>
+                    </template>
+                </v-data-table>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -87,8 +87,23 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+
+        visiblePageRange() {
+            const maxVisiblePages = 5;
+            const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+            const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+            const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+            const range = [];
+            for (let i = firstPage; i <= lastPage; i++) {
+                range.push(i);
+            }
+
+            return range;
         },
     },
 

@@ -3,7 +3,7 @@
     <v-container class="mt-15">
       <v-row>
         <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" :searchLabel="searchLabel" :searchType="'regular'" />
+          <SearchField @search="handleSearch" :searchType="'regular'" />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -37,7 +37,7 @@
                 <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                   :disabled="currentPage === 1">Previous</v-btn>
 
-                <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                   :class="{ active: pageNumber === currentPage }" class="pagination-button">
                   {{ pageNumber }}
                 </v-btn>
@@ -46,7 +46,6 @@
                   :disabled="currentPage === totalPages">Next</v-btn>
               </div>
             </template>
-
           </v-data-table>
         </v-col>
       </v-row>
@@ -220,6 +219,20 @@ export default {
 
     totalPages() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+
+    visiblePageRange() {
+      const maxVisiblePages = 5;
+      const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+      const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+      const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+      const range = [];
+      for (let i = firstPage; i <= lastPage; i++) {
+        range.push(i);
+      }
+
+      return range;
     },
   },
 
