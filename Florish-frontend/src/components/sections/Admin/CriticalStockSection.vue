@@ -4,7 +4,7 @@
             <v-col cols="12">
                 <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                     :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-                    @update:options="debouncedGetCriticalStocks" fixed-header height="400">
+                    @update:options="debouncedGetCriticalStocks" fixed-header height="500">
                     <template v-slot:custom-sort="{ header }">
                         <span v-if="header.key === 'actions'">Actions</span>
                     </template>
@@ -26,13 +26,13 @@
                             <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
                                 :disabled="currentPage === 1">Previous</v-btn>
 
-                            <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
                                 {{ pageNumber }}
                             </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage"
-                                :disabled="currentPage === totalPages" color="#23b78d">Next</v-btn>
+                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                                :disabled="currentPage === totalPages">Next</v-btn>
                         </div>
                     </template>
                 </v-data-table>
@@ -76,8 +76,23 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+
+        visiblePageRange() {
+            const maxVisiblePages = 5;
+            const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+            const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+            const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+            const range = [];
+            for (let i = firstPage; i <= lastPage; i++) {
+                range.push(i);
+            }
+
+            return range;
         },
     },
 

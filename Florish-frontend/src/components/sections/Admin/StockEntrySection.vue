@@ -17,7 +17,7 @@
 
                 <v-col cols="12" sm="3" md="6" lg="4" xl="2">
                     <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
-                        :searchType="'barcode'" />
+                        :searchType="'barcode'" :disabled="!isReferenceNumberPresent" />
                 </v-col>
 
                 <v-col cols="12" sm="3" class="d-flex justify-center align-center mt-n6">
@@ -42,7 +42,7 @@
             <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                 :items-per-page="itemsPerPage" density="compact" :reference_number="reference_number"
                 :stock_in_date="stock_in_date" :stock_in_by="stock_in_by" item-value="id" class="elevation-1"
-                hide-default-footer fixed-header height="400">
+                hide-default-footer fixed-header height="310">
                 <template v-slot:custom-sort="{ header }">
                     <span v-if="header.key === 'actions'">Actions</span>
                 </template>
@@ -70,16 +70,16 @@
                 </template>
                 <template v-slot:bottom>
                     <div class="text-center pt-8 pagination">
-                        <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1"
-                            color="#23b78d">Previous</v-btn>
+                        <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                            :disabled="currentPage === 1">Previous</v-btn>
 
-                        <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
+                        <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                             :class="{ active: pageNumber === currentPage }" class="pagination-button">
                             {{ pageNumber }}
                         </v-btn>
 
-                        <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages"
-                            color="#23b78d">Next</v-btn>
+                        <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                            :disabled="currentPage === totalPages">Next</v-btn>
                     </div>
                 </template>
             </v-data-table>
@@ -204,11 +204,30 @@ export default {
             return this.reference_number === '' || this.stock_in_date === '' || this.stock_in_by === '' || this.products.length === 0;
         },
 
+        isReferenceNumberPresent() {
+            return !!this.reference_number;
+        },
+
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
+
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
+        },
+
+        visiblePageRange() {
+            const maxVisiblePages = 5; // Adjust this value to control the number of visible pages
+            const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+            const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+            const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+            const range = [];
+            for (let i = firstPage; i <= lastPage; i++) {
+                range.push(i);
+            }
+
+            return range;
         },
     },
 

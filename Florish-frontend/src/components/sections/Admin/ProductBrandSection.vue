@@ -1,72 +1,72 @@
 <template>
-    <v-container class="mt-14">
-      <v-row>
-        <v-col cols="12" sm="9">
-          <SearchField @search="handleSearch" :searchLabel="searchLabel" :searchType="'regular'" />
-        </v-col>
-        <v-col cols="12" sm="3" class="d-flex justify-center align-center">
-          <v-btn color="#23b78d" block @click="showBrandForm">Add Brand</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-data-table :headers="headers" :items="brands" :loading="loading" :page="currentPage"
-            :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
-            @update:options="debouncedGetBrands" fixed-header>
-            <template v-slot:custom-sort="{ header }">
-              <span v-if="header.key === 'actions'">Actions</span>
-            </template>
-            <template v-slot:item="{ item, index }">
-              <tr>
-                <td>{{ displayedIndex + index }}</td>
-                <td>{{ item.brand_name }}</td>
-                <td>
-                  <span>
-                    <v-icon @click="editBrandRow(item)" color="primary">mdi-pencil</v-icon>
-                  </span>
-                  <span style="margin-left: 15px;">
-                    <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
-                  </span>
-                </td>
-              </tr>
-            </template>
-            <template v-slot:bottom>
-              <div class="text-center pt-8 pagination">
-                <v-btn class="pagination-button" @click="previousPage" :disabled="currentPage === 1"
-                  color="#23b78d">Previous</v-btn>
+  <v-container class="mt-14">
+    <v-row>
+      <v-col cols="12" sm="9">
+        <SearchField @search="handleSearch" :searchLabel="searchLabel" :searchType="'regular'" />
+      </v-col>
+      <v-col cols="12" sm="3" class="d-flex justify-center align-center">
+        <v-btn color="#23b78d" block @click="showBrandForm">Add Brand</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-data-table :headers="headers" :items="brands" :loading="loading" :page="currentPage"
+          :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
+          @update:options="debouncedGetBrands" fixed-header height="400">
+          <template v-slot:custom-sort="{ header }">
+            <span v-if="header.key === 'actions'">Actions</span>
+          </template>
+          <template v-slot:item="{ item, index }">
+            <tr>
+              <td>{{ displayedIndex + index }}</td>
+              <td>{{ item.brand_name }}</td>
+              <td>
+                <span>
+                  <v-icon @click="editBrandRow(item)" color="primary">mdi-pencil</v-icon>
+                </span>
+                <span style="margin-left: 15px;">
+                  <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                </span>
+              </td>
+            </tr>
+          </template>
+          <template v-slot:bottom>
+            <div class="text-center pt-8 pagination">
+              <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                :disabled="currentPage === 1">Previous</v-btn>
 
-                <v-btn v-for="pageNumber in totalPages" :key="pageNumber" @click="gotoPage(pageNumber)"
-                  :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                  {{ pageNumber }}
-                </v-btn>
+              <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
+                :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                {{ pageNumber }}
+              </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" :disabled="currentPage === totalPages"
-                  color="#23b78d">Next</v-btn>
-              </div>
-            </template>
-          </v-data-table>
-        </v-col>
-      </v-row>
-      <DeleteConfirmationDialog @confirm-delete="deleteBrand" ref="deleteConfirmationDialog" />
-      <v-row>
-        <v-col cols="12">
-          <v-row class="d-flex justify-center">
-            <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
-              <BrandForm v-if="showForm" @add-brand="addBrand" :existingCategories="existingCategories"
-                @update-brand="updateBrand" @cancel="hideBrandForm" :initialBrand="editingBrand" />
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-snackbar v-model="snackbar" right top :color="snackbarColor">
-        {{ snackbarText }}
-        <template v-slot:actions>
-          <v-btn color="pink" variant="text" @click="snackbar = false">
-            Close
-          </v-btn>
-        </template>
-      </v-snackbar>
-    </v-container>
+              <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                :disabled="currentPage === totalPages">Next</v-btn>
+            </div>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+    <DeleteConfirmationDialog @confirm-delete="deleteBrand" ref="deleteConfirmationDialog" />
+    <v-row>
+      <v-col cols="12">
+        <v-row class="d-flex justify-center">
+          <v-col cols="12" sm="5" xl="5" lg="5" md="5" class="mt-5 form-container">
+            <BrandForm v-if="showForm" @add-brand="addBrand" :existingCategories="existingCategories"
+              @update-brand="updateBrand" @cancel="hideBrandForm" :initialBrand="editingBrand" />
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-snackbar v-model="snackbar" right top :color="snackbarColor">
+      {{ snackbarText }}
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </v-container>
 </template>
 
 <script>
@@ -113,8 +113,23 @@ export default {
     displayedIndex() {
       return (this.currentPage - 1) * this.itemsPerPage + 1;
     },
+
     totalPages() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+
+    visiblePageRange() {
+      const maxVisiblePages = 5;
+      const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
+      const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
+      const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
+
+      const range = [];
+      for (let i = firstPage; i <= lastPage; i++) {
+        range.push(i);
+      }
+
+      return range;
     },
   },
 
