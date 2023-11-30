@@ -41,7 +41,7 @@ class ProductManager
         } else if ($context === 'stockIn') {
             $query->orderBy('stock_on_hand', 'asc');
         } else if ($context === 'transaction') {
-            $query->where('stock_on_hand', '>=', 0);
+            $query->where('stock_on_hand', '>', 0);
         } else {
             $query->orderBy('created_at', 'asc');
         }
