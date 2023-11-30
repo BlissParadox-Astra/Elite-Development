@@ -74,21 +74,21 @@
                     </v-row>
 
                 </v-form>
-            </v-col>
+            </v-col> 
         </v-row>
         <v-dialog v-model="showConfirmationDialog" max-width="500px">
             <v-card>
-                <v-card-title class="headline">
+                <v-card-title class="bg-teal pa-1 text-center">
                     Confirm Cancel Order
                 </v-card-title>
                 <v-card-text>
                     ARE YOU SURE YOU WANT CANCEL THIS ORDER?
                 </v-card-text>
                 <v-card-actions class="d-flex justify-center">
-                    <v-btn @click="cancelOrderConfirmed" color="primary">
+                    <v-btn @click="cancelOrderConfirmed" color="#23b78d">
                         Yes
                     </v-btn>
-                    <v-btn @click="cancelOrderCancelled" color="red darken-1">
+                    <v-btn @click="cancelOrderCancelled" color="#068863">
                         No
                     </v-btn>
                 </v-card-actions>

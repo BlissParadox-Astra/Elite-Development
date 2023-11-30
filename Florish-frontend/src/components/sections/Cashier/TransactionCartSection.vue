@@ -136,7 +136,7 @@
             </v-col>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
-                    <v-card-title>
+                    <v-card-title  class="bg-teal pa-1 text-center">
                         Confirm Transaction
                     </v-card-title>
                     <v-card-text class="text-center">
@@ -144,8 +144,8 @@
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Yes</v-btn>
-                            <v-btn @click="cancelSave">No</v-btn>
+                            <v-btn  color="#23b78d" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn color="#068863" @click="cancelSave">No</v-btn>
                         </div>
                     </v-card-actions>
                 </v-card>
@@ -576,7 +576,7 @@ export default {
 .center-dialog {
     position: fixed;
     left: 30%;
-    right: 15%;
+    right: 30%;
     /* transform: translate(-50%, -50%); */
 }
 
