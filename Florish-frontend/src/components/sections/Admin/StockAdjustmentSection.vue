@@ -93,16 +93,16 @@
       </v-row>
       <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
         <v-card>
-          <v-card-title>
+          <v-card-title class="d-flex justify-center bg-teal pa-3">
             Confirm Save
           </v-card-title>
           <v-card-text class="text-center">
             ARE YOU SURE YOU WANT TO SAVE THIS STOCK ADJUSTMENT RECORDS?
           </v-card-text>
-          <v-card-actions class="d-flex justify-center">
+          <v-card-actions class="d-flex justify-center ">
             <div>
-              <v-btn color="success" @click="saveStockAdjustment" style="width: 150px;">Yes</v-btn>
-              <v-btn @click="cancelSave">No</v-btn>
+              <v-btn color="#23b78d" @click="saveStockAdjustment" style="width: 150px;">Yes</v-btn>
+              <v-btn @click="cancelSave" color="#068863">No</v-btn>
             </div>
           </v-card-actions>
         </v-card>

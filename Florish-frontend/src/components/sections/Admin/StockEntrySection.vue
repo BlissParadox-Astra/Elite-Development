@@ -91,7 +91,7 @@
             </v-row>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
-                    <v-card-title>
+                    <v-card-title class="text-center bg-teal pa-3">
                         Confirm Save
                     </v-card-title>
                     <v-card-text class="text-center">
@@ -99,22 +99,22 @@
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="success" @click="saveRecord" style="width: 150px;">Yes</v-btn>
-                            <v-btn @click="cancelSave">No</v-btn>
+                            <v-btn color="#23b78d" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn @click="cancelSave" color="#068863">No</v-btn>
                         </div>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="showEditQuantityDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
-                    <v-card-title>Edit Quantity</v-card-title>
+                    <v-card-title class="text-center bg-teal pa-3">Edit Quantity</v-card-title>
                     <v-card-text>
                         <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
-                        <v-btn color="primary" @click="saveEditedQuantity"
+                        <v-btn color="#23b78d" @click="saveEditedQuantity"
                             :disabled="isEditQuantitySaveButtonDisabled">Update</v-btn>
-                        <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
+                        <v-btn @click="closeEditQuantityDialog"  color="#068863">Cancel</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
