@@ -84,7 +84,7 @@
                 <v-card-text>
                     ARE YOU SURE YOU WANT CANCEL THIS ORDER?
                 </v-card-text>
-                <v-card-actions>
+                <v-card-actions class="d-flex justify-center">
                     <v-btn @click="cancelOrderConfirmed" color="primary">
                         Yes
                     </v-btn>
