@@ -109,7 +109,7 @@
             <v-card>
                 <v-card-title>Edit Quantity</v-card-title>
                 <v-card-text>
-                    <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
+                    <v-text-field v-model="editedQuantity" label="New Quantity" @keypress="filterNumeric"></v-text-field>
                 </v-card-text>
                 <v-card-actions class="d-flex justify-center">
                     <v-btn color="primary" @click="saveEditedQuantity"
@@ -136,7 +136,7 @@
             </v-col>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
-                    <v-card-title  class="bg-teal pa-1 text-center">
+                    <v-card-title class="bg-teal pa-1 text-center">
                         Confirm Transaction
                     </v-card-title>
                     <v-card-text class="text-center">
@@ -144,7 +144,7 @@
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn  color="#23b78d" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn color="#23b78d" @click="saveRecord" style="width: 150px;">Yes</v-btn>
                             <v-btn color="#068863" @click="cancelSave">No</v-btn>
                         </div>
                     </v-card-actions>
@@ -262,6 +262,7 @@ export default {
             this.transaction_date = `${year}-${month}-${day}`;
         }
         this.totalItems = this.products.length;
+        this.generateAndFetchInvoiceNumber();
     },
 
     mounted() {
@@ -310,6 +311,17 @@ export default {
                 });
 
             this.scannedData = '';
+        },
+
+        filterNumeric(event) {
+            const keyCode = event.keyCode || event.which;
+            const key = String.fromCharCode(keyCode);
+
+            if (/^\d*\.?\d*$/.test(key)) {
+                return;
+            }
+
+            event.preventDefault();
         },
 
         generateAndFetchInvoiceNumber() {
@@ -483,8 +495,9 @@ export default {
                     this.resetData();
                     this.isGeneratingInvoiceNumber = false;
                     this.totalItems = this.products.length;
+                    this.generateAndFetchInvoiceNumber();
                     this.snackbarColor = 'success';
-                    this.showSnackbar('Transaction Successful', 'success');
+                    this.showSnackbar('Transacted Successfully', 'success');
                 })
                 .catch((error) => {
                     console.error("Transaction errored", error);
@@ -566,7 +579,7 @@ export default {
 
 .form-container {
     position: absolute;
-    top: 10%;
+    top: 0;
     left: 1;
     right: 1;
     z-index: 999;

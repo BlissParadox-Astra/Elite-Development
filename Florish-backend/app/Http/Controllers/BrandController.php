@@ -143,7 +143,7 @@ class BrandController extends Controller
      public function getBrands()
      {
          try {
-             $brands = Brand::all();
+            $brands = Brand::with('category')->get();
  
              return response()->json($brands);
          } catch (\Exception $e) {

@@ -41,26 +41,26 @@
                                 </v-col>
                             </v-row>
                         </v-col>
-                   
+
                         <v-col cols="12">
                             <h3 class="mb-4">CANCEL ITEM(S)</h3>
                             <v-row>
                                 <v-col cols="12" md="6">
                                     <v-text-field v-model="cancel_quantity" label="CANCEL QUANTITY"
-                                    @input="clearFieldErrors('quantity')" :error-messages="cancelQuantityError"
-                                    :rules="[v => !!v || 'Quantity is required']" required></v-text-field>
+                                        @input="clearFieldErrors('quantity')" :error-messages="cancelQuantityError"
+                                        :rules="[v => !!v || 'Quantity is required']" @keypress="filterNumeric" required></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-text-field :model-value="cancel_by" label="CANCEL BY" readonly></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-text-field v-model="reasons" label="REASON(S)" @input="clearFieldErrors('reason')"
-                                    :error-messages="reasonError" :rules="[v => !!v || 'Reason is required']"
-                                    required></v-text-field>
+                                        :error-messages="reasonError" :rules="[v => !!v || 'Reason is required']"
+                                        required></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-select v-model="options" :error-messages="actionTakenError"
-                                    :items="commandOptions"></v-select>
+                                        :items="commandOptions"></v-select>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -74,7 +74,7 @@
                     </v-row>
 
                 </v-form>
-            </v-col> 
+            </v-col>
         </v-row>
         <v-dialog v-model="showConfirmationDialog" max-width="500px">
             <v-card>
@@ -182,6 +182,18 @@ export default {
             //     action_taken: this.options,
             // };
             // this.$emit('cancel-order', transactionData);
+        },
+
+
+        filterNumeric(event) {
+            const keyCode = event.keyCode || event.which;
+            const key = String.fromCharCode(keyCode);
+
+            if (/^\d*\.?\d*$/.test(key)) {
+                return;
+            }
+
+            event.preventDefault();
         },
 
         cancelOrderConfirmed() {

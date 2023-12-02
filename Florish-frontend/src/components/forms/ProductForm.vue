@@ -6,47 +6,52 @@
           <v-icon color="white">mdi-close</v-icon>
         </div>
         <v-form @submit.prevent="submitForm" class="form">
-          <v-row  justify="center" class="bg-teal pa-3">
+          <v-row justify="center" class="bg-teal pa-3">
             <h2 class="text-center">
-            {{ editingProduct ? 'Edit Product' : 'Product Module' }}
-          </h2>
+              {{ editingProduct ? 'Edit Product' : 'Product Module' }}
+            </h2>
           </v-row>
-         
+
           <v-row justify="center" class="bg-teal-darken-2 pa-2">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError" readonly></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
+                @keypress="filterNumeric"></v-text-field>
 
             </v-col>
+
             <v-col cols="12" md="6">
               <v-text-field v-model="description" label="Description" placeholder="Enter Description"
-                @input="clearFieldErrors('description')" :error-messages="descriptionError" :rules="[v => !!v || 'Description is required']"></v-text-field>
+                @input="clearFieldErrors('description')" :error-messages="descriptionError"
+                :rules="[v => !!v || 'Description is required']"></v-text-field>
+            </v-col>
 
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-select v-model="category_name"
-                :items="existingCategories.length > 0 ? existingCategories.map(category => category.category_name) : []"
-                label="Categories" placeholder="Choose Category" :error-messages="selectedCategoryError"
-                @input="clearFieldErrors('categories')"></v-select>
-            </v-col>
             <v-col cols="12" md="6">
               <v-select v-model="brand_name" label="Brand"
                 :items="existingBrands.length > 0 ? existingBrands.map(brand => brand.brand_name) : []"
-                placeholder="Enter Brand Name" @input="clearFieldErrors('brands')"
-                :error-messages="brandError"  :rules="[v => !!v || 'Brand is required']" autocomplete></v-select>
-
+                placeholder="Enter Brand Name" @input="onBrandChange" :error-messages="brandError"
+                :rules="[v => !!v || 'Brand is required']" autocomplete></v-select>
             </v-col>
+
+            <v-col cols="12" md="6">
+              <v-text-field v-model="category_name" :items="getCategoriesForBrand(brand_name)" label="Categories"
+                placeholder="Choose Category" :error-messages="selectedCategoryError"
+                @input="clearFieldErrors('categories')" readonly></v-text-field>
+            </v-col>
+
             <v-col cols="12" md="6">
               <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
-                :error-messages="priceError" :rules="[v => !!v || 'Price is required']"></v-text-field>
+                :error-messages="priceError" :rules="[v => !!v || 'Price is required']"
+                @keypress="filterNumeric"></v-text-field>
 
             </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level" @input="clearFieldErrors('reorderLevel')"
-                :error-messages="reorderLevelError" :rules="[v => !!v || 'Reorder level is required']"></v-text-field>
 
+            <v-col cols="12" md="6">
+              <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level"
+                @input="clearFieldErrors('reorderLevel')" :error-messages="reorderLevelError"
+                :rules="[v => !!v || 'Reorder level is required']" @keypress="filterNumeric"></v-text-field>
             </v-col>
           </v-row>
-          <v-row  justify="center" class="bg-teal-darken-1 pa-2">
+          <v-row justify="center" class="bg-teal-darken-1 pa-2">
             <v-col cols="12" md="4" lg="4" sm="4">
               <v-btn type="submit" color="#23b78d" block>
                 {{ editingProduct ? "Save" : "Submit" }}
@@ -86,6 +91,15 @@ export default {
     };
   },
 
+  watch: {
+    brand_name: {
+      immediate: true,
+      handler(newBrandName) {
+        this.category_name = this.findCategoryNameByBrandName(newBrandName);
+      },
+    },
+  },
+
   methods: {
     async submitForm() {
       this.clearErrors();
@@ -122,6 +136,38 @@ export default {
       } else {
         this.$emit('add-product', productData);
       }
+    },
+
+    filterNumeric(event) {
+      const keyCode = event.keyCode || event.which;
+      const key = String.fromCharCode(keyCode);
+
+      if (keyCode === 13) {
+        event.preventDefault();
+        return;
+      }
+
+      if (/^\d*\.?\d*$/.test(key)) {
+        return;
+      }
+
+      event.preventDefault();
+    },
+
+    onBrandChange() {
+      this.clearFieldErrors('brands');
+    },
+
+    findCategoryNameByBrandName(brandName) {
+      const brand = this.existingBrands.find(brand => brand.brand_name === brandName);
+      return brand && brand.category ? brand.category.category_name : '';
+    },
+
+    getCategoriesForBrand(brandName) {
+      const categoryNames = this.existingBrands
+        .filter(brand => brand.brand_name === brandName)
+        .map(brand => brand.category.category_name);
+      return categoryNames.length > 0 ? categoryNames : [];
     },
 
     findCategoryIdByName(categoryName) {
@@ -168,8 +214,6 @@ export default {
 
 <style scoped>
 .showProductForm {
-  /* background-image: url("../../assets/assets/vuejs.jpg"); */
-  /* background-color: #23b78d; */
   z-index: 999;
 }
 

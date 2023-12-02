@@ -78,7 +78,7 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-text-field v-model="quantity" label="Quantity" placeholder="Enter Quantity" @input="validateQuantity" />
+          <v-text-field v-model="quantity" label="Quantity" placeholder="Enter Quantity" @input="validateQuantity" @keypress="filterNumeric" />
           <div v-if="quantityError" class="text-error">{{ quantityError }}</div>
         </v-col>
         <v-col>
@@ -272,6 +272,18 @@ export default {
           console.error('Error fetching products:', error);
         });
     },
+
+    filterNumeric(event) {
+      const keyCode = event.keyCode || event.which;
+      const key = String.fromCharCode(keyCode);
+
+      if (/^\d*\.?\d*$/.test(key)) {
+        return;
+      }
+
+      event.preventDefault();
+    },
+
     previousPage() {
       this.loading = true;
       if (this.currentPage > 1) {

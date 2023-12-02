@@ -39,9 +39,10 @@ class TransactionManager
 
     public function generateInvoiceNumber(): string
     {
-        $timestamp = Carbon::now()->format('YmdHis');
-        $randomNumber = mt_rand(10, 99);
-        return "{$timestamp}{$randomNumber}";
+        $datePart = Carbon::now()->format('YmdHis');
+        $randomPart = mt_rand(1000, 9999);
+
+        return "{$datePart}{$randomPart}";
     }
 
     public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $searchQuery = null)
