@@ -30,9 +30,10 @@ class StockInManager
 
     public function generateReferenceNumber(): string
     {
-        $timestamp = now()->format('YmdHis');
-        $randomNumber = mt_rand(100, 999);
-        return "{$timestamp}{$randomNumber}";
+        $datePart = Carbon::now()->format('YmdHis');
+        $randomPart = mt_rand(1000, 9999);
+
+        return "{$datePart}{$randomPart}";
     }
 
     public function getAllStockIns($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null)

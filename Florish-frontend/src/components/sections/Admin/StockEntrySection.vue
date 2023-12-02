@@ -109,12 +109,12 @@
                 <v-card>
                     <v-card-title class="text-center bg-teal pa-3">Edit Quantity</v-card-title>
                     <v-card-text>
-                        <v-text-field v-model="editedQuantity" label="New Quantity"></v-text-field>
+                        <v-text-field v-model="editedQuantity" label="New Quantity" @keypress="filterNumeric"></v-text-field>
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <v-btn color="#23b78d" @click="saveEditedQuantity"
                             :disabled="isEditQuantitySaveButtonDisabled">Update</v-btn>
-                        <v-btn @click="closeEditQuantityDialog"  color="#068863">Cancel</v-btn>
+                        <v-btn @click="closeEditQuantityDialog" color="#068863">Cancel</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -217,7 +217,7 @@ export default {
         },
 
         visiblePageRange() {
-            const maxVisiblePages = 5; // Adjust this value to control the number of visible pages
+            const maxVisiblePages = 5;
             const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
             const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
             const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
@@ -243,6 +243,7 @@ export default {
             this.stock_in_date = `${year}-${month}-${day}`;
         }
         this.totalItems = this.products.length;
+        this.generateAndFetchReferenceNumber();
     },
 
     mounted() {
@@ -291,6 +292,17 @@ export default {
                 });
 
             this.scannedData = '';
+        },
+
+        filterNumeric(event) {
+            const keyCode = event.keyCode || event.which;
+            const key = String.fromCharCode(keyCode);
+
+            if (/^\d*\.?\d*$/.test(key)) {
+                return;
+            }
+
+            event.preventDefault();
         },
 
         generateAndFetchReferenceNumber() {
@@ -393,6 +405,7 @@ export default {
                     this.resetData();
                     this.isGeneratingReferenceNumber = false;
                     this.totalItems = this.products.length;
+                    this.generateAndFetchReferenceNumber();
                     this.snackbarColor = 'success';
                     this.showSnackbar('Stock-In records saved successfully', 'success');
                 })

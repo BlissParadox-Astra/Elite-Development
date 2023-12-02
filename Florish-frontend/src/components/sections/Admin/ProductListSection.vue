@@ -134,7 +134,7 @@ export default {
         },
 
         visiblePageRange() {
-            const maxVisiblePages = 5; // Adjust this value to control the number of visible pages
+            const maxVisiblePages = 5;
             const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
             const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
             const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
