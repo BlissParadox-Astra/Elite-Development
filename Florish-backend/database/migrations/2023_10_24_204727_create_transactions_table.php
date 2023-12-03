@@ -18,6 +18,8 @@ return new class extends Migration
             $table->float('price', 10, 2);
             $table->integer('quantity');
             $table->decimal('total', 10, 2);
+            $table->decimal('payment', 10, 2);
+            $table->decimal('change', 10, 2 );
             $table->date('transaction_date');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
@@ -35,7 +37,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {    
+    {
         Schema::dropIfExists('transactions');
     }
 };

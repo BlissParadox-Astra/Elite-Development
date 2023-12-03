@@ -11,7 +11,6 @@
             </v-col>
             <v-col cols="10">
               <v-list-item-title>
-                <!-- Move v-list-group outside v-list-item-title -->
                 <v-list-group v-if="item.items">
                   <template v-slot:activator="{ props }">
                     <v-list-item v-bind="props" tabindex="0">{{ item.text }}</v-list-item>
@@ -91,14 +90,14 @@ export default {
       this.$store.commit('setIsSidebarCollapsed', this.sidebarCollapsed);
       localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
       if (this.sidebarCollapsed) {
-        this.showMenuItems = false; // Hide menu items when collapsing
+        this.showMenuItems = false;
       } else {
-        this.showMenuItems = true; // show menu items when expand
+        this.showMenuItems = true;
       }
     },
     expandSidebar() {
       this.sidebarCollapsed = false;
-      this.showMenuItems = true; // Show menu items when expanding
+      this.showMenuItems = true;
     },
     handleItemClick(item) {
       if (!item.items) {

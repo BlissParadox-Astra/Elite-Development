@@ -5,7 +5,15 @@
         <SearchField @search="handleSearch" :searchType="'regular'" />
       </v-col>
       <v-col cols="12" sm="6" md="5" class="mt-3">
-        <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
+        <v-row>
+          <v-col cols="12">
+            <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
+          </v-col>
+          <v-col cols="6" v-if="filterType === 'Day'">
+            <v-text-field v-model="filterByDay" label="Select Date" type="date" outlined
+              @change="handleFilterByDay"></v-text-field>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col cols="12" sm="6" md="3" class="mt-4">
         <v-card class="pa-3 total-card">
@@ -42,7 +50,7 @@
           <template v-slot:bottom>
             <div class="text-center pt-5 pagination">
               <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                :disabled="currentPage === 1">Previous</v-btn>
+                :disabled="currentPage === 1"><v-icon>mdi-chevron-left</v-icon> Prev</v-btn>
 
               <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
@@ -50,21 +58,12 @@
               </v-btn>
 
               <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                :disabled="currentPage === totalPages">Next</v-btn>
+                :disabled="currentPage === totalPages">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
             </div>
           </template>
         </v-data-table>
       </v-col>
     </v-row>
-    <!-- <v-row>
-        <v-col cols="12" xl="5" lg="3">
-          <v-card class="pa-3 total-card">
-            <span class="total-label">Total of All Total: </span>
-            <span class="total-value" v-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
-            <span class="loading-message" v-else>Loading...</span>
-          </v-card>
-        </v-col>
-      </v-row> -->
   </v-container>
 </template>
   
@@ -82,6 +81,10 @@ export default {
   },
 
   data() {
+    const asiaManilaTimezone = 'Asia/Manila';
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Set time to midnight to remove time information
+    const currentDateInManila = currentDate.toLocaleDateString('en-CA', { timeZone: asiaManilaTimezone });
     return {
       itemsPerPage: 10,
       currentPage: 1,
@@ -96,7 +99,7 @@ export default {
       toDate: '',
       filterType: '',
       searchQuery: '',
-      // selectedSort: 'Alphabetically',
+      filterByDay: currentDateInManila,
       headers: [
         { title: '#', value: 'index' },
         { title: "Invoice No.", key: 'transaction_number' },
@@ -110,25 +113,8 @@ export default {
         { title: "Transaction Date", key: 'transaction_date' },
         { title: "Transacted By", key: 'user.first_name' },
       ],
-      // items: [
-      //   { title: 'Category' },
-      //   { title: 'Total' },
-      //   { title: 'Alphabetically' },
-      // ],
     };
   },
-
-  // watch: {
-  //   selectedSort: {
-  //     handler: function (newSort, oldSort) {
-  //       if (newSort !== oldSort) {
-  //         this.currentPage = 1;
-  //         this.debouncedGetTransactions();
-  //       }
-  //     },
-  //     immediate: true,
-  //   },
-  // },
 
   computed: {
     displayedIndex() {
@@ -157,6 +143,7 @@ export default {
   async mounted() {
     await this.debouncedGetTransactions();
     await this.fetchTotalOfAllTotal();
+    await this.handleFilterByDay();
   },
 
   methods: {
@@ -179,7 +166,6 @@ export default {
           itemsPerPage: this.itemsPerPage,
           fromDate: this.fromDate,
           toDate: this.toDate,
-          // sortBy: this.selectedSort,
           search: this.searchQuery,
         };
 
@@ -187,6 +173,7 @@ export default {
           switch (this.filterType) {
             case 'Day':
               params.filterType = 'Day';
+              params.selectedDate = this.filterByDay;
               break;
             case 'Week':
               params.filterType = 'Week';
@@ -230,6 +217,7 @@ export default {
         switch (this.filterType) {
           case 'Day':
             params.filterType = 'Day';
+            params.selectedDate = this.filterByDay;
             break;
           case 'Week':
             params.filterType = 'Week';
@@ -255,15 +243,21 @@ export default {
       }
     },
 
-    handleFilterTypeChange(newFilterType) {
-      this.filterType = newFilterType;
+    handleFilterByDay() {
       this.currentPage = 1;
       this.debouncedGetTransactions();
     },
 
-    // updateSort(sortType) {
-    //   this.selectedSort = sortType;
-    // },
+    handleFilterTypeChange(newFilterType) {
+      this.filterType = newFilterType;
+      this.currentPage = 1;
+
+      if (this.filterType !== 'Day') {
+        this.filterByDay = null;
+      }
+
+      this.debouncedGetTransactions();
+    },
 
     handleDateRangeChange({ fromDate, toDate }) {
       this.fromDate = fromDate;
@@ -356,9 +350,8 @@ export default {
 }
 
 .pagination-button.active {
-  background-color: #007bff;
+  background-color: #23b78d;
   color: #fff;
-  border-color: #007bff;
+  border-color: #23b78d;
 }
 </style>
-  

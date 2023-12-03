@@ -30,9 +30,10 @@ class TransactionController extends Controller
             $toDate = $request->input('toDate');
             $filterType = $request->input('filterType');
             $searchQuery = $request->input('search');
+            $selectedDay = $request->input('selectedDate');
             // $sortBy = $request->input('sortBy');
 
-            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType, $searchQuery);
+            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType, $searchQuery, $selectedDay);
 
             return response()->json([
                 'transactions' => $transactions->items(),

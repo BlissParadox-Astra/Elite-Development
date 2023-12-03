@@ -32,7 +32,7 @@
                     <template v-slot:bottom>
                         <div class="text-center pt-5 pagination">
                             <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                :disabled="currentPage === 1">Previous</v-btn>
+                                :disabled="currentPage === 1"><v-icon>mdi-chevron-left</v-icon> Prev</v-btn>
 
                             <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
@@ -40,7 +40,7 @@
                             </v-btn>
 
                             <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                :disabled="currentPage === totalPages">Next</v-btn>
+                                :disabled="currentPage === totalPages">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
                         </div>
                     </template>
                 </v-data-table>
@@ -257,9 +257,9 @@ export default {
 }
 
 .pagination-button.active {
-    background-color: #007bff;
+    background-color: #23b78d;
     color: #fff;
-    border-color: #007bff;
+    border-color: #23b78d;
 }
 </style>
   

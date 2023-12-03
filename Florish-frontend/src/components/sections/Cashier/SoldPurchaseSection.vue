@@ -19,19 +19,6 @@
                             <span class="loading-message" v-else>Loading...</span>
                         </v-card>
                     </v-col>
-                    <!-- <v-col cols="12" sm="4">
-                        <v-btn color="#23b78d" block>
-                            SORT BY
-                            <v-menu activator="parent">
-                                <v-list>
-                                    <v-list-item v-for="(item, index) in items" :key="index" :value="index"
-                                        @click="updateSort(item.title)">
-                                        <v-list-item-title>{{ item.title }}</v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-menu>
-                        </v-btn>
-                    </v-col> -->
                 </v-row>
             </v-col>
         </v-row>
@@ -66,7 +53,7 @@
                     <template v-slot:bottom>
                         <div class="text-center pt-8 pagination">
                             <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                :disabled="currentPage === 1">Previous</v-btn>
+                                :disabled="currentPage === 1"><v-icon>mdi-chevron-left</v-icon> Prev</v-btn>
 
                             <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
                                 :class="{ active: pageNumber === currentPage }" class="pagination-button">
@@ -74,7 +61,7 @@
                             </v-btn>
 
                             <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                :disabled="currentPage === totalPages">Next</v-btn>
+                                :disabled="currentPage === totalPages">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
                         </div>
                     </template>
                 </v-data-table>
@@ -92,7 +79,7 @@
         </v-row>
 
         <v-row class="d-flex justify-space-between mt-n6">
-            <v-col cols="12" sm="6" lg="3" class="text-start">
+            <v-col cols="12" sm="3" lg="2" class="text-start">
                 <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
             </v-col>
         </v-row>
@@ -138,7 +125,6 @@ export default {
             toDate: '',
             filterType: '',
             searchQuery: '',
-            // selectedSort: 'Alphabetically',
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Invoice No.", key: 'transaction_number' },
@@ -153,25 +139,8 @@ export default {
                 { title: "Transacted By", key: 'user.first_name' },
                 { title: 'Actions', key: 'actions', sortable: false }
             ],
-            // items: [
-            //     { title: 'Category' },
-            //     { title: 'Total' },
-            //     { title: 'Alphabetically' },
-            // ],
         };
     },
-
-    // watch: {
-    //     selectedSort: {
-    //         handler: function (newSort, oldSort) {
-    //             if (newSort !== oldSort) {
-    //                 this.currentPage = 1;
-    //                 this.debouncedGetTransactions();
-    //             }
-    //         },
-    //         immediate: true,
-    //     },
-    // },
 
     computed: {
         displayedIndex() {
@@ -222,7 +191,6 @@ export default {
                     itemsPerPage: this.itemsPerPage,
                     fromDate: this.fromDate,
                     toDate: this.toDate,
-                    // sortBy: this.selectedSort,
                     search: this.searchQuery,
                     userId: this.$store.state.user.id,
                 };
@@ -469,8 +437,8 @@ export default {
 }
 
 .pagination-button.active {
-    /* background-color: #23b78d; */
+    background-color: #23b78d;
     color: #fff;
-    background-color: #007bff;
+    background-color: #23b78d;
 }
 </style>
