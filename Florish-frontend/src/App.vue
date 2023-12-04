@@ -84,7 +84,7 @@ export default {
       return this.$store.state.alertMessage;
     },
     appTitle() {
-      return this.isMobileSize ? 'Florish' : this.$route.meta.title;
+      return this.isMobileSize ? 'Florish IS with POS' : this.$route.meta.title;
     },
   },
   mounted() {

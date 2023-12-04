@@ -6,35 +6,37 @@
       <v-list>
         <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" :to="'/admin-dashboard'" tabindex="0"
           @click="handleItemClick()"></v-list-item>
-        <v-list-item prepend-icon="mdi-package-variant-closed" title="Product" :to="'/product-list-view'"
-          tabindex="0"  @click="handleItemClick()"></v-list-item >
+        <v-list-item prepend-icon="mdi-package-variant-closed" title="Product" :to="'/product-list-view'" tabindex="0"
+          @click="handleItemClick()"></v-list-item>
         <v-list-group value="stockEntry" class="white-title-color">
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" prepend-icon="mdi-cart" title="Stock Entry" tabindex="0"  @click="handleItemClick()"></v-list-item>
+            <v-list-item v-bind="props" prepend-icon="mdi-cart" title="Stock Entry" tabindex="0"
+              @click="handleItemClick()"></v-list-item>
           </template>
           <v-list-item v-for="([title, route], i) in stockin" :key="i" :to="route" :value="title" :title="title"
             class="subItems" tabindex="0"></v-list-item>
         </v-list-group>
         <v-list-group value="stockAdjust" class="white-title-color">
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" prepend-icon="mdi-poll-box" title="Stock Adjust" tabindex="0"  @click="handleItemClick()"></v-list-item>
+            <v-list-item v-bind="props" prepend-icon="mdi-poll-box" title="Stock Adjust" tabindex="0"
+              @click="handleItemClick()"></v-list-item>
           </template>
           <v-list-item v-for="([title, route], i) in stockAdjust" :key="i" :to="route" :value="title" :title="title"
             class="subItems" tabindex="0"></v-list-item>
         </v-list-group>
         <v-list-item prepend-icon="mdi-tag-multiple" title="Categories" :to="'/product-category'"
-          tabindex="0"></v-list-item>
-        <v-list-item prepend-icon="mdi-label" title="Brands" :to="'/product-brand'" tabindex="0"></v-list-item>
+          tabindex="0"  @click="handleItemClick()"></v-list-item>
+        <v-list-item prepend-icon="mdi-label" title="Brands" :to="'/product-brand'" tabindex="0"  @click="handleItemClick()"></v-list-item>
         <v-list-group value="records" class="white-title-color">
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" prepend-icon="mdi-database" title="Records" tabindex="0"></v-list-item>
+            <v-list-item v-bind="props" prepend-icon="mdi-database" title="Records" tabindex="0"  @click="handleItemClick()"></v-list-item>
           </template>
           <v-list-item v-for="([title, route], i) in records" :key="i" :to="route" :value="title" :title="title"
-            class="subItems" tabindex="0"></v-list-item>
+            class="subItems" tabindex="0" ></v-list-item>
         </v-list-group>
         <v-list-item prepend-icon="mdi-currency-usd" title="Sales History" :to="'/sales-history'"
-          tabindex="0"></v-list-item>
-        <v-list-item prepend-icon="mdi-account-group" title="Users" :to="'/users'" tabindex="0"></v-list-item>
+          tabindex="0"  @click="handleItemClick()"></v-list-item>
+        <v-list-item prepend-icon="mdi-account-group" title="Users" :to="'/users'" tabindex="0"  @click="handleItemClick()"></v-list-item>
       </v-list>
     </v-hover>
   </v-navigation-drawer>
@@ -54,7 +56,6 @@ export default {
   showMenuItems: true,
   data: () => ({
     sidebarCollapsed: false,
-
     open: [],
     stockin: [
       ['Stock in', "/stock-entry"],
@@ -77,18 +78,18 @@ export default {
       this.$store.commit('setIsSidebarCollapsed', this.sidebarCollapsed);
       localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
       if (this.sidebarCollapsed) {
-        this.showMenuItems = false; // Hide menu items when collapsing
+        this.showMenuItems = false;
       } else {
-        this.showMenuItems = true; // show menu items when expand
+        this.showMenuItems = true;
       }
     },
     expandSidebar() {
       this.sidebarCollapsed = false;
-      this.showMenuItems = true; // Show menu items when expanding
+      this.showMenuItems = true;
     },
-   handleItemClick(){
-    this.sidebarCollapsed = false;
-   }
+    handleItemClick() {
+      this.sidebarCollapsed = false;
+    }
   },
 
 };
@@ -121,6 +122,7 @@ a {
 .v-list-item:focus {
   background-color: #068863;
 }
+
 .v-list-item:hover {
   background-color: #068863;
 }

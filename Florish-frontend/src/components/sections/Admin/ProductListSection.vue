@@ -5,7 +5,7 @@
                 <SearchField @search="handleSearch" :searchType="'regular'" />
             </v-col>
             <v-col cols="12" sm="3">
-                <v-btn color="#23b78d" block @click="showProductForm">Add New Product</v-btn>
+                <v-btn color="#23b78d" block @click="showProductForm">Add Product</v-btn>
             </v-col>
         </v-row>
         <v-row justify="center">
@@ -28,27 +28,40 @@
                             <td>{{ item.reorder_level }}</td>
                             <td>
                                 <span>
-                                    <v-icon @click="editProductRow(item)" color="primary">mdi-pencil</v-icon>
+                                    <v-icon @click="editProductRow(item)" color="#23b78d">mdi-pencil</v-icon>
                                 </span>
                                 <span style="margin-left: 2px;">
-                                    <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
+                                    <v-icon @click="showDeleteConfirmation(item)" color="#23b78d">mdi-delete</v-icon>
                                 </span>
                             </td>
                         </tr>
                     </template>
                     <template v-slot:bottom>
-                        <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                :disabled="currentPage === 1">Previous</v-btn>
+                        <v-col cols="12">
+                            <div v-if="totalPages > 1" class="text-center pt-5 pagination">
+                                <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
+                                    color="#23b78d">
+                                    <v-icon>mdi-chevron-left</v-icon> Prev
+                                </v-btn>
 
-                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
-                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                                {{ pageNumber }}
-                            </v-btn>
+                                <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber"
+                                    @click="gotoPage(pageNumber)" :class="{ active: pageNumber === currentPage }"
+                                    class="pagination-button">
+                                    {{ pageNumber }}
+                                </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                :disabled="currentPage === totalPages">Next</v-btn>
-                        </div>
+                                <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage"
+                                    color="#23b78d">
+                                    Next <v-icon>mdi-chevron-right</v-icon>
+                                </v-btn>
+                            </div>
+                            <div v-else class="text-center pt-5">
+                                <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }"
+                                    class="pagination-button">
+                                    1
+                                </v-btn>
+                            </div>
+                        </v-col>
                     </template>
                 </v-data-table>
             </v-col>
@@ -128,7 +141,7 @@ export default {
         displayedIndex() {
             return (this.currentPage - 1) * this.itemsPerPage + 1;
         },
-        
+
         totalPages() {
             return Math.ceil(this.totalItems / this.itemsPerPage);
         },
@@ -156,6 +169,11 @@ export default {
         await this.fetchBrands();
         this.loadingBrands = false;
         await this.debouncedGetProducts();
+        // this.$nextTick(() => {
+        //     if (this.$refs.searchField && this.$refs.searchField.$refs.searchField) {
+        //         this.$refs.searchField.$refs.searchField.focus();
+        //     }
+        // });
     },
 
     methods: {
@@ -400,9 +418,9 @@ export default {
 }
 
 .pagination-button.active {
-    background-color: #007bff;
+    background-color: #23b78d;
     color: #fff;
-    border-color: #007bff;
+    border-color: #23b78d;
 }
 </style>
   

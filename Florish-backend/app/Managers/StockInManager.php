@@ -36,25 +36,35 @@ class StockInManager
         return "{$datePart}{$randomPart}";
     }
 
-    public function getAllStockIns($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null)
+    public function getAllStockIns($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $selectedDate = null)
     {
         $query = StockIn::with(['adjustedProduct.stockIns', 'stockInByUser']);
 
         if ($filterType) {
             switch ($filterType) {
                 case 'Day':
-                    $query->whereDate('stock_ins.stock_in_date', now()->toDateString());
+                    $dateToFilter = $selectedDate ?? now()->toDateString();
+                    $query->whereDate('stock_ins.stock_in_date', $dateToFilter);
                     break;
+
                 case 'Week':
-                    $query->whereBetween('stock_ins.stock_in_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
+                    $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
+                    $query->whereBetween('stock_ins.stock_in_date', [$startOfWeek, $endOfWeek]);
                     break;
+
                 case 'Month':
-                    $query->whereYear('stock_ins.stock_in_date', now()->year)
-                        ->whereMonth('stock_ins.stock_in_date', now()->month);
+                    $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
+                    $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
+                    $query->whereBetween('stock_ins.stock_in_date', [$startOfMonth, $endOfMonth]);
                     break;
+
                 case 'Year':
-                    $query->whereYear('stock_ins.stock_in_date', now()->year);
+                    $startOfYear = Carbon::parse($selectedDate)->startOfYear();
+                    $endOfYear = Carbon::parse($selectedDate)->endOfYear();
+                    $query->whereBetween('stock_ins.stock_in_date', [$startOfYear, $endOfYear]);
                     break;
+
                 case 'Customize':
                     $query->whereBetween('stock_ins.stock_in_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;

@@ -2,11 +2,13 @@
   <v-container class="browseProduct mt-14">
     <v-row>
       <v-col>
-        <h2 class="text-center mb-1">Product Module</h2>
+        <div @click="closeForm" class="close-button">
+          <v-icon color="white">mdi-close</v-icon>
+        </div>
+        <v-row justify="center" class="bg-teal pa-3">
+          <h2 class="text-center">Product Module</h2>
+        </v-row>
       </v-col>
-      <div @click="closeForm" class="close-button">
-        <v-icon color="white">mdi-close</v-icon>
-      </div>
     </v-row>
     <v-row>
       <v-col cols="12" sm="9">
@@ -36,18 +38,27 @@
             </tr>
           </template>
           <template v-slot:bottom>
-            <div class="text-center pt-8 pagination">
-              <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                :disabled="currentPage === 1">Previous</v-btn>
+            <v-col cols="12">
+              <div v-if="totalPages > 1" class="text-center pt-5 pagination">
+                <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage" color="#23b78d">
+                  <v-icon>mdi-chevron-left</v-icon> Prev
+                </v-btn>
 
-              <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
-                :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                {{ pageNumber }}
-              </v-btn>
+                <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
+                  :class="{ active: pageNumber === currentPage }" class="pagination-button">
+                  {{ pageNumber }}
+                </v-btn>
 
-              <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                :disabled="currentPage === totalPages">Next</v-btn>
-            </div>
+                <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage" color="#23b78d">
+                  Next <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+              </div>
+              <div v-else class="text-center pt-5">
+                <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }" class="pagination-button">
+                  1
+                </v-btn>
+              </div>
+            </v-col>
           </template>
         </v-data-table>
       </v-col>
@@ -127,6 +138,9 @@ export default {
 
   async mounted() {
     await this.debouncedGetProducts();
+    // this.$nextTick(() => {
+    //   this.$refs.searchField.$refs.searchField.focus();
+    // });
   },
 
   methods: {
@@ -260,7 +274,7 @@ export default {
 
 <style scoped>
 .browseProduct {
-  background-color: #23b78d;
+  background-color: rgba(233, 224, 224, 0.949);
   z-index: 999;
 }
 
@@ -288,8 +302,8 @@ export default {
 }
 
 .pagination-button.active {
-  background-color: #007bff;
+  background-color: #23b78d;
   color: #fff;
-  border-color: #007bff;
+  border-color: #23b78d;
 }
 </style>

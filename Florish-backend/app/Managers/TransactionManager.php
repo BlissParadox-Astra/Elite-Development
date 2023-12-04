@@ -25,6 +25,9 @@ class TransactionManager
             'price' => $product->price,
             'quantity' => $transactionRequest['quantity'],
             'total' => $total,
+            'transaction_total' => $transactionRequest['transaction_total'],
+            'payment' => $transactionRequest['payment'],
+            'change' => $transactionRequest['change'],
         ];
 
         $product = Product::findOrFail($transactionRequest['product_id']);
@@ -45,7 +48,7 @@ class TransactionManager
         return "{$datePart}{$randomPart}";
     }
 
-    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $searchQuery = null)
+    public function getAllTransactions($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $searchQuery = null, $selectedDate = null)
     {
         $query = Transaction::with(['transactedProduct.category', 'user']);
 
@@ -56,18 +59,28 @@ class TransactionManager
         if ($filterType) {
             switch ($filterType) {
                 case 'Day':
-                    $query->whereDate('transactions.transaction_date', now()->toDateString());
+                    $dateToFilter = $selectedDate ?? now()->toDateString();
+                    $query->whereDate('transactions.transaction_date', $dateToFilter);
                     break;
+
                 case 'Week':
-                    $query->whereBetween('transactions.transaction_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
+                    $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
+                    $query->whereBetween('transactions.transaction_date', [$startOfWeek, $endOfWeek]);
                     break;
+
                 case 'Month':
-                    $query->whereYear('transactions.transaction_date', now()->year)
-                        ->whereMonth('transactions.transaction_date', now()->month);
+                    $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
+                    $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
+                    $query->whereBetween('transactions.transaction_date', [$startOfMonth, $endOfMonth]);
                     break;
+
                 case 'Year':
-                    $query->whereYear('transactions.transaction_date', now()->year);
+                    $startOfYear = Carbon::parse($selectedDate)->startOfYear();
+                    $endOfYear = Carbon::parse($selectedDate)->endOfYear();
+                    $query->whereBetween('transactions.transaction_date', [$startOfYear, $endOfYear]);
                     break;
+
                 case 'Customize':
                     $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;
@@ -84,7 +97,8 @@ class TransactionManager
                 $query->where('transaction_number', 'LIKE', '%' . $searchQuery . '%')
                     ->orWhereHas('transactedProduct', function ($query) use ($searchQuery) {
                         $query->where('barcode', 'LIKE', '%' . $searchQuery . '%')
-                            ->orWhere('description', 'LIKE', '%' . $searchQuery . '%');
+                            ->orWhere('description', 'LIKE', '%' . $searchQuery . '%')
+                            ->orWhere('product_code', 'LIKE', '%' . $searchQuery . '%');
 
                         $query->orWhereHas('brand', function ($query) use ($searchQuery) {
                             $query->where('brand_name', 'LIKE', '%' . $searchQuery . '%');
@@ -99,26 +113,6 @@ class TransactionManager
                     });
             });
         }
-
-        // if ($sortBy) {
-        //     switch ($sortBy) {
-        //         case 'Category':
-        //             $query->join('products', 'transactions.product_id', '=', 'products.id')
-        //                 ->join('categories', 'products.category_id', '=', 'categories.id')
-        //                 ->orderBy('categories.category_name', 'asc');
-        //             break;
-        //         case 'Total':
-        //             $query->orderBy('total', 'desc');
-        //             break;
-        //         case 'Alphabetically':
-        //             $query->join('products', 'transactions.product_id', '=', 'products.id')
-        //                 ->orderBy('products.description', 'asc');
-        //             break;
-        //         default:
-        //             $query->orderBy('total', 'asc');
-        //             break;
-        //     }
-        // }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);
     }

@@ -1,6 +1,6 @@
 <template>
     <v-container class="mt-12" fluid>
-        <h1 class="text-center">CRITICAL STOCK</h1>
+        <h1 class="text-center">CRITICAL STOCKS</h1>
         <v-row v-if="loading">
             <v-col class="text-center" cols="12">
                 <p>Loading...</p>
@@ -12,11 +12,10 @@
                     <h1 class="text-center mb-4">{{ product.description }}</h1>
                     <v-row class="text-center">
                         <v-col class="mb-10">
-                            <p class="text-h1">{{ calculatePercentage(product.stock_on_hand, product.reorder_level) }}%</p>
-                            <h2>CRITICAL</h2>
+                            <p class="text-h3">{{ product.stock_on_hand }} Items Left</p>
+                            <h2 class="pa-">CRITICAL</h2>
                         </v-col>
                     </v-row>
-                    <p>{{ product.stock_on_hand }} Items Left</p>
                 </v-card>
             </v-col>
         </v-row>
@@ -55,12 +54,6 @@ export default {
                 this.loading = false;
             }
         },
-
-        calculatePercentage(stock, reorderLevel) {
-            const ratio = stock / reorderLevel;
-            const percentage = Math.floor((1 - ratio) * 100);
-            return percentage < 0 ? 0 : percentage;
-        },
     },
 };
 </script>
@@ -68,7 +61,6 @@ export default {
 <style scoped>
 .link {
     position: fixed;
-
     right: -90px;
     top: 50%;
     transform: rotate(-90deg) translate(0, 0) scale(1, 1);
@@ -85,6 +77,28 @@ export default {
     color: #777;
     margin-top: 20px;
     padding: 10px;
+}
+
+.card h1 {
+    color: #23b78d;
+}
+
+.card {
+    background-color: #ffff;
+}
+
+.card h2 {
+    margin-top: 15px;
+    color: rgb(240, 35, 35);
+    font-size: 24px;
+}
+
+.card:hover {
+    background-color: rgb(203, 20, 20);
+}
+
+.card:hover h2 {
+    color: white;
 }
 </style>
   

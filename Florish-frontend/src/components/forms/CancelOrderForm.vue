@@ -11,7 +11,7 @@
                             <v-icon color="white">mdi-close</v-icon>
                         </div>
                     </v-row>
-                    <v-row class="bg-teal-darken-2 pa-2">
+                    <v-row class="bg-dirty-white pa-2">
                         <v-col cols="12">
                             <h3 class="mb-4">SOLD ITEMS</h3>
                             <v-row>
@@ -48,7 +48,8 @@
                                 <v-col cols="12" md="6">
                                     <v-text-field v-model="cancel_quantity" label="CANCEL QUANTITY"
                                         @input="clearFieldErrors('quantity')" :error-messages="cancelQuantityError"
-                                        :rules="[v => !!v || 'Quantity is required']" @keypress="filterNumeric" required></v-text-field>
+                                        :rules="[v => !!v || 'Quantity is required']" @keypress="filterNumeric"
+                                        required></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-text-field :model-value="cancel_by" label="CANCEL BY" readonly></v-text-field>
@@ -65,7 +66,7 @@
                             </v-row>
                         </v-col>
                     </v-row>
-                    <v-row justify="center" class="bg-teal-darken-1 pa-2">
+                    <v-row justify="center" class="bg-dirty-white pa-2">
                         <v-col cols="6" class="mt-5">
                             <v-btn type="submit" color="#23b78d" block :disabled="isCancelButtonDisabled">
                                 CANCEL ORDER
@@ -173,15 +174,6 @@ export default {
                 return;
             }
             this.showConfirmationDialog = true;
-            // const transactionData = {
-            //     transaction_id: this.id,
-            //     total: this.total,
-            //     quantity: this.cancel_quantity,
-            //     cancel_by: this.cancel_by,
-            //     reason: this.reasons,
-            //     action_taken: this.options,
-            // };
-            // this.$emit('cancel-order', transactionData);
         },
 
 
@@ -248,8 +240,11 @@ export default {
   
 <style scoped>
 .showUserForm {
-    /* background-color: rgba(114, 165, 104, 0.9); */
     z-index: 999;
+}
+
+.bg-dirty-white {
+    background-color: rgba(233, 224, 224, 0.949);
 }
 
 .close-button {

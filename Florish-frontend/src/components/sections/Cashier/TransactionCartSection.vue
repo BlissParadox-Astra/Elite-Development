@@ -1,96 +1,140 @@
 <template>
-    <v-container class="mt-12 " >
+    <v-container class="mt-12">
         <v-row justify="center">
             <v-col cols="12">
                 <v-row>
-                    <v-col cols="12" md="4" lg="4" sm="12">
+                    <v-col cols="12" md="4" lg="4" sm="12" class="mt-3">
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
                             readonly />
                     </v-col>
 
-                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
+                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="generateAndFetchInvoiceNumber"
-                            :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
+                            :disabled="isGeneratingInvoiceNumber">GENERATE</v-btn>
                     </v-col>
 
-                    <v-col cols="12" md="1" lg="2" sm="12">
+                    <v-col cols="12" md="5" lg="2" sm="12" class="ml-16 mt-3">
                         <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date" />
                     </v-col>
 
-                    <v-col cols="12" md="4" lg="4" sm="12">
+                    <v-col cols="12" md="4" lg="4" sm="12" class="mt-n7">
                         <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
                             :searchType="'barcode'" :disabled="!isTransactionNumberPresent" />
                     </v-col>
 
-                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
+                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center mt-n8">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
-                            :disabled="!canBrowseProduct">[CLICK HERE TO BROWSE PRODUCT] </v-btn>
+                            :disabled="!canBrowseProduct">BROWSE PRODUCT</v-btn>
                     </v-col>
 
-                    <v-col cols="12" md="5" sm="12" lg="3" class="d-flex align-center ml-15">
-                        <v-card class="pa-3 total-card" style="height: 50px; width: 80%;">
-                            <v-row class="text-left" style="height: 80%;">
+                    <v-row class="mt-n6">
+                        <v-col cols="12" class="text-center">
+                            <h2 class="total-text">
+                                <span class="total-label">Total:</span>
+                                <span class="total-value">₱{{ calculateOverallTotal() }}</span>
+                            </h2>
+                        </v-col>
+                    </v-row>
+
+                    <v-col cols="12" md="9" lg="15" sm="12">
+                        <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
+                            :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
+                            :transaction_number="transaction_number" :transact_by="transact_by" item-value="id"
+                            class="elevation-1" hide-default-footer fixed-header height="350">
+                            <template v-slot:custom-sort="{ header }">
+                                <span v-if="header.key === 'actions'">Actions</span>
+                            </template>
+                            <template v-slot:item="{ item, index }">
+                                <tr>
+                                    <td>{{ displayedIndex + index }}</td>
+                                    <td>{{ item.product_code }}</td>
+                                    <td>{{ item.barcode }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.price }}</td>
+                                    <td>
+                                        <span v-if="isTransactionPage">
+                                            <span @click="openEditQuantityDialog(item)">{{ item.quantity }}</span>
+                                        </span>
+                                        <span v-else>{{ item.quantity }}</span>
+                                    </td>
+                                    <td>{{ item.total }}</td>
+                                    <td>
+                                        <span>
+                                            <v-icon @click="subtractProduct(item)" size="22" class="ml-n3"
+                                                color="#23b78d">mdi-minus-circle</v-icon>
+                                        </span>
+                                        <span>
+                                            <v-icon @click="addProduct(item)" size="22"
+                                                color="#23b78d">mdi-plus-circle</v-icon>
+                                        </span>
+                                        <span>
+                                            <v-icon @click="showDeleteConfirmation(item)" color="#23b78d"
+                                                size="22">mdi-delete</v-icon>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-slot:bottom>
                                 <v-col cols="12">
-                                    <span class="total-label" style="margin-right: 8px;">Overall Total:</span>
-                                    <span class="total-value">{{ calculateOverallTotal() }}</span>
+                                    <div v-if="totalPages > 1" class="text-center pt-5 pagination">
+                                        <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
+                                            color="#23b78d">
+                                            <v-icon>mdi-chevron-left</v-icon> Prev
+                                        </v-btn>
+
+                                        <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber"
+                                            @click="gotoPage(pageNumber)" :class="{ active: pageNumber === currentPage }"
+                                            class="pagination-button">
+                                            {{ pageNumber }}
+                                        </v-btn>
+
+                                        <v-btn :disabled="currentPage === totalPages" class="pagination-button"
+                                            @click="nextPage" color="#23b78d">
+                                            Next <v-icon>mdi-chevron-right</v-icon>
+                                        </v-btn>
+                                    </div>
+                                    <div v-else class="text-center pt-5">
+                                        <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }"
+                                            class="pagination-button">
+                                            1
+                                        </v-btn>
+                                    </div>
+                                </v-col>
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                    <v-col cols="12" md="3" lg="3" sm="12">
+                        <v-card class="pa-4 total-card" style="height: 418px; width: 400px;" color="#23b78d">
+                            <v-row class="text-left" style="height: 10%;" align="center">
+                                <v-col cols="12">
+                                    <v-card-title class="headline white--text font-weight-bold">Transaction
+                                        Summary</v-card-title>
+                                </v-col>
+                                <v-col cols="12" class="mb-2 mt-n7">
+                                    <v-card-text>Over All Total</v-card-text>
+                                    <v-text-field v-model="overallTotal" readonly dense outlined class="input-lg">
+                                        {{ calculateOverallTotal() }}
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12" class="mb-2 mt-n12">
+                                    <v-card-text>Payment Received</v-card-text>
+                                    <v-text-field v-model="payment" dense outlined @input="calculateChange"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" class="mb-2 mt-n12">
+                                    <v-card-text>Change</v-card-text>
+                                    <v-text-field v-model="change" readonly dense outlined class="input-lg"></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-card>
                     </v-col>
+                    <v-col cols="12" md="5" sm="12" lg="6" class="text-start mt-n4">
+                        <v-btn to="/cashier-dashboard" color="#23b78d" style="width: 180px;">BACK</v-btn>
+                    </v-col>
+                    <v-col cols="12" md="5" sm="12" lg="3" class="text-end mt-n4">
+                        <v-btn color="#23b78d" @click="showConfirmation" style="width: 180px;"
+                            :disabled="!isPaymentEnough || isSoldButtonDisabled">SOLD</v-btn>
+                    </v-col>
                 </v-row>
-            </v-col>
-        </v-row>
-        <v-row justify="center">
-            <v-col cols="12">
-                <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
-                    :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
-                    :transaction_number="transaction_number" :transact_by="transact_by" item-value="id" class="elevation-1"
-                    hide-default-footer fixed-header height="350">
-                    <template v-slot:custom-sort="{ header }">
-                        <span v-if="header.key === 'actions'">Actions</span>
-                    </template>
-                    <template v-slot:item="{ item, index }">
-                        <tr>
-                            <td>{{ displayedIndex + index }}</td>
-                            <td>{{ item.product_code }}</td>
-                            <td>{{ item.barcode }}</td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.price }}</td>
-                            <td>
-                                <span v-if="isTransactionPage">
-                                    <span @click="openEditQuantityDialog(item)">{{ item.quantity }}</span>
-                                </span>
-                                <span v-else>{{ item.quantity }}</span>
-                            </td>
-                            <td>{{ item.total }}</td>
-                            <td>
-                                <span>
-                                    <v-icon @click="subtractProduct(item)">mdi-minus-circle</v-icon>
-                                </span>
-                                <span style="margin-left: 2px;">
-                                    <v-icon @click="addProduct(item)">mdi-plus-circle</v-icon>
-                                </span>
-                                <span style="margin-left: 2px;">
-                                    <v-icon @click="showDeleteConfirmation(item)" color="error">mdi-delete</v-icon>
-                                </span>
-                            </td>
-                        </tr>
-                    </template>
-                    <template v-slot:bottom>
-                        <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                :disabled="currentPage === 1">Previous</v-btn>
-
-                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
-                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                                {{ pageNumber }}
-                            </v-btn>
-
-                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                :disabled="currentPage === totalPages">Next</v-btn>
-                        </div>
-                    </template>
-                </v-data-table>
             </v-col>
         </v-row>
         <!--Browse Product -->
@@ -126,14 +170,7 @@
                 </v-btn>
             </template>
         </v-snackbar>
-        <v-row class="d-flex justify-space-between mt-n4">
-            <v-col cols="12" sm="6" lg="3" class="text-start">
-                <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
-            </v-col>
-            <v-col cols="12" sm="6" lg="3" class="text-end">
-                <v-btn color="#23b78d" @click="showConfirmation" style="width: 150px;"
-                    :disabled="isSoldButtonDisabled" block>SOLD</v-btn>
-            </v-col>
+        <v-row class="mt-n4">
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
                     <v-card-title class="bg-teal pa-1 text-center">
@@ -170,6 +207,7 @@ export default {
             itemsPerPage: 10,
             currentPage: 1,
             totalItems: 0,
+            change: 0,
             showEditQuantityDialog: false,
             showConfirmationDialog: false,
             showBrowseProduct: false,
@@ -183,6 +221,8 @@ export default {
             searchLabel: 'Search Barcode Here',
             snackbarColor: '',
             scannedData: '',
+            overallTotal: '',
+            payment: '',
             loading: false,
             products: [],
             headers: [
@@ -248,6 +288,12 @@ export default {
 
             return range;
         },
+
+        isPaymentEnough() {
+            const payment = parseFloat(this.payment);
+            const overallTotal = parseFloat(this.calculateOverallTotal());
+            return !isNaN(payment) && payment >= 0 && payment >= overallTotal;
+        },
     },
 
     created() {
@@ -267,6 +313,7 @@ export default {
 
     mounted() {
         window.addEventListener('keydown', this.handleKeyDown);
+        this.$refs.barcodeSearchField.$refs.searchField.focus();
     },
 
     beforeUnmount() {
@@ -376,6 +423,7 @@ export default {
                 item.quantity--;
                 item.total = this.calculateTotal(item);
             }
+            this.$refs.barcodeSearchField.$refs.searchField.focus();
         },
 
         addProduct(item) {
@@ -394,6 +442,18 @@ export default {
                 .catch(error => {
                     console.error('Error fetching inventory data for adding product', error);
                 });
+            this.$refs.barcodeSearchField.$refs.searchField.focus();
+        },
+
+        calculateChange() {
+            const payment = parseFloat(this.payment);
+            const overallTotal = parseFloat(this.calculateOverallTotal());
+
+            if (!isNaN(payment) && payment >= 0 && payment >= overallTotal) {
+                this.change = payment - overallTotal;
+            } else {
+                this.change = 0;
+            }
         },
 
         calculateOverallTotal() {
@@ -417,7 +477,7 @@ export default {
             this.showEditQuantityDialog = true;
         },
 
-        saveEditedQuantity() {
+        async saveEditedQuantity() {
             if (this.editingIndex !== -1) {
                 const editedProduct = this.products[this.editingIndex];
 
@@ -439,6 +499,9 @@ export default {
                         this.editedQuantity = 0;
                         this.snackbarColor = 'success';
                         this.showSnackbar('Quantity updated successfully', 'success');
+                        this.$nextTick(() => {
+                            this.$refs.barcodeSearchField.$refs.searchField.focus();
+                        });
                     })
                     .catch(error => {
                         console.error('Error fetching inventory data for editing quantity', error);
@@ -463,6 +526,7 @@ export default {
                 this.totalItems = this.products.length;
                 this.snackbarColor = 'success';
                 this.showSnackbar('Successfully removed product from cart');
+                this.$refs.barcodeSearchField.$refs.searchField.focus();
             } else {
                 this.snackbarColor = 'error';
                 this.showSnackbar('Error removing product from cart');
@@ -474,14 +538,23 @@ export default {
             this.deleteProductRow(item);
         },
 
+        resetPayment() {
+            this.payment = '';
+            this.change = 0;
+        },
+
         saveRecord() {
             this.showConfirmationDialog = false;
             const transactionRequests = this.products.map((product) => {
+                const overallTotal = this.calculateOverallTotal();
                 return {
                     transaction_number: this.transaction_number,
                     transaction_date: this.transaction_date,
                     product_id: product.id,
                     quantity: product.quantity,
+                    transaction_total: overallTotal,
+                    payment: this.payment,
+                    change: this.change,
                 };
             });
 
@@ -498,6 +571,8 @@ export default {
                     this.generateAndFetchInvoiceNumber();
                     this.snackbarColor = 'success';
                     this.showSnackbar('Transacted Successfully', 'success');
+                    this.resetPayment();
+                    this.$refs.barcodeSearchField.$refs.searchField.focus();
                 })
                 .catch((error) => {
                     console.error("Transaction errored", error);
@@ -518,6 +593,7 @@ export default {
 
         cancelSave() {
             this.showConfirmationDialog = false;
+            this.resetPayment();
         },
 
         showBrowseProductForm() {
@@ -526,6 +602,9 @@ export default {
 
         closeBrowseProductForm() {
             this.showBrowseProduct = false;
+            this.$nextTick(() => {
+                this.$refs.barcodeSearchField.$refs.searchField.focus();
+            });
         },
 
         previousPage() {
@@ -562,10 +641,6 @@ export default {
 </script>
 
 <style scoped>
-.mt-12 {
-    overflow-x: hidden;
-  /* white-space: nowrap; */
-}
 .total-card {
 
     background-color: #d8d3d3;
@@ -577,6 +652,7 @@ export default {
 }
 
 .total-value {
+    font-size: 45px;
     font-weight: bold;
     color: #333;
 }
@@ -617,8 +693,16 @@ export default {
 }
 
 .pagination-button.active {
-    background-color: #007bff;
+    background-color: #23b78d;
     color: #fff;
-    border-color: #007bff;
+    border-color: #23b78d;
 }
-</style>
+
+.total-text {
+    font-size: 1.5em;
+}
+
+.total-label {
+    font-weight: bold;
+    margin-right: 40px;
+}</style>

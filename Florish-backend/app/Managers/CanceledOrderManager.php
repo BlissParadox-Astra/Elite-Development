@@ -5,6 +5,7 @@ namespace App\Managers;
 use App\Models\CanceledOrder;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CanceledOrderManager
 {
@@ -45,25 +46,35 @@ class CanceledOrderManager
         }
     }
 
-    public function getAllCanceledOrders($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null)
+    public function getAllCanceledOrders($page, $itemsPerPage, $fromDate = null, $toDate = null, $filterType = null, $selectedDate = null)
     {
         $query = CanceledOrder::with(['canceledTransaction.transactedProduct', 'user']);
 
         if ($filterType) {
             switch ($filterType) {
                 case 'Day':
-                    $query->whereDate('canceled_orders.canceled_date', now()->toDateString());
+                    $dateToFilter = $selectedDate ?? now()->toDateString();
+                    $query->whereDate('canceled_orders.canceled_date', $dateToFilter);
                     break;
+
                 case 'Week':
-                    $query->whereBetween('canceled_orders.canceled_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
+                    $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
+                    $query->whereBetween('canceled_orders.canceled_date', [$startOfWeek, $endOfWeek]);
                     break;
+
                 case 'Month':
-                    $query->whereYear('canceled_orders.canceled_date', now()->year)
-                        ->whereMonth('canceled_orders.canceled_date', now()->month);
+                    $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
+                    $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
+                    $query->whereBetween('canceled_orders.canceled_date', [$startOfMonth, $endOfMonth]);
                     break;
+
                 case 'Year':
-                    $query->whereYear('canceled_orders.canceled_date', now()->year);
+                    $startOfYear = Carbon::parse($selectedDate)->startOfYear();
+                    $endOfYear = Carbon::parse($selectedDate)->endOfYear();
+                    $query->whereBetween('canceled_orders.canceled_date', [$startOfYear, $endOfYear]);
                     break;
+
                 case 'Customize':
                     $query->whereBetween('canceled_orders.canceled_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                     break;

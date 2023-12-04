@@ -12,11 +12,10 @@
             </h2>
           </v-row>
 
-          <v-row justify="center" class="bg-teal-darken-2 pa-2">
+          <v-row justify="center" class="bg-dirty-white pa-3">
             <v-col cols="12" md="6">
               <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
                 @keypress="filterNumeric"></v-text-field>
-
             </v-col>
 
             <v-col cols="12" md="6">
@@ -51,14 +50,14 @@
                 :rules="[v => !!v || 'Reorder level is required']" @keypress="filterNumeric"></v-text-field>
             </v-col>
           </v-row>
-          <v-row justify="center" class="bg-teal-darken-1 pa-2">
-            <v-col cols="12" md="4" lg="4" sm="4">
-              <v-btn type="submit" color="#23b78d" block>
+          <v-row justify="center" class="bg-dirty-white pa-3">
+            <v-col cols="12" md="4" lg="3" sm="4">
+              <v-btn type="submit" class="bg-teal" block>
                 {{ editingProduct ? "Save" : "Submit" }}
               </v-btn>
             </v-col>
-            <v-col cols="12" md="4" lg="4" sm="4">
-              <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
+            <v-col cols="12" md="4" lg="3" sm="4">
+              <v-btn type="button" color="#23b78d" block @click="cancelForm">Cancel</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -217,6 +216,9 @@ export default {
   z-index: 999;
 }
 
+.bg-dirty-white {
+  background-color: rgba(233, 224, 224, 0.949);
+} 
 
 .close-button {
   position: absolute;
@@ -225,7 +227,6 @@ export default {
   z-index: 999;
   font-size: larger;
 }
-
 
 .error-messages {
   color: red;

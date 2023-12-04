@@ -9,7 +9,7 @@
                     <v-row justify="center" class="bg-teal pa-1">
                         <h2 class="text-center mb-4">{{ editingUser ? 'Edit User' : 'User Module' }}</h2>
                     </v-row>
-                    <v-row justify="center" class="bg-teal-darken-2 pa-1">
+                    <v-row justify="center" class="bg-dirty-white pa-3">
                         <v-col cols="12" md="6" lg="6">
                             <v-text-field v-model="first_name" label="First Name" placeholder="Enter First Name" required
                                 :error-messages="firstNameError" @input="clearFieldErrors('firstName')"
@@ -60,14 +60,14 @@
                                 :rules="[v => !!v || 'Contact number is required']"></v-text-field>
                         </v-col>
                     </v-row>
-                    <v-row justify="center" class="bg-teal-darken-1 pa-2">
-                        <v-col cols="12" md="6" lg="4">
-                            <v-btn type="submit" color="#23b78d" block>
+                    <v-row justify="center" class="bg-dirty-white pa-3">
+                        <v-col cols="12" md="6" lg="3">
+                            <v-btn type="submit" class="bg-teal" block>
                                 {{ editingUser ? 'Save' : 'Submit' }}
                             </v-btn>
                         </v-col>
-                        <v-col cols="12" md="6" lg="4">
-                            <v-btn type="button" color="#068863" block @click="cancelForm">Cancel</v-btn>
+                        <v-col cols="12" md="6" lg="3">
+                            <v-btn type="button" color="#23b78d" block @click="cancelForm">Cancel</v-btn>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -275,9 +275,11 @@ export default {
  
 <style scoped>
 .showUserForm {
-    /* background-image: url("../../assets/assets/vuejs.jpg"); */
-    /* background-color: #23b78d; */
     z-index: 999;
+}
+
+.bg-dirty-white {
+    background-color: rgba(233, 224, 224, 0.949);
 }
 
 .close-button {
