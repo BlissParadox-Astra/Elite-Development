@@ -53,9 +53,9 @@ export default {
       return this.isAdmin && this.$route.name !== 'login';
     },
   },
-  showMenuItems: true,
   data: () => ({
     sidebarCollapsed: false,
+    showMenuItems: true,
     open: [],
     stockin: [
       ['Stock in', "/stock-entry"],
