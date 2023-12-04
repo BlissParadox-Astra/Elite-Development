@@ -17,6 +17,15 @@
           </v-col>
         </v-row>
       </v-col>
+      <v-col cols="12" lg="6" md="6" sm="6"
+        v-else-if="selectedFiltering === 'Day' || selectedFiltering === 'Week' || selectedFiltering === 'Month' || selectedFiltering === 'Year'">
+        <v-row class="col-sm-5">
+          <v-col cols="6">
+            <v-text-field v-model="selectedDate" label="Select Date" type="date" outlined
+              @change="updateDateRange"></v-text-field>
+          </v-col>
+        </v-row>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -25,8 +34,13 @@
 export default {
   name: "FilterByDate",
   data() {
+    const asiaManilaTimezone = 'Asia/Manila';
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    const currentDateInManila = currentDate.toLocaleDateString('en-CA', { timeZone: asiaManilaTimezone });
     return {
       selectedFiltering: '',
+      selectedDate: currentDateInManila,
       fromDate: '',
       toDate: '',
       choices: ['Day', 'Week', 'Month', 'Year', 'Customize']
@@ -46,7 +60,11 @@ export default {
       this.$emit('filter-type-change', this.selectedFiltering);
     },
     updateDateRange() {
-      this.$emit('date-range-change', { fromDate: this.fromDate, toDate: this.toDate });
+      if (['Day', 'Week', 'Month', 'Year'].includes(this.selectedFiltering)) {
+        this.$emit('date-range-change', { selectedDate: this.selectedDate });
+      } else {
+        this.$emit('date-range-change', { fromDate: this.fromDate, toDate: this.toDate });
+      }
     }
   }
 };
