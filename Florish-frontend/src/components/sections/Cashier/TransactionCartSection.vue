@@ -1,5 +1,5 @@
 <template>
-    <v-container class="mt-12">
+    <v-container class="mt-12 " >
         <v-row justify="center">
             <v-col cols="12">
                 <v-row>
@@ -13,7 +13,7 @@
                             :disabled="isGeneratingInvoiceNumber">[GENERATE]</v-btn>
                     </v-col>
 
-                    <v-col cols="12" md="5" lg="2" sm="12" class="ml-15">
+                    <v-col cols="12" md="1" lg="2" sm="12">
                         <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date" />
                     </v-col>
 
@@ -132,7 +132,7 @@
             </v-col>
             <v-col cols="12" sm="6" lg="3" class="text-end">
                 <v-btn color="#23b78d" @click="showConfirmation" style="width: 150px;"
-                    :disabled="isSoldButtonDisabled">SOLD</v-btn>
+                    :disabled="isSoldButtonDisabled" block>SOLD</v-btn>
             </v-col>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
@@ -562,6 +562,10 @@ export default {
 </script>
 
 <style scoped>
+.mt-12 {
+    overflow-x: hidden;
+  /* white-space: nowrap; */
+}
 .total-card {
 
     background-color: #d8d3d3;
