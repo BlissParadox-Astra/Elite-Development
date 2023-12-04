@@ -41,28 +41,44 @@
                             <td>{{ item.price }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.total }}</td>
+                            <td>{{ item.transaction_total }}</td>
+                            <td>{{ item.payment }}</td>
+                            <td>{{ item.change }}</td>
                             <td>{{ item.transaction_date }}</td>
                             <td>{{ item.user.first_name }}</td>
                             <td>
                                 <span>
-                                    <v-icon @click="fetchOrder(item)">mdi-arrow-right</v-icon>
+                                    <v-icon @click="fetchOrder(item)" color="#23b78d">mdi-arrow-right</v-icon>
                                 </span>
                             </td>
                         </tr>
                     </template>
                     <template v-slot:bottom>
-                        <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                :disabled="currentPage === 1"><v-icon>mdi-chevron-left</v-icon> Prev</v-btn>
+                        <v-col cols="12">
+                            <div v-if="totalPages > 1" class="text-center pt-5 pagination">
+                                <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
+                                    color="#23b78d">
+                                    <v-icon>mdi-chevron-left</v-icon> Prev
+                                </v-btn>
 
-                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
-                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                                {{ pageNumber }}
-                            </v-btn>
+                                <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber"
+                                    @click="gotoPage(pageNumber)" :class="{ active: pageNumber === currentPage }"
+                                    class="pagination-button">
+                                    {{ pageNumber }}
+                                </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                :disabled="currentPage === totalPages">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
-                        </div>
+                                <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage"
+                                    color="#23b78d">
+                                    Next <v-icon>mdi-chevron-right</v-icon>
+                                </v-btn>
+                            </div>
+                            <div v-else class="text-center pt-5">
+                                <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }"
+                                    class="pagination-button">
+                                    1
+                                </v-btn>
+                            </div>
+                        </v-col>
                     </template>
                 </v-data-table>
             </v-col>
@@ -135,6 +151,9 @@ export default {
                 { title: "Price", key: 'price' },
                 { title: "Quantity", key: 'quantity' },
                 { title: "Total", key: 'total' },
+                { title: "Over All Total", key: 'transaction_total' },
+                { title: "Payment", key: 'payment' },
+                { title: "Change", key: 'change' },
                 { title: "Transacted Date", key: 'transaction_date' },
                 { title: "Transacted By", key: 'user.first_name' },
                 { title: 'Actions', key: 'actions', sortable: false }
@@ -169,6 +188,9 @@ export default {
     async mounted() {
         await this.debouncedGetTransactions();
         await this.fetchTotalOfAllTotal();
+        // this.$nextTick(() => {
+        //     this.$refs.searchField.$refs.searchField.focus();
+        // });
     },
 
     methods: {
@@ -199,15 +221,19 @@ export default {
                     switch (this.filterType) {
                         case 'Day':
                             params.filterType = 'Day';
+                            params.selectedDate = this.selectedDate;
                             break;
                         case 'Week':
                             params.filterType = 'Week';
+                            params.selectedDate = this.selectedDate;
                             break;
                         case 'Month':
                             params.filterType = 'Month';
+                            params.selectedDate = this.selectedDate;
                             break;
                         case 'Year':
                             params.filterType = 'Year';
+                            params.selectedDate = this.selectedDate;
                             break;
                         case 'Customize':
                             params.filterType = 'Customize';
@@ -243,15 +269,19 @@ export default {
                 switch (this.filterType) {
                     case 'Day':
                         params.filterType = 'Day';
+                        params.selectedDate = this.selectedDate;
                         break;
                     case 'Week':
                         params.filterType = 'Week';
+                        params.selectedDate = this.selectedDate;
                         break;
                     case 'Month':
                         params.filterType = 'Month';
+                        params.selectedDate = this.selectedDate;
                         break;
                     case 'Year':
                         params.filterType = 'Year';
+                        params.selectedDate = this.selectedDate;
                         break;
                     case 'Customize':
                         params.filterType = 'Customize';
@@ -271,19 +301,32 @@ export default {
         handleFilterTypeChange(newFilterType) {
             this.filterType = newFilterType;
             this.currentPage = 1;
+
+            if (['Day', 'Week', 'Month', 'Year'].includes(newFilterType)) {
+                this.filterByDay = null;
+                this.fromDate = null;
+                this.toDate = null;
+            }
+
             this.debouncedGetTransactions();
         },
 
-        // updateSort(sortType) {
-        //     this.selectedSort = sortType;
-        // },
+        handleDateRangeChange({ fromDate, toDate, selectedDate }) {
+            if (['Day', 'Week', 'Month', 'Year'].includes(this.filterType)) {
+                this.filterByDay = null;
+                this.fromDate = null;
+                this.toDate = null;
+                this.selectedDate = selectedDate;
+            } else {
+                this.fromDate = fromDate;
+                this.toDate = toDate;
+                this.selectedDate = null;
+            }
 
-        handleDateRangeChange({ fromDate, toDate }) {
-            this.fromDate = fromDate;
             this.currentPage = 1;
-            this.toDate = toDate;
             this.debouncedGetTransactions();
         },
+
 
         fetchOrder(transaction) {
             this.soldTransaction = {

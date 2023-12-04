@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use PhpParser\Node\Stmt\TryCatch;
 
 class TransactionController extends Controller
@@ -30,10 +31,9 @@ class TransactionController extends Controller
             $toDate = $request->input('toDate');
             $filterType = $request->input('filterType');
             $searchQuery = $request->input('search');
-            $selectedDay = $request->input('selectedDate');
-            // $sortBy = $request->input('sortBy');
+            $selectedDate = $request->input('selectedDate');
 
-            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType, $searchQuery, $selectedDay);
+            $transactions = $this->transactionManager->getAllTransactions($page, $itemsPerPage, $fromDate, $toDate, $filterType, $searchQuery, $selectedDate);
 
             return response()->json([
                 'transactions' => $transactions->items(),
@@ -166,6 +166,7 @@ class TransactionController extends Controller
             $toDate = $request->input('toDate');
             $filterType = $request->input('filterType');
             $searchQuery = $request->input('search');
+            $selectedDate = $request->input('selectedDate');
 
             $query = Transaction::query();
 
@@ -176,18 +177,28 @@ class TransactionController extends Controller
             if ($filterType) {
                 switch ($filterType) {
                     case 'Day':
-                        $query->whereDate('transactions.transaction_date', now()->toDateString());
+                        $dateToFilter = $selectedDate ?? now()->toDateString();
+                        $query->whereDate('transactions.transaction_date', $dateToFilter);
                         break;
+
                     case 'Week':
-                        $query->whereBetween('transactions.transaction_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                        $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
+                        $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
+                        $query->whereBetween('transactions.transaction_date', [$startOfWeek, $endOfWeek]);
                         break;
+
                     case 'Month':
-                        $query->whereYear('transactions.transaction_date', now()->year)
-                            ->whereMonth('transactions.transaction_date', now()->month);
+                        $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
+                        $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
+                        $query->whereBetween('transactions.transaction_date', [$startOfMonth, $endOfMonth]);
                         break;
+
                     case 'Year':
-                        $query->whereYear('transactions.transaction_date', now()->year);
+                        $startOfYear = Carbon::parse($selectedDate)->startOfYear();
+                        $endOfYear = Carbon::parse($selectedDate)->endOfYear();
+                        $query->whereBetween('transactions.transaction_date', [$startOfYear, $endOfYear]);
                         break;
+
                     case 'Customize':
                         $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
                         break;

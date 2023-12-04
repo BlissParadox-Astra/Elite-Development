@@ -60,33 +60,46 @@
                                     <td>{{ item.total }}</td>
                                     <td>
                                         <span>
-                                            <v-icon @click="subtractProduct(item)" size="22" class="ml-n3" color="#23b78d">mdi-minus-circle</v-icon>
+                                            <v-icon @click="subtractProduct(item)" size="22" class="ml-n3"
+                                                color="#23b78d">mdi-minus-circle</v-icon>
                                         </span>
                                         <span>
-                                            <v-icon @click="addProduct(item)" size="22" color="#23b78d">mdi-plus-circle</v-icon>
+                                            <v-icon @click="addProduct(item)" size="22"
+                                                color="#23b78d">mdi-plus-circle</v-icon>
                                         </span>
                                         <span>
                                             <v-icon @click="showDeleteConfirmation(item)" color="#23b78d"
-                                            size="22">mdi-delete</v-icon>
+                                                size="22">mdi-delete</v-icon>
                                         </span>
                                     </td>
                                 </tr>
                             </template>
                             <template v-slot:bottom>
-                                <div class="text-center pt-8 pagination">
-                                    <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                        :disabled="currentPage === 1"><v-icon>mdi-chevron-left</v-icon> Prev</v-btn>
+                                <v-col cols="12">
+                                    <div v-if="totalPages > 1" class="text-center pt-5 pagination">
+                                        <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
+                                            color="#23b78d">
+                                            <v-icon>mdi-chevron-left</v-icon> Prev
+                                        </v-btn>
 
-                                    <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber"
-                                        @click="gotoPage(pageNumber)" :class="{ active: pageNumber === currentPage }"
-                                        class="pagination-button">
-                                        {{ pageNumber }}
-                                    </v-btn>
+                                        <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber"
+                                            @click="gotoPage(pageNumber)" :class="{ active: pageNumber === currentPage }"
+                                            class="pagination-button">
+                                            {{ pageNumber }}
+                                        </v-btn>
 
-                                    <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                        :disabled="currentPage === totalPages">Next
-                                        <v-icon>mdi-chevron-right</v-icon></v-btn>
-                                </div>
+                                        <v-btn :disabled="currentPage === totalPages" class="pagination-button"
+                                            @click="nextPage" color="#23b78d">
+                                            Next <v-icon>mdi-chevron-right</v-icon>
+                                        </v-btn>
+                                    </div>
+                                    <div v-else class="text-center pt-5">
+                                        <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }"
+                                            class="pagination-button">
+                                            1
+                                        </v-btn>
+                                    </div>
+                                </v-col>
                             </template>
                         </v-data-table>
                     </v-col>
@@ -300,6 +313,7 @@ export default {
 
     mounted() {
         window.addEventListener('keydown', this.handleKeyDown);
+        this.$refs.barcodeSearchField.$refs.searchField.focus();
     },
 
     beforeUnmount() {
@@ -409,6 +423,7 @@ export default {
                 item.quantity--;
                 item.total = this.calculateTotal(item);
             }
+            this.$refs.barcodeSearchField.$refs.searchField.focus();
         },
 
         addProduct(item) {
@@ -427,6 +442,7 @@ export default {
                 .catch(error => {
                     console.error('Error fetching inventory data for adding product', error);
                 });
+            this.$refs.barcodeSearchField.$refs.searchField.focus();
         },
 
         calculateChange() {
@@ -461,7 +477,7 @@ export default {
             this.showEditQuantityDialog = true;
         },
 
-        saveEditedQuantity() {
+        async saveEditedQuantity() {
             if (this.editingIndex !== -1) {
                 const editedProduct = this.products[this.editingIndex];
 
@@ -483,6 +499,9 @@ export default {
                         this.editedQuantity = 0;
                         this.snackbarColor = 'success';
                         this.showSnackbar('Quantity updated successfully', 'success');
+                        this.$nextTick(() => {
+                            this.$refs.barcodeSearchField.$refs.searchField.focus();
+                        });
                     })
                     .catch(error => {
                         console.error('Error fetching inventory data for editing quantity', error);
@@ -507,6 +526,7 @@ export default {
                 this.totalItems = this.products.length;
                 this.snackbarColor = 'success';
                 this.showSnackbar('Successfully removed product from cart');
+                this.$refs.barcodeSearchField.$refs.searchField.focus();
             } else {
                 this.snackbarColor = 'error';
                 this.showSnackbar('Error removing product from cart');
@@ -526,11 +546,15 @@ export default {
         saveRecord() {
             this.showConfirmationDialog = false;
             const transactionRequests = this.products.map((product) => {
+                const overallTotal = this.calculateOverallTotal();
                 return {
                     transaction_number: this.transaction_number,
                     transaction_date: this.transaction_date,
                     product_id: product.id,
                     quantity: product.quantity,
+                    transaction_total: overallTotal,
+                    payment: this.payment,
+                    change: this.change,
                 };
             });
 
@@ -548,6 +572,7 @@ export default {
                     this.snackbarColor = 'success';
                     this.showSnackbar('Transacted Successfully', 'success');
                     this.resetPayment();
+                    this.$refs.barcodeSearchField.$refs.searchField.focus();
                 })
                 .catch((error) => {
                     console.error("Transaction errored", error);
@@ -577,6 +602,9 @@ export default {
 
         closeBrowseProductForm() {
             this.showBrowseProduct = false;
+            this.$nextTick(() => {
+                this.$refs.barcodeSearchField.$refs.searchField.focus();
+            });
         },
 
         previousPage() {
@@ -673,8 +701,8 @@ export default {
 .total-text {
     font-size: 1.5em;
 }
+
 .total-label {
     font-weight: bold;
     margin-right: 40px;
-}
-</style>
+}</style>

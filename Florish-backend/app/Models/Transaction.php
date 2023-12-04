@@ -16,6 +16,7 @@ class Transaction extends Model
         'price',
         'quantity',
         'total',
+        'transaction_total',
         'payment',
         'change',
         'transaction_date',

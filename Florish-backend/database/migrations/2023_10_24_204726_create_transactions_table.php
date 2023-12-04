@@ -18,6 +18,7 @@ return new class extends Migration
             $table->float('price', 10, 2);
             $table->integer('quantity');
             $table->decimal('total', 10, 2);
+            $table->decimal('transaction_total', 10, 2);
             $table->decimal('payment', 10, 2);
             $table->decimal('change', 10, 2 );
             $table->date('transaction_date');

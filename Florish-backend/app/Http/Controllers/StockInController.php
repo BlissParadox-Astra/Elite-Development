@@ -27,8 +27,9 @@ class StockInController extends Controller
             $fromDate = $request->input('fromDate');
             $toDate = $request->input('toDate');
             $filterType = $request->input('filterType');
+            $selectedDate = $request->input('selectedDate');
 
-            $stockIns = $this->stockInManager->getAllStockIns($page, $itemsPerPage, $fromDate, $toDate, $filterType);
+            $stockIns = $this->stockInManager->getAllStockIns($page, $itemsPerPage, $fromDate, $toDate, $filterType, $selectedDate);
 
             return response()->json([
                 'stockIns' => $stockIns->items(),

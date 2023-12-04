@@ -22,18 +22,31 @@
                         </tr>
                     </template>
                     <template v-slot:bottom>
-                        <div class="text-center pt-8 pagination">
-                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
-                                :disabled="currentPage === 1"><v-icon>mdi-chevron-left</v-icon> Prev</v-btn>
+                        <v-col cols="12">
+                            <div v-if="totalPages > 1" class="text-center pt-5 pagination">
+                                <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
+                                    color="#23b78d">
+                                    <v-icon>mdi-chevron-left</v-icon> Prev
+                                </v-btn>
 
-                            <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber" @click="gotoPage(pageNumber)"
-                                :class="{ active: pageNumber === currentPage }" class="pagination-button">
-                                {{ pageNumber }}
-                            </v-btn>
+                                <v-btn v-for="pageNumber in visiblePageRange" :key="pageNumber"
+                                    @click="gotoPage(pageNumber)" :class="{ active: pageNumber === currentPage }"
+                                    class="pagination-button">
+                                    {{ pageNumber }}
+                                </v-btn>
 
-                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
-                                :disabled="currentPage === totalPages">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
-                        </div>
+                                <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage"
+                                    color="#23b78d">
+                                    Next <v-icon>mdi-chevron-right</v-icon>
+                                </v-btn>
+                            </div>
+                            <div v-else class="text-center pt-5">
+                                <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }"
+                                    class="pagination-button">
+                                    1
+                                </v-btn>
+                            </div>
+                        </v-col>
                     </template>
                 </v-data-table>
             </v-col>
