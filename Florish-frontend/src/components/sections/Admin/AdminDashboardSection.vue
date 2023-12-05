@@ -16,19 +16,19 @@
                 <v-col cols="12" md="3">
                     <v-card class="card-box">
                         <v-card-title>PRODUCT LINE</v-card-title>
-                        <v-card-text>{{ productLineCount }} PRODUCT LINES</v-card-text>
+                        <v-card-text>{{ productLineCount }} PRODUCT LINE(S)</v-card-text>
                     </v-card>
                 </v-col>
                 <v-col cols="12" md="3">
                     <v-card class="card-box">
                         <v-card-title>STOCK ON HAND</v-card-title>
-                        <v-card-text>{{ totalStockOnHand }} STOCKS</v-card-text>
+                        <v-card-text>{{ totalStockOnHand }} STOCK(S)</v-card-text>
                     </v-card>
                 </v-col>
                 <v-col cols="12" md="3">
                     <v-card class="card-box">
-                        <v-card-title>CRITICAL ITEMS</v-card-title>
-                        <v-card-text>{{ criticalStockCount }} ITEMS</v-card-text>
+                        <v-card-title>CRITICAL ITEM(S)</v-card-title>
+                        <v-card-text>{{ criticalStockCount }} ITEM(S)</v-card-text>
                     </v-card>
                 </v-col>
             </v-row>

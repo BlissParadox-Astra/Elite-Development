@@ -35,7 +35,7 @@
             <template v-slot:bottom>
               <v-col cols="12">
                 <div v-if="totalPages > 1" class="text-center pt-5 pagination">
-                  <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage" color="#23b78d">
+                  <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">
                     <v-icon>mdi-chevron-left</v-icon> Prev
                   </v-btn>
 
@@ -44,14 +44,9 @@
                     {{ pageNumber }}
                   </v-btn>
 
-                  <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage"
-                    color="#23b78d">
+                  <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                    :disabled="currentPage === totalPages">
                     Next <v-icon>mdi-chevron-right</v-icon>
-                  </v-btn>
-                </div>
-                <div v-else class="text-center pt-5">
-                  <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }" class="pagination-button">
-                    1
                   </v-btn>
                 </div>
               </v-col>
@@ -107,7 +102,7 @@
             Confirm Save
           </v-card-title>
           <v-card-text class="text-center">
-            ARE YOU SURE YOU WANT TO SAVE THIS STOCK ADJUSTMENT RECORDS?
+            ARE YOU SURE YOU WANT TO SAVE THIS STOCK ADJUSTMENT RECORD(S)?
           </v-card-text>
           <v-card-actions class="d-flex justify-center ">
             <div>
@@ -177,16 +172,16 @@ export default {
         { title: 'Actions', key: 'actions', sortable: false }
       ],
 
-      commandOptions: ["Remove From Inventory", "Add to Inventory"],
+      commandOptions: ["Remove from inventory", "Add to inventory"],
 
-      options: "Select an Actions",
+      options: "Select action",
     };
   },
 
   watch: {
     options: {
       handler(newOption) {
-        if (newOption === 'Remove From Inventory' && this.quantity !== '') {
+        if (newOption === 'Remove from inventory' && this.quantity !== '') {
           this.validateQuantity();
         } else {
           this.quantityError = '';
@@ -196,7 +191,7 @@ export default {
     },
     quantity: {
       handler(newQuantity) {
-        if (this.options === 'Remove From Inventory' && newQuantity !== '') {
+        if (this.options === 'Remove from inventory' && newQuantity !== '') {
           this.validateQuantity();
         } else {
           this.quantityError = '';
@@ -247,7 +242,7 @@ export default {
 
       return range;
     },
-    
+
     isSmallScreen() {
       return window.innerWidth < 768;
     },
@@ -352,7 +347,7 @@ export default {
     },
 
     validateQuantity() {
-      if (this.options === 'Remove From Inventory' && this.quantity !== null) {
+      if (this.options === 'Remove from inventory' && this.quantity !== null) {
         if (this.quantity > this.selectedRow.stock_on_hand) {
           this.quantityError = 'Cannot remove more products than available in stock.';
         } else {
