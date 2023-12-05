@@ -128,7 +128,10 @@ export default {
     },
 
     visiblePageRange() {
-      const maxVisiblePages = 5;
+      const smallScreenMaxPages = 2;
+      const largeScreenMaxPages = 5;
+
+      const maxVisiblePages = this.isSmallScreen ? smallScreenMaxPages : largeScreenMaxPages;
       const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
       const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
       const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
@@ -139,6 +142,10 @@ export default {
       }
 
       return range;
+    },
+    
+    isSmallScreen() {
+      return window.innerWidth < 768;
     },
   },
 

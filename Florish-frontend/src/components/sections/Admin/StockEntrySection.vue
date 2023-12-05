@@ -1,7 +1,7 @@
 <template>
     <v-main class="section2 mt-14">
         <v-container>
-            <v-row class="pa-2" >
+            <v-row class="pa-2">
                 <v-col cols="12" sm="5" md="5" lg="4" xl="5">
                     <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>
@@ -96,8 +96,7 @@
             </v-data-table>
             <v-row class="mt-5 save-btn">
                 <v-col cols="12" sm="12" md="2" class="text-start">
-                    <v-btn color="#23b78d" @click="showConfirmation"
-                        :disabled="isSaveButtonDisabled" block>Save</v-btn>
+                    <v-btn color="#23b78d" @click="showConfirmation" :disabled="isSaveButtonDisabled" block>Save</v-btn>
                 </v-col>
             </v-row>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
@@ -229,7 +228,10 @@ export default {
         },
 
         visiblePageRange() {
-            const maxVisiblePages = 5;
+            const smallScreenMaxPages = 2;
+            const largeScreenMaxPages = 5;
+
+            const maxVisiblePages = this.isSmallScreen ? smallScreenMaxPages : largeScreenMaxPages;
             const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
             const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
             const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
@@ -240,6 +242,10 @@ export default {
             }
 
             return range;
+        },
+        
+        isSmallScreen() {
+            return window.innerWidth < 768;
         },
     },
 

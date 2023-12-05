@@ -127,15 +127,15 @@
                             </v-row>
                         </v-card>
                     </v-col>
-                        <v-row justify="space-between pa-3">
-                            <v-col cols="12" md="5" sm="12" lg="2" class="text-start ">
-                                <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
-                            </v-col>
-                            <v-col cols="12" md="5" sm="12" lg="2" class="text-end ">
-                                <v-btn color="#23b78d" @click="showConfirmation"
-                                    :disabled="!isPaymentEnough || isSoldButtonDisabled" block>SOLD</v-btn>
-                            </v-col>
-                        </v-row>
+                    <v-row justify="space-between pa-3">
+                        <v-col cols="12" md="5" sm="12" lg="2" class="text-start ">
+                            <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
+                        </v-col>
+                        <v-col cols="12" md="5" sm="12" lg="2" class="text-end ">
+                            <v-btn color="#23b78d" @click="showConfirmation"
+                                :disabled="!isPaymentEnough || isSoldButtonDisabled" block>SOLD</v-btn>
+                        </v-col>
+                    </v-row>
                 </v-row>
             </v-col>
         </v-row>
@@ -278,7 +278,10 @@ export default {
         },
 
         visiblePageRange() {
-            const maxVisiblePages = 5;
+            const smallScreenMaxPages = 2;
+            const largeScreenMaxPages = 5;
+
+            const maxVisiblePages = this.isSmallScreen ? smallScreenMaxPages : largeScreenMaxPages;
             const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
             const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
             const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
@@ -289,6 +292,10 @@ export default {
             }
 
             return range;
+        },
+        
+        isSmallScreen() {
+            return window.innerWidth < 768;
         },
 
         isPaymentEnough() {
@@ -658,6 +665,7 @@ export default {
     font-weight: bold;
     color: #333;
 }
+
 .form-container {
     position: absolute;
     top: 0;
@@ -706,4 +714,5 @@ export default {
 .total-label {
     font-weight: bold;
     margin-right: 40px;
-}</style>
+}
+</style>
