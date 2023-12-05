@@ -3,26 +3,26 @@
         <v-row>
             <v-col cols="12">
                 <v-row>
-                    <v-col cols="12" md="4" lg="4" sm="12" class="mt-3">
+                    <v-col cols="12" md="4" lg="4" sm="5" class="mt-3">
                         <v-text-field class="ml-1" label="Transaction ID" variant="plain" v-model="transaction_number"
                             readonly />
                     </v-col>
 
-                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
+                    <v-col cols="12" md="2" lg="3" sm="3" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="generateAndFetchInvoiceNumber"
                             :disabled="isGeneratingInvoiceNumber">GENERATE</v-btn>
                     </v-col>
 
-                    <v-col cols="12" md="5" lg="4" sm="12" class="mt-3">
+                    <v-col cols="12" md="5" lg="4" sm="4" class="mt-3">
                         <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date" />
                     </v-col>
 
-                    <v-col cols="12" md="4" lg="4" sm="12">
+                    <v-col cols="12" md="4" lg="4" sm="5">
                         <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
                             :searchType="'barcode'" :disabled="!isTransactionNumberPresent" />
                     </v-col>
 
-                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
+                    <v-col cols="12" md="2" lg="3" sm="3" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">BROWSE PRODUCT</v-btn>
                     </v-col>

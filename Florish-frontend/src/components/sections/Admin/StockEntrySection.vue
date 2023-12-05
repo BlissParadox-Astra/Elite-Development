@@ -11,11 +11,11 @@
                         :disabled="isGeneratingReferenceNumber">Generate</v-btn>
                 </v-col>
 
-                <v-col cols="12" sm="5" md="3" lg="4" xl="5">
+                <v-col cols="12" sm="4" md="3" lg="4" xl="5">
                     <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
                 </v-col>
 
-                <v-col cols="12" sm="3" md="5" lg="4" xl="2" class="mb-6">
+                <v-col cols="12" sm="5" md="5" lg="4" xl="2" class="mb-6">
                     <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
                         :searchType="'barcode'" :disabled="!isReferenceNumberPresent" />
                 </v-col>
@@ -25,7 +25,7 @@
                         Product</v-btn>
                 </v-col>
 
-                <v-col cols="12" sm="5" md="3" lg="4" xl="5" class="d-flex justify-center align-center mt-n3">
+                <v-col cols="12" sm="4" md="3" lg="4" xl="5" class="d-flex justify-center align-center mt-n3">
                     <v-text-field label="Stock In By" readonly :model-value="stock_in_by" />
                 </v-col>
             </v-row>
