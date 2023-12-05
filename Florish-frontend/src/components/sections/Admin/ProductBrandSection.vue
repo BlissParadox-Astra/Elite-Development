@@ -1,7 +1,7 @@
 <template>
   <v-container class="mt-14">
-    <v-row>
-      <v-col cols="12" sm="9">
+    <v-row justify="space-between">
+      <v-col cols="12" sm="9" md="5" lg="5">
         <SearchField @search="handleSearch" :searchLabel="searchLabel" :searchType="'regular'" />
       </v-col>
       <v-col cols="12" sm="3" class="d-flex justify-center align-center">

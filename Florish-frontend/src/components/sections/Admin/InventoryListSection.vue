@@ -1,7 +1,7 @@
 <template>
     <v-container class="section2 mt-14">
         <v-row>
-            <v-col cols="12" sm="9">
+            <v-col cols="12" sm="9" md="5" lg="5">
                 <SearchField @search="handleSearch" :searchType="'regular'" />
             </v-col>
         </v-row>

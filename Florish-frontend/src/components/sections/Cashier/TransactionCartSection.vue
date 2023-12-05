@@ -1,6 +1,6 @@
 <template>
     <v-container class="mt-12">
-        <v-row justify="center">
+        <v-row>
             <v-col cols="12">
                 <v-row>
                     <v-col cols="12" md="4" lg="4" sm="12" class="mt-3">
@@ -8,26 +8,26 @@
                             readonly />
                     </v-col>
 
-                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center">
+                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="generateAndFetchInvoiceNumber"
                             :disabled="isGeneratingInvoiceNumber">GENERATE</v-btn>
                     </v-col>
 
-                    <v-col cols="12" md="5" lg="2" sm="12" class="ml-16 mt-3">
+                    <v-col cols="12" md="5" lg="4" sm="12" class="mt-3">
                         <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date" />
                     </v-col>
 
-                    <v-col cols="12" md="4" lg="4" sm="12" class="mt-n7">
+                    <v-col cols="12" md="4" lg="4" sm="12">
                         <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
                             :searchType="'barcode'" :disabled="!isTransactionNumberPresent" />
                     </v-col>
 
-                    <v-col cols="12" md="2" lg="2" sm="12" class="d-flex align-center mt-n8">
+                    <v-col cols="12" md="2" lg="3" sm="12" class="d-flex align-center">
                         <v-btn class="text clickable-text" color="#23b78d" block @click="showBrowseProductForm"
                             :disabled="!canBrowseProduct">BROWSE PRODUCT</v-btn>
                     </v-col>
 
-                    <v-row class="mt-n6">
+                    <v-row class="">
                         <v-col cols="12" class="text-center">
                             <h2 class="total-text">
                                 <span class="total-label">Total:</span>
@@ -36,7 +36,7 @@
                         </v-col>
                     </v-row>
 
-                    <v-col cols="12" md="9" lg="15" sm="12">
+                    <v-col cols="12" md="8" lg="9" sm="12">
                         <v-data-table :headers="headers" :items="products" :loading="loading" :page="currentPage"
                             :items-per-page="itemsPerPage" density="compact" :transaction_date="transaction_date"
                             :transaction_number="transaction_number" :transact_by="transact_by" item-value="id"
@@ -103,9 +103,9 @@
                             </template>
                         </v-data-table>
                     </v-col>
-                    <v-col cols="12" md="3" lg="3" sm="12">
-                        <v-card class="pa-4 total-card" style="height: 418px; width: 400px;" color="#23b78d">
-                            <v-row class="text-left" style="height: 10%;" align="center">
+                    <v-col cols="12" md="4" lg="3" sm="12">
+                        <v-card class="pa-2 total-card" style="height: 430px;" color="#23b78d">
+                            <v-row class="text-left" style="height: 12%;" align="center">
                                 <v-col cols="12">
                                     <v-card-title class="headline white--text font-weight-bold">Transaction
                                         Summary</v-card-title>
@@ -127,13 +127,15 @@
                             </v-row>
                         </v-card>
                     </v-col>
-                    <v-col cols="12" md="5" sm="12" lg="6" class="text-start mt-n4">
-                        <v-btn to="/cashier-dashboard" color="#23b78d" style="width: 180px;">BACK</v-btn>
-                    </v-col>
-                    <v-col cols="12" md="5" sm="12" lg="3" class="text-end mt-n4">
-                        <v-btn color="#23b78d" @click="showConfirmation" style="width: 180px;"
-                            :disabled="!isPaymentEnough || isSoldButtonDisabled">SOLD</v-btn>
-                    </v-col>
+                        <v-row justify="space-between pa-3">
+                            <v-col cols="12" md="5" sm="12" lg="2" class="text-start ">
+                                <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
+                            </v-col>
+                            <v-col cols="12" md="5" sm="12" lg="2" class="text-end ">
+                                <v-btn color="#23b78d" @click="showConfirmation"
+                                    :disabled="!isPaymentEnough || isSoldButtonDisabled" block>SOLD</v-btn>
+                            </v-col>
+                        </v-row>
                 </v-row>
             </v-col>
         </v-row>
@@ -656,7 +658,6 @@ export default {
     font-weight: bold;
     color: #333;
 }
-
 .form-container {
     position: absolute;
     top: 0;
