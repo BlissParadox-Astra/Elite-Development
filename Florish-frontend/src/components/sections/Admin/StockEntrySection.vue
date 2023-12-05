@@ -1,7 +1,7 @@
 <template>
     <v-main class="section2 mt-14">
         <v-container>
-            <v-row>
+            <v-row class="pa-2" >
                 <v-col cols="12" sm="5" md="5" lg="4" xl="5">
                     <v-text-field label="Reference Number" v-model="reference_number" readonly />
                 </v-col>
@@ -11,11 +11,11 @@
                         :disabled="isGeneratingReferenceNumber">Generate</v-btn>
                 </v-col>
 
-                <v-col cols="12" sm="5" md="5" lg="3" xl="5" class="ml-15">
+                <v-col cols="12" sm="5" md="3" lg="4" xl="5">
                     <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
                 </v-col>
 
-                <v-col cols="12" sm="3" md="6" lg="4" xl="2">
+                <v-col cols="12" sm="3" md="5" lg="4" xl="2" class="mb-6">
                     <SearchField ref="barcodeSearchField" @searchBarcode="handleBarcodeScan" :searchLabel="searchLabel"
                         :searchType="'barcode'" :disabled="!isReferenceNumberPresent" />
                 </v-col>
@@ -25,7 +25,7 @@
                         Product</v-btn>
                 </v-col>
 
-                <v-col cols="12" sm="3" class="d-flex justify-center align-center mt-n3 ml-15">
+                <v-col cols="12" sm="5" md="3" lg="4" xl="5" class="d-flex justify-center align-center mt-n3">
                     <v-text-field label="Stock In By" readonly :model-value="stock_in_by" />
                 </v-col>
             </v-row>
@@ -95,9 +95,9 @@
                 </template>
             </v-data-table>
             <v-row class="mt-5 save-btn">
-                <v-col cols="2" offset-md="10">
-                    <v-btn color="#23b78d" @click="showConfirmation" style="width: 150px;"
-                        :disabled="isSaveButtonDisabled">Save</v-btn>
+                <v-col cols="12" sm="12" md="2" class="text-start">
+                    <v-btn color="#23b78d" @click="showConfirmation"
+                        :disabled="isSaveButtonDisabled" block>Save</v-btn>
                 </v-col>
             </v-row>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
