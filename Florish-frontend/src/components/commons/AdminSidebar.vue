@@ -3,12 +3,12 @@
     :width="sidebarCollapsed ? 70 : 250" floating permanent>
     <v-img src="../../assets/assets/florish-logo.png" alt="storelogo" class="logo" contain @click="toggleSidebar"></v-img>
     <v-hover>
-      <v-list>
+      <v-list >
         <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" :to="'/admin-dashboard'" tabindex="0"
           @click="handleItemClick()"></v-list-item>
         <v-list-item prepend-icon="mdi-package-variant-closed" title="Product" :to="'/product-list-view'" tabindex="0"
           @click="handleItemClick()"></v-list-item>
-        <v-list-group value="stockEntry" class="white-title-color">
+        <v-list-group v-model="open" value="stockEntry" class="white-title-color">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" prepend-icon="mdi-cart" title="Stock Entry" tabindex="0"
               @click="handleItemClick()"></v-list-item>
@@ -16,7 +16,7 @@
           <v-list-item v-for="([title, route], i) in stockin" :key="i" :to="route" :value="title" :title="title"
             class="subItems" tabindex="0"></v-list-item>
         </v-list-group>
-        <v-list-group value="stockAdjust" class="white-title-color">
+        <v-list-group v-model="open" value="stockAdjust" class="white-title-color">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" prepend-icon="mdi-poll-box" title="Stock Adjust" tabindex="0"
               @click="handleItemClick()"></v-list-item>
@@ -24,19 +24,22 @@
           <v-list-item v-for="([title, route], i) in stockAdjust" :key="i" :to="route" :value="title" :title="title"
             class="subItems" tabindex="0"></v-list-item>
         </v-list-group>
-        <v-list-item prepend-icon="mdi-tag-multiple" title="Categories" :to="'/product-category'"
-          tabindex="0"  @click="handleItemClick()"></v-list-item>
-        <v-list-item prepend-icon="mdi-label" title="Brands" :to="'/product-brand'" tabindex="0"  @click="handleItemClick()"></v-list-item>
-        <v-list-group value="records" class="white-title-color">
+        <v-list-item prepend-icon="mdi-tag-multiple" title="Categories" :to="'/product-category'" tabindex="0"
+          @click="handleItemClick()"></v-list-item>
+        <v-list-item prepend-icon="mdi-label" title="Brands" :to="'/product-brand'" tabindex="0"
+          @click="handleItemClick()"></v-list-item>
+        <v-list-group v-model="open" value="records" class="white-title-color">
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" prepend-icon="mdi-database" title="Records" tabindex="0"  @click="handleItemClick()"></v-list-item>
+            <v-list-item v-bind="props" prepend-icon="mdi-database" title="Records" tabindex="0"
+              @click="handleItemClick()"></v-list-item>
           </template>
           <v-list-item v-for="([title, route], i) in records" :key="i" :to="route" :value="title" :title="title"
-            class="subItems" tabindex="0" ></v-list-item>
+            class="subItems" tabindex="0"></v-list-item>
         </v-list-group>
-        <v-list-item prepend-icon="mdi-currency-usd" title="Sales History" :to="'/sales-history'"
-          tabindex="0"  @click="handleItemClick()"></v-list-item>
-        <v-list-item prepend-icon="mdi-account-group" title="Users" :to="'/users'" tabindex="0"  @click="handleItemClick()"></v-list-item>
+        <v-list-item prepend-icon="mdi-currency-usd" title="Sales History" :to="'/sales-history'" tabindex="0"
+          @click="handleItemClick()"></v-list-item>
+        <v-list-item prepend-icon="mdi-account-group" title="Users" :to="'/users'" tabindex="0"
+          @click="handleItemClick()"></v-list-item>
       </v-list>
     </v-hover>
   </v-navigation-drawer>
@@ -53,9 +56,9 @@ export default {
       return this.isAdmin && this.$route.name !== 'login';
     },
   },
-  showMenuItems: true,
   data: () => ({
     sidebarCollapsed: false,
+    showMenuItems: true,
     open: [],
     stockin: [
       ['Stock in', "/stock-entry"],
@@ -74,13 +77,14 @@ export default {
 
   methods: {
     toggleSidebar() {
-      this.sidebarCollapsed = !this.sidebarCollapsed;
-      this.$store.commit('setIsSidebarCollapsed', this.sidebarCollapsed);
-      localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
       if (this.sidebarCollapsed) {
-        this.showMenuItems = false;
-      } else {
+        this.sidebarCollapsed = false;
         this.showMenuItems = true;
+        this.open = Object.keys(this.$refs); // Open all group lists
+      } else {
+        this.sidebarCollapsed = true;
+        this.showMenuItems = false;
+        this.open = []; // Close all group lists
       }
     },
     expandSidebar() {
@@ -142,8 +146,12 @@ a {
 }
 
 /* Add styles to hide text when sidebar is collapsed */
-.v-navigation-drawer.collapsed .v-list-item-title {
+.v-navigation-drawer.collapsed .subItems{
   display: none;
+}
+
+.v-navigation-drawer.collapsed .v-list-item{
+  margin-top: 10px;
 }
 
 .v-navigation-drawer.collapsed .v-list-item-title i {
@@ -152,4 +160,5 @@ a {
 
 .icon-pointer {
   cursor: pointer;
-}</style>
+}
+</style>

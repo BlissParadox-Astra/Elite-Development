@@ -2,7 +2,7 @@
   <v-main>
     <v-container class="mt-15">
       <v-row>
-        <v-col cols="12" sm="9">
+        <v-col cols="12" sm="9" md="5" lg="5">
           <SearchField @search="handleSearch" :searchType="'regular'" />
         </v-col>
       </v-row>
