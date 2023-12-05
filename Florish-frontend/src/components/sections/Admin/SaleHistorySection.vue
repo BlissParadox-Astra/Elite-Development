@@ -39,7 +39,6 @@
               <td>{{ item.price }}</td>
               <td>{{ item.quantity }}</td>
               <td>{{ item.total }}</td>
-              <td>{{ item.transaction_total }}</td>
               <td>{{ item.payment }}</td>
               <td>{{ item.change }}</td>
               <td>{{ item.transaction_date }}</td>
@@ -113,7 +112,6 @@ export default {
         { title: "Price", key: 'price' },
         { title: "Quantity", key: 'quantity' },
         { title: "Total", key: 'total' },
-        { title: "Over All Total", key: 'transaction_total' },
         { title: "Payment", key: 'payment' },
         { title: "Change", key: 'change' },
         { title: "Transaction Date", key: 'transaction_date' },
@@ -132,7 +130,10 @@ export default {
     },
 
     visiblePageRange() {
-      const maxVisiblePages = 5;
+      const smallScreenMaxPages = 2;
+      const largeScreenMaxPages = 5;
+
+      const maxVisiblePages = this.isSmallScreen ? smallScreenMaxPages : largeScreenMaxPages;
       const halfMaxVisiblePages = Math.floor(maxVisiblePages / 2);
       const firstPage = Math.max(1, this.currentPage - halfMaxVisiblePages);
       const lastPage = Math.min(this.totalPages, firstPage + maxVisiblePages - 1);
@@ -143,6 +144,10 @@ export default {
       }
 
       return range;
+    },
+
+    isSmallScreen() {
+      return window.innerWidth < 768;
     },
   },
 
