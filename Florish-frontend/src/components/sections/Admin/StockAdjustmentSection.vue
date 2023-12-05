@@ -96,10 +96,10 @@
           <v-text-field v-model="user" label="User" placeholder="USER" :model-value="stock_in_by" readonly />
         </v-col>
       </v-row>
-      <v-row class="mt-3">
-        <v-col cols="2" offset-md="10">
+      <v-row class="mt-5">
+        <v-col cols="12" sm="12" md="2" class="text-start">
           <v-btn @click="showConfirmation" :disabled="isSaveButtonDisabled" color="#23b78d"
-            style="width: 150px">Save</v-btn>
+           block>Save</v-btn>
         </v-col>
       </v-row>
       <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
