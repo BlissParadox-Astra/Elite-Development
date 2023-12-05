@@ -15,9 +15,9 @@ class StockAdjustmentManager
         $stockAdjustmentData['adjustment_date'] = $stockAdjustmentData['adjustment_date'] ?? now();
 
         $product = Product::findOrFail($stockAdjustmentData['product_id']);
-        if ($stockAdjustmentData['action'] === 'Add to Inventory') {
+        if ($stockAdjustmentData['action'] === 'Add to inventory') {
             $product->stock_on_hand += $stockAdjustmentData['quantity'];
-        } elseif ($stockAdjustmentData['action'] === 'Remove From Inventory') {
+        } elseif ($stockAdjustmentData['action'] === 'Remove from inventory') {
             if ($product->stock_on_hand < $stockAdjustmentData['quantity']) {
                 throw new \Exception('Cannot remove more products than available in stock.');
             }

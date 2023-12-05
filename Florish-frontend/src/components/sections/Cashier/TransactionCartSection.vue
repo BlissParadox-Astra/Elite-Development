@@ -14,7 +14,8 @@
                     </v-col>
 
                     <v-col cols="12" md="5" lg="4" sm="4" class="mt-3">
-                        <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date" />
+                        <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date"
+                            readonly />
                     </v-col>
 
                     <v-col cols="12" md="4" lg="4" sm="5">
@@ -31,7 +32,7 @@
                         <v-col cols="12" class="text-center">
                             <h2 class="total-text">
                                 <span class="total-label">Total:</span>
-                                <span class="total-value">₱{{ calculateOverallTotal() }}</span>
+                                <span class="total-value">₱{{ calculateOverallTotal().toFixed(2) }}</span>
                             </h2>
                         </v-col>
                     </v-row>
@@ -77,8 +78,8 @@
                             <template v-slot:bottom>
                                 <v-col cols="12">
                                     <div v-if="totalPages > 1" class="text-center pt-5 pagination">
-                                        <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
-                                            color="#23b78d">
+                                        <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                                            :disabled="currentPage === 1">
                                             <v-icon>mdi-chevron-left</v-icon> Prev
                                         </v-btn>
 
@@ -88,15 +89,9 @@
                                             {{ pageNumber }}
                                         </v-btn>
 
-                                        <v-btn :disabled="currentPage === totalPages" class="pagination-button"
-                                            @click="nextPage" color="#23b78d">
+                                        <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                                            :disabled="currentPage === totalPages">
                                             Next <v-icon>mdi-chevron-right</v-icon>
-                                        </v-btn>
-                                    </div>
-                                    <div v-else class="text-center pt-5">
-                                        <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }"
-                                            class="pagination-button">
-                                            1
                                         </v-btn>
                                     </div>
                                 </v-col>
@@ -113,23 +108,23 @@
                                 <v-col cols="12" class="mb-2 mt-n7">
                                     <v-card-text>Over All Total</v-card-text>
                                     <v-text-field v-model="overallTotal" readonly dense outlined class="input-lg">
-                                        {{ calculateOverallTotal() }}
+                                        ₱{{ calculateOverallTotal().toFixed(2) }}
                                     </v-text-field>
                                 </v-col>
                                 <v-col cols="12" class="mb-2 mt-n12">
                                     <v-card-text>Payment Received</v-card-text>
-                                    <v-text-field v-model="payment" dense outlined @input="calculateChange"></v-text-field>
+                                    <v-text-field v-model="payment" dense outlined @input="calculateChange">₱</v-text-field>
                                 </v-col>
                                 <v-col cols="12" class="mb-2 mt-n12">
                                     <v-card-text>Change</v-card-text>
-                                    <v-text-field v-model="change" readonly dense outlined class="input-lg"></v-text-field>
+                                    <v-text-field v-model="change" readonly dense outlined class="input-lg">₱</v-text-field>
                                 </v-col>
                             </v-row>
                         </v-card>
                     </v-col>
-                    <v-row justify="space-between pa-3">
+                    <v-row justify="space-between">
                         <v-col cols="12" md="5" sm="12" lg="2" class="text-start ">
-                            <v-btn to="/cashier-dashboard" color="#23b78d" block>BACK</v-btn>
+                            <v-btn @click="showBackConfirmation" color="#23b78d" block>BACK</v-btn>
                         </v-col>
                         <v-col cols="12" md="5" sm="12" lg="2" class="text-end ">
                             <v-btn color="#23b78d" @click="showConfirmation"
@@ -161,6 +156,23 @@
                     <v-btn color="primary" @click="saveEditedQuantity"
                         :disabled="isEditQuantitySaveButtonDisabled">Update</v-btn>
                     <v-btn @click="closeEditQuantityDialog">Cancel</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!-- Confirmation dialog for back button -->
+        <v-dialog v-model="showBackConfirmationDialog" max-width="400" class="center-dialog  no-background">
+            <v-card>
+                <v-card-title class="bg-teal pa-1 text-center">
+                    Confirm Navigation
+                </v-card-title>
+                <v-card-text class="text-center">
+                    ARE YOU SURE YOU WANT TO LEAVE THIS TRANSACTION?
+                </v-card-text>
+                <v-card-actions class="d-flex justify-center">
+                    <div>
+                        <v-btn color="#23b78d" @click="navigateBack" style="width: 150px;">Yes</v-btn>
+                        <v-btn color="#068863" @click="cancelNavigation">No</v-btn>
+                    </div>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -213,6 +225,7 @@ export default {
             showEditQuantityDialog: false,
             showConfirmationDialog: false,
             showBrowseProduct: false,
+            showBackConfirmationDialog: false,
             transaction_date: '',
             transaction_number: '',
             isGeneratingInvoiceNumber: false,
@@ -293,7 +306,7 @@ export default {
 
             return range;
         },
-        
+
         isSmallScreen() {
             return window.innerWidth < 768;
         },
@@ -459,9 +472,9 @@ export default {
             const overallTotal = parseFloat(this.calculateOverallTotal());
 
             if (!isNaN(payment) && payment >= 0 && payment >= overallTotal) {
-                this.change = payment - overallTotal;
+                this.change = (payment - overallTotal).toFixed(2);
             } else {
-                this.change = 0;
+                this.change = '0.00';
             }
         },
 
@@ -607,6 +620,19 @@ export default {
 
         showBrowseProductForm() {
             this.showBrowseProduct = true;
+        },
+
+        showBackConfirmation() {
+            this.showBackConfirmationDialog = true;
+        },
+
+        navigateBack() {
+            this.$router.push('/cashier-dashboard');
+            this.showBackConfirmationDialog = false;
+        },
+
+        cancelNavigation() {
+            this.showBackConfirmationDialog = false;
         },
 
         closeBrowseProductForm() {

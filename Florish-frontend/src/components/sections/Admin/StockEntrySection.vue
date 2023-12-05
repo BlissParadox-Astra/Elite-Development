@@ -12,7 +12,7 @@
                 </v-col>
 
                 <v-col cols="12" sm="4" md="3" lg="4" xl="5">
-                    <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" />
+                    <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" readonly />
                 </v-col>
 
                 <v-col cols="12" sm="5" md="5" lg="4" xl="2" class="mb-6">
@@ -55,7 +55,8 @@
                         <td>{{ item.description }}</td>
                         <td>
                             <span v-if="isStockEntryPage">
-                                <span @click="openEditQuantityDialog(item)">{{ item.quantity_added }}</span>
+                                <span @click="openEditQuantityDialog(item)" class="icon-pointer">{{ item.quantity_added
+                                }}</span>
                             </span>
                             <span v-else>{{ item.quantity_added }}</span>
                         </td>
@@ -71,8 +72,8 @@
                 <template v-slot:bottom>
                     <v-col cols="12">
                         <div v-if="totalPages > 1" class="text-center pt-5 pagination">
-                            <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage"
-                                color="#23b78d">
+                            <v-btn class="pagination-button" @click="previousPage" color="#23b78d"
+                                :disabled="currentPage === 1">
                                 <v-icon>mdi-chevron-left</v-icon> Prev
                             </v-btn>
 
@@ -81,14 +82,9 @@
                                 {{ pageNumber }}
                             </v-btn>
 
-                            <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage"
-                                color="#23b78d">
+                            <v-btn class="pagination-button" @click="nextPage" color="#23b78d"
+                                :disabled="currentPage === totalPages">
                                 Next <v-icon>mdi-chevron-right</v-icon>
-                            </v-btn>
-                        </div>
-                        <div v-else class="text-center pt-5">
-                            <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }" class="pagination-button">
-                                1
                             </v-btn>
                         </div>
                     </v-col>
@@ -105,7 +101,7 @@
                         Confirm Save
                     </v-card-title>
                     <v-card-text class="text-center">
-                        ARE YOU SURE YOU WANT TO SAVE THESE STOCK-IN RECORDS?
+                        ARE YOU SURE YOU WANT TO SAVE THESE STOCK-IN RECORD(S)?
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
@@ -243,7 +239,7 @@ export default {
 
             return range;
         },
-        
+
         isSmallScreen() {
             return window.innerWidth < 768;
         },
@@ -531,5 +527,10 @@ export default {
     background-color: #23b78d;
     color: #fff;
     border-color: #23b78d;
+}
+
+.icon-pointer {
+    cursor: pointer;
+    margin-right: 30px;
 }
 </style>

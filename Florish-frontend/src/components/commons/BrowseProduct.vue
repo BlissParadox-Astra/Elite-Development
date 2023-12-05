@@ -40,7 +40,7 @@
           <template v-slot:bottom>
             <v-col cols="12">
               <div v-if="totalPages > 1" class="text-center pt-5 pagination">
-                <v-btn :disabled="currentPage === 1" class="pagination-button" @click="previousPage" color="#23b78d">
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">
                   <v-icon>mdi-chevron-left</v-icon> Prev
                 </v-btn>
 
@@ -49,13 +49,8 @@
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn :disabled="currentPage === totalPages" class="pagination-button" @click="nextPage" color="#23b78d">
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">
                   Next <v-icon>mdi-chevron-right</v-icon>
-                </v-btn>
-              </div>
-              <div v-else class="text-center pt-5">
-                <v-btn @click="gotoPage(1)" :class="{ active: 1 === currentPage }" class="pagination-button">
-                  1
                 </v-btn>
               </div>
             </v-col>
@@ -137,7 +132,7 @@ export default {
 
       return range;
     },
-    
+
     isSmallScreen() {
       return window.innerWidth < 768;
     },
