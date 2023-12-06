@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="9">
+      <v-col cols="12" sm="9" md="5" lg="5">
         <SearchField @search="handleSearch" :searchType="'regular'" />
       </v-col>
     </v-row>
@@ -40,7 +40,7 @@
           <template v-slot:bottom>
             <v-col cols="12">
               <div v-if="totalPages > 1" class="text-center pt-5 pagination">
-                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" :disabled="currentPage === 1">
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" style="width: 2px;" :disabled="currentPage === 1">
                   <v-icon>mdi-chevron-left</v-icon> Prev
                 </v-btn>
 
@@ -49,7 +49,7 @@
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" :disabled="currentPage === totalPages">
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" style="width: 2px;" :disabled="currentPage === totalPages">
                   Next <v-icon>mdi-chevron-right</v-icon>
                 </v-btn>
               </div>

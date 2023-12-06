@@ -7,10 +7,10 @@ import store from './store';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
+axios.defaults.baseURL = 'http://192.168.1.216:8000/api';
 
 axios.interceptors.request.use(config => {
-  const token = Cookies.get('token'); 
+  const token = Cookies.get('token');
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }

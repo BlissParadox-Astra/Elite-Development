@@ -97,7 +97,7 @@
             </v-row>
             <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
                 <v-card>
-                    <v-card-title class="text-center bg-teal pa-3">
+                    <v-card-title class="d-flex justify-center bg-teal pa-3">
                         Confirm Save
                     </v-card-title>
                     <v-card-text class="text-center">
@@ -500,12 +500,6 @@ export default {
     left: 1;
     right: 1;
     z-index: 999;
-}
-
-.center-dialog {
-    position: fixed;
-    left: 30%;
-    right: 15%;
 }
 
 .pagination {
