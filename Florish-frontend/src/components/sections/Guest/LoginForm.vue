@@ -1,44 +1,42 @@
 <template>
-  <v-container class="content-container fill-height ">
-    <v-row>
-      <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
-        <div class="logo">
-          <v-img src="../../../assets/assets/florish-logo.png" alt="storelogo" contain></v-img>
-        </div>
-      </v-col>
-      <v-col cols="12" sm="6" md="6" xl="6" lg="6">
-        <v-card class="login-card">
-          <v-card-title class="title text-center">LOGIN</v-card-title>
-          <v-form ref="loginForm" @submit.prevent="login">
-            <v-alert v-if="loginError" color="error" dismissible @input="loginError = false">
-              Invalid credentials
-              <template #close>
-                <v-btn icon @click="loginError = false">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </template>
-            </v-alert>
-            <v-label class="text-subtitle-1 font-weight-bold">User Name</v-label>
-            <v-text-field density="compact" v-model="username" label="Username" prepend-inner-icon="mdi-account-outline"
-              variant="outlined" :rules="[v => !!v || 'Username is required']"></v-text-field>
+  <v-row class="content-container fill-height">
+    <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
+      <div class="logo">
+        <v-img src="../../../assets/assets/florish-logo.png" alt="storelogo" contain></v-img>
+      </div>
+    </v-col>
+    <v-col cols="12" sm="6" md="4" xl="6" lg="6">
+      <v-card class="login-card">
+        <v-card-title class="title text-center">LOGIN</v-card-title>
+        <v-form ref="loginForm" @submit.prevent="login">
+          <v-alert v-if="loginError" color="error" dismissible @input="loginError = false">
+            Invalid credentials
+            <template #close>
+              <v-btn icon @click="loginError = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-alert>
+          <v-label class="text-subtitle-1 font-weight-bold">User Name</v-label>
+          <v-text-field density="compact" v-model="username" label="Username" prepend-inner-icon="mdi-account-outline"
+            variant="outlined" :rules="[v => !!v || 'Username is required']"></v-text-field>
 
-            <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
-              Password
-            </v-label>
+          <v-label class="text-subtitle-1 font-weight-bold d-flex align-center justify-space-between">
+            Password
+          </v-label>
 
-            <v-text-field v-model="password" label="Password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-              :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
-              prepend-inner-icon="mdi-lock-outline" variant="outlined" @click:append-inner="visible = !visible"
-              :rules="[v => !!v || 'Password is required']"></v-text-field>
-            <v-btn type="submit" block class="mb-8" color="blue" size="large" variant="tonal"
-              :disabled="!username || !password">
-              Login
-            </v-btn>
-          </v-form>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+          <v-text-field v-model="password" label="Password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+            :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
+            prepend-inner-icon="mdi-lock-outline" variant="outlined" @click:append-inner="visible = !visible"
+            :rules="[v => !!v || 'Password is required']"></v-text-field>
+          <v-btn type="submit" block class="mb-8" color="blue" size="large" variant="tonal"
+            :disabled="!username || !password">
+            Login
+          </v-btn>
+        </v-form>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -115,22 +113,37 @@ export default {
 
 <style scoped>
 .fill-height {
-  overflow: auto;
+  overflow: hidden;
 }
 
 .content-container {
-  background-image: url("../../../assets/assets/mekus (3).png");
+  background-image: url("../../../assets/assets/store-background.png");
   background-size: cover;
   background-position: center;
   margin-top: 64px;
   height: 100vh !important;
 }
 
+.logo {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
 .login-card {
   margin: 0 auto;
   margin-top: 20%;
+  max-width: 90%;
+  width: 100%;
   background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
+  padding: 40px;
+  width: 90%;
   border-radius: 8px;
+}
+
+@media only screen and (max-width: 600px) {
+  .fill-height {
+    overflow: auto;
+  }
 }
 </style>
