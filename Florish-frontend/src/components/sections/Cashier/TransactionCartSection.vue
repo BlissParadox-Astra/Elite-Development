@@ -122,7 +122,7 @@
                             </v-row>
                         </v-card>
                     </v-col>
-                    <v-row justify="space-between">
+                    <v-row justify="space-between" class="pa-3">
                         <v-col cols="12" md="5" sm="12" lg="2" class="text-start ">
                             <v-btn @click="showBackConfirmation" color="#23b78d" block>BACK</v-btn>
                         </v-col>
@@ -699,13 +699,6 @@ export default {
     right: 1;
     z-index: 999;
 
-}
-
-.center-dialog {
-    position: fixed;
-    left: 30%;
-    right: 30%;
-    /* transform: translate(-50%, -50%); */
 }
 
 .clickable-text {
