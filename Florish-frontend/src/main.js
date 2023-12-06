@@ -7,7 +7,7 @@ import store from './store';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-axios.defaults.baseURL = 'http://192.168.1.216:8000/api';
+axios.defaults.baseURL = 'http://192.168.0.167:8000/api';
 
 axios.interceptors.request.use(config => {
   const token = Cookies.get('token');
