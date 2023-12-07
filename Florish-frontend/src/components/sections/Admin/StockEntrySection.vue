@@ -63,8 +63,15 @@
                         <td>{{ item.stock_in_date }}</td>
                         <td>{{ item.stock_in_by }}</td>
                         <td>
-                            <span style="margin-left: 2px;">
-                                <v-icon @click="showDeleteConfirmation(item)" color="#23b78d">mdi-delete</v-icon>
+                            <span>
+                                <v-icon @click="subtractProduct(item)" size="22" class="ml-n3"
+                                    color="#23b78d">mdi-minus-circle</v-icon>
+                            </span>
+                            <span>
+                                <v-icon @click="addProduct(item)" size="22" color="#23b78d">mdi-plus-circle</v-icon>
+                            </span>
+                            <span>
+                                <v-icon @click="showDeleteConfirmation(item)" color="#23b78d" size="22">mdi-delete</v-icon>
                             </span>
                         </td>
                     </tr>
@@ -351,6 +358,18 @@ export default {
             }
             this.totalItems = this.products.length;
             return true;
+        },
+
+        subtractProduct(item) {
+            if (item.quantity_added > 1) {
+                item.quantity_added--;
+            }
+            this.$refs.barcodeSearchField.$refs.searchField.focus();
+        },
+
+        addProduct(item) {
+            item.quantity_added++;
+            this.$refs.barcodeSearchField.$refs.searchField.focus();
         },
 
         openEditQuantityDialog(item) {

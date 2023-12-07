@@ -284,6 +284,7 @@ export default {
 
 .close-button {
     position: absolute;
+    cursor: pointer;
     top: 80px;
     right: 35px;
     z-index: 999;

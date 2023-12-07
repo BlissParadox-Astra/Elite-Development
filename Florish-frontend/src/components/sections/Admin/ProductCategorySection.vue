@@ -8,7 +8,7 @@
         <v-btn color="#23b78d" block @click="showCategoryForm">Add Category</v-btn>
       </v-col>
     </v-row>
-    <v-row justify="center">
+    <v-row>
       <v-col cols="12">
         <v-data-table :headers="headers" :items="categories" :loading="loading" :page="currentPage"
           :items-per-page="itemsPerPage" density="compact" item-value="id" class="elevation-1" hide-default-footer
@@ -24,7 +24,7 @@
                 <span>
                   <v-icon @click="editCategoryRow(item)" color="#23b78d">mdi-pencil</v-icon>
                 </span>
-                <span style="margin-left: 15px;">
+                <span style="margin-left: 5px;">
                   <v-icon @click="showDeleteConfirmation(item)" color="#23b78d">mdi-delete</v-icon>
                 </span>
               </td>
