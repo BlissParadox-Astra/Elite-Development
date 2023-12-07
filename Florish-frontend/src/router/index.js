@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Cookies from 'js-cookie';
 import store from '../store';
+import axios from 'axios';
+
 //admin
 import AdminDashboardView from '../views/Admin/AdminDashboardView.vue';
 import ProductListView from '../views/Admin/ProductListView.vue';
@@ -190,39 +192,58 @@ router.beforeEach((to, from, next) => {
   const token = Cookies.get('token');
   const userRole = store.getters.getUserRole;
 
-  if (to.matched.some((route) => route.meta.requiresAuth)) {
+  if (to.name === 'Login Page' && token) {
+    const dashboardRoute = userRole === 'Admin' ? '/admin-dashboard' : '/cashier-dashboard';
+    next(dashboardRoute);
+  } else if (to.matched.some((route) => route.meta.requiresAuth)) {
     if (!token || !store.getters.isAuthenticated) {
       store.commit('setAlertMessage', `Please log in to access ${to.meta.title}.`);
       setTimeout(() => {
         store.commit('clearAlertMessage');
-      }, 5000);
+      }, 3000);
       next('/login');
-    } else if ((to.meta.role === 'admin' && userRole === 'Admin') || (to.meta.role === 'cashier' && userRole === 'Cashier')) {
-      next();
     } else {
-      const errorMessage = `As a ${userRole}, you are not allowed to navigate to ${to.meta.title}`;
-      store.commit('setAlertMessage', errorMessage);
-      if (userRole === 'Admin') {
-        next('/admin-dashboard');
-      } else if (userRole === 'Cashier') {
-        next('/cashier-dashboard');
-      }
-      setTimeout(() => {
-        store.commit('clearAlertMessage');
-      }, 5000);
-    }
-  } else if (to.name === 'Login Page' && store.getters.isAuthenticated) {
-    store.commit('setAlertMessage', `You are already logged in. Please log out to access ${to.meta.title}`);
-    setTimeout(() => {
-      store.commit('clearAlertMessage');
-    }, 5000);
-    if (store.getters.isAdmin) {
-      next('/admin-dashboard');
-    } else if (store.getters.isCashier) {
-      next('/cashier-dashboard');
+      axios.get('/check-token-validity')
+        .then(response => {
+          if (response.data.valid) {
+            if ((to.meta.role === 'admin' && userRole === 'Admin') || (to.meta.role === 'cashier' && userRole === 'Cashier')) {
+              next();
+            } else {
+              const errorMessage = `As a ${userRole}, you do not have permission to navigate to ${to.meta.title}`;
+              store.commit('setAlertMessage', errorMessage);
+              const dashboardRoute = userRole === 'Admin' ? '/admin-dashboard' : '/cashier-dashboard';
+              next(dashboardRoute);
+              setTimeout(() => {
+                store.commit('clearAlertMessage');
+              }, 3000);
+            }
+          } else {
+            handleUnauthorizedError();
+          }
+        })
+        .catch(error => {
+          console.error('Error checking token validity:', error);
+          handleUnauthorizedError();
+        });
     }
   } else {
+    axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response && error.response.status === 401) {
+          handleUnauthorizedError();
+        }
+        return Promise.reject(error);
+      }
+    );
+
     next();
   }
-})
+});
+
+function handleUnauthorizedError() {
+  Cookies.remove('token');
+  router.push({ path: '/login' });
+}
+
 export default router;

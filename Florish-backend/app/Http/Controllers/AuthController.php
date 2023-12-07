@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\Request;
 use App\Managers\AuthManager;
 
 class AuthController extends Controller
@@ -46,5 +47,14 @@ class AuthController extends Controller
         $user = auth()->user();
 
         return response()->json(['user' => $user]);
+    }
+
+    public function checkTokenValidity(Request $request)
+    {
+        if ($request->user()) {
+            return response()->json(['valid' => true]);
+        } else {
+            return response()->json(['valid' => false], 401);
+        }
     }
 }

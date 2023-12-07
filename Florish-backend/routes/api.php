@@ -26,6 +26,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/check-token-validity', [AuthController::class, 'checkTokenValidity']);
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('product/by-barcode', [ProductController::class, 'getByBarcode'])->name('by-barcode.getByBarcode');
     Route::get('/all-transactions-total', [TransactionController::class, 'calculateTotalOfAllTotals']);

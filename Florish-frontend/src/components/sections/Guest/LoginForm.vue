@@ -1,11 +1,11 @@
 <template>
   <v-row class="content-container fill-height">
-    <v-col class="mt-sm-10" cols="12" sm="6" md="6" xl="6" lg="6">
+    <v-col class="mt-sm-10" cols="12" sm="12" md="6" xl="6" lg="5">
       <div class="logo">
         <v-img src="../../../assets/assets/florish-logo.png" alt="storelogo" contain></v-img>
       </div>
     </v-col>
-    <v-col cols="12" sm="6" md="4" xl="6" lg="6">
+    <v-col cols="12" sm="12" md="4" xl="6" lg="6">
       <v-card class="login-card">
         <v-card-title class="title text-center">LOGIN</v-card-title>
         <v-form ref="loginForm" @submit.prevent="login">
@@ -137,11 +137,10 @@ export default {
   width: 100%;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
-  width: 90%;
   border-radius: 8px;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
   .fill-height {
     overflow: auto;
   }
