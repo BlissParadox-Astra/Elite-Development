@@ -1,23 +1,23 @@
 <template>
   <v-container class="mt-12">
-    <v-row>
-      <v-col cols="12" sm="4" md="4" class="mt-5">
-        <SearchField @search="handleSearch" :searchType="'regular'" />
-      </v-col>
-      <v-col cols="12" sm="3" md="5" class="mt-3">
+    <v-row justify="center">
+      <v-col cols="12">
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" sm="6" md="4" class="mt-5">
+            <SearchField @search="handleSearch" :searchType="'regular'" />
+          </v-col>
+          <v-col cols="12" sm="6" md="5" class="mt-3">
             <FilterByDate @date-range-change="handleDateRangeChange" @filter-type-change="handleFilterTypeChange" />
           </v-col>
+          <v-col cols="12" sm="6" md="3" class="mt-4">
+            <v-card class="pa-3 total-card">
+              <span class="total-label">Total of All Total: </span>
+              <span class="loading-message" v-if="loadingTotal">Loading...</span>
+              <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
+              <span class="loading-message" v-else>Loading...</span>
+            </v-card>
+          </v-col>
         </v-row>
-      </v-col>
-      <v-col cols="12" sm="4" md="3" class="mt-4">
-        <v-card class="pa-3 total-card">
-          <span class="total-label">Total of All Total: </span>
-          <span class="loading-message" v-if="loadingTotal">Loading...</span>
-          <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
-          <span class="loading-message" v-else>Loading...</span>
-        </v-card>
       </v-col>
     </v-row>
     <v-row justify="center">

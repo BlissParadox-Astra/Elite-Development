@@ -1,6 +1,5 @@
 <template>
     <v-container class="dashboard mt-15" fluid>
-      <!-- <h2 class="text-center">FLORISH CONVENIENCE STORE</h2> -->
       <v-row>
         <v-col cols="12" sm="12" md="6" xl="6" lg="5" class="d-flex pa-5">
           <div class="logo">
@@ -69,20 +68,20 @@
   
   .v-icon.icon-size {
     color: #07a278;
-    font-size: 10vw; /* Adjust the size as needed */
+    font-size: 10vw;
     transition: color 0.3s;
   }
   
   .cardbox:hover {
-    background-color: #07a278; /* Change background color on hover */
+    background-color: #07a278;
   }
   
   .cardbox:hover .v-icon.icon-size {
-    color: #fff; /* Change icon color to white on hover */
+    color: #fff;
   }
   
   .cardbox:hover .name {
-    color: #fff; /* Change text color to white on hover */
+    color: #fff;
   }
   
   .logo {
