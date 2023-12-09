@@ -2,13 +2,14 @@
   <v-app id="inspire">
     <AdminSidebar v-model="admindrawer" v-if="!isMobileSize && showAdminSidebar" />
     <v-app-bar v-if="showAppBar">
-      <v-app-bar-nav-icon v-if="isAdmin && isMobileSize" @click="isMobileSidebarOpen = !isMobileSidebarOpen"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-if="isAdmin && isMobileSize"
+        @click="isMobileSidebarOpen = !isMobileSidebarOpen"></v-app-bar-nav-icon>
       <v-app-bar-title class="app-bar-title">{{ appTitle }}</v-app-bar-title>
       <Profile></Profile>
     </v-app-bar>
     <MessageAlert :message="alertMessage" v-if="alertMessage" />
     <v-main class="mt-n16" >
-      <MobileSidebar v-model="isMobileSidebarOpen" v-if="isMobileSize && isMobileSidebarOpen &&isAdmin" />
+      <MobileSidebar v-model="isMobileSidebarOpen" v-if="isMobileSize && isMobileSidebarOpen && isAdmin" />
       <router-view v-if="showMainContent" />
     </v-main>
   </v-app>
@@ -109,5 +110,9 @@ export default {
   flex-direction: row;
   align-items: center;
   font-weight: bold;
+}
+
+.v-data-table {
+  cursor: default;
 }
 </style>

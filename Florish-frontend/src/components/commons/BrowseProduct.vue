@@ -40,7 +40,8 @@
           <template v-slot:bottom>
             <v-col cols="12">
               <div v-if="totalPages > 1" class="text-center pt-5 pagination">
-                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" style="width: 2px;" :disabled="currentPage === 1">
+                <v-btn class="pagination-button" @click="previousPage" color="#23b78d" style="width: 2px;"
+                  :disabled="currentPage === 1">
                   <v-icon>mdi-chevron-left</v-icon> Prev
                 </v-btn>
 
@@ -49,7 +50,8 @@
                   {{ pageNumber }}
                 </v-btn>
 
-                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" style="width: 2px;" :disabled="currentPage === totalPages">
+                <v-btn class="pagination-button" @click="nextPage" color="#23b78d" style="width: 2px;"
+                  :disabled="currentPage === totalPages">
                   Next <v-icon>mdi-chevron-right</v-icon>
                 </v-btn>
               </div>
@@ -104,6 +106,7 @@ export default {
         { title: 'Actions', key: 'actions', sortable: false }
       ],
       showProductForm: false,
+      isAddingToCart: false,
     };
   },
 
@@ -233,24 +236,29 @@ export default {
       this.debouncedGetProducts();
     },
 
-    addToCartProduct(product) {
+    async addToCartProduct(product) {
       if (this.isAddingToCart) {
         return;
       }
 
       this.isAddingToCart = true;
 
-      const addToCartSuccess = this.addToCart(product);
+      try {
+        const addToCartSuccess = await this.addToCart(product);
 
-      if (addToCartSuccess) {
-        this.snackbarColor = 'success';
-        this.showSnackbar('Product successfully added to cart', 'success');
-      }
-
-      setTimeout(() => {
+        if (addToCartSuccess) {
+          this.snackbarColor = 'success';
+          this.showSnackbar('Product successfully added to cart', 'success');
+        }
+      } catch (error) {
+        console.error('Error adding product to cart:', error);
+        this.snackbarColor = 'error';
+        this.showSnackbar('Failed to add product to cart', 'error');
+      } finally {
         this.isAddingToCart = false;
-      }, 1000);
+      }
     },
+
 
     closeForm() {
       this.showProductForm = false;
