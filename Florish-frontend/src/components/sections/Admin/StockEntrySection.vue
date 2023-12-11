@@ -345,6 +345,7 @@ export default {
             axios.get('/stock-in/generate-reference-number')
                 .then(response => {
                     this.reference_number = response.data.reference_number;
+                    this.currentPage = 1;
                 })
                 .catch(error => {
                     console.error('Error fetching reference number', error);
