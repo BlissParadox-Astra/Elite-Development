@@ -1,6 +1,6 @@
 <template>
     <v-container class="mt-12" fluid>
-        <h1 class="text-center">CRITICAL STOCKS</h1>
+        <h1 class="text-center">CRITICAL STOCK(S)</h1>
         <v-row v-if="loading">
             <v-col class="text-center" cols="12">
                 <p>Loading...</p>
@@ -12,7 +12,7 @@
                     <h1 class="text-center mb-4">{{ product.description }}</h1>
                     <v-row class="text-center">
                         <v-col class="mb-10">
-                            <p class="text-h3">{{ product.stock_on_hand }} Items Left</p>
+                            <p class="text-h3">{{ product.stock_on_hand }} Item(s) left</p>
                             <h2 class="pa-">CRITICAL</h2>
                         </v-col>
                     </v-row>
@@ -21,7 +21,7 @@
         </v-row>
         <v-row v-else>
             <v-col class="text-center" cols="12">
-                <p class="no-critical-items">No critical items at the moment. Please check back later.</p>
+                <p class="no-critical-items">No critical item(s) at the moment. Please check back later.</p>
             </v-col>
         </v-row>
         <v-btn to="/cashier-dashboard" class="link px-5 rounded-lg" success color="#23b78d">BACK TO DASHBOARD</v-btn>

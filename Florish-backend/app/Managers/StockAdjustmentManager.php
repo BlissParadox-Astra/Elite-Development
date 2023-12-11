@@ -36,36 +36,41 @@ class StockAdjustmentManager
             switch ($filterType) {
                 case 'Day':
                     $dateToFilter = $selectedDate ?? now()->toDateString();
-                    $query->whereDate('stock_adjustments.adjustment_date', $dateToFilter);
+                    $query->whereDate('stock_adjustments.adjustment_date', $dateToFilter)
+                    ->orderBy('stock_adjustments.created_at', 'desc');
                     break;
 
                 case 'Week':
                     $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
                     $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
-                    $query->whereBetween('stock_adjustments.adjustment_date', [$startOfWeek, $endOfWeek]);
+                    $query->whereBetween('stock_adjustments.adjustment_date', [$startOfWeek, $endOfWeek])
+                    ->orderBy('stock_adjustments.created_at', 'desc');
                     break;
 
                 case 'Month':
                     $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
                     $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
-                    $query->whereBetween('stock_adjustments.adjustment_date', [$startOfMonth, $endOfMonth]);
+                    $query->whereBetween('stock_adjustments.adjustment_date', [$startOfMonth, $endOfMonth])
+                    ->orderBy('stock_adjustments.created_at', 'desc');
                     break;
 
                 case 'Year':
                     $startOfYear = Carbon::parse($selectedDate)->startOfYear();
                     $endOfYear = Carbon::parse($selectedDate)->endOfYear();
-                    $query->whereBetween('stock_adjustments.adjustment_date', [$startOfYear, $endOfYear]);
+                    $query->whereBetween('stock_adjustments.adjustment_date', [$startOfYear, $endOfYear])
+                    ->orderBy('stock_adjustments.created_at', 'desc');
                     break;
 
                 case 'Customize':
-                    $query->whereBetween('stock_adjustments.adjustment_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('stock_adjustments.adjustment_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"])
+                    ->orderBy('stock_adjustments.created_at', 'asc');
                     break;
                 default:
-                    $query->whereNull('deleted_at');
+                    $query->whereNull('deleted_at')->orderBy('stock_adjustments.created_at', 'desc');
                     break;
             }
         } else {
-            $query->whereNull('deleted_at');
+            $query->whereNull('deleted_at')->orderBy('stock_adjustments.created_at', 'desc');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

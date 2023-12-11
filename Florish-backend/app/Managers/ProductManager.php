@@ -43,7 +43,7 @@ class ProductManager
         } else if ($context === 'transaction') {
             $query->where('stock_on_hand', '>', 0);
         } else {
-            $query->orderBy('created_at', 'asc');
+            $query->orderBy('created_at', 'desc');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

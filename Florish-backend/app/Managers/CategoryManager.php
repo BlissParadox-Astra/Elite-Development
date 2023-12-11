@@ -41,7 +41,8 @@ class CategoryManager
 
     public function getPaginatedAllCategories($page, $itemsPerPage, $searchQuery = null)
     {
-        $query = Category::query();
+        $query = Category::query()
+        ->orderBy('categories.created_at', 'desc');
 
         if ($searchQuery) {
             $query->where('category_name', 'LIKE', '%'. $searchQuery . '%');

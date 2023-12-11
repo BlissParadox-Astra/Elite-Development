@@ -12,7 +12,7 @@ class TransactionManager
     public function createTransaction(array $transactionRequest)
     {
         $transactionBy = Auth::id();
-        $transactionDate = Carbon::parse($transactionRequest['transaction_date'])->format('Y-m-d');
+        $transactionDate = Carbon::parse($transactionRequest['transaction_date'])->format('Y-m-d H:i:s');
 
         $product = Product::findOrFail($transactionRequest['product_id']);
         $total = $product->price * $transactionRequest['quantity'];
@@ -60,36 +60,41 @@ class TransactionManager
             switch ($filterType) {
                 case 'Day':
                     $dateToFilter = $selectedDate ?? now()->toDateString();
-                    $query->whereDate('transactions.transaction_date', $dateToFilter);
+                    $query->whereDate('transactions.transaction_date', $dateToFilter)
+                    ->orderBy('transactions.transaction_date', 'desc');
                     break;
 
                 case 'Week':
                     $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
                     $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
-                    $query->whereBetween('transactions.transaction_date', [$startOfWeek, $endOfWeek]);
+                    $query->whereBetween('transactions.transaction_date', [$startOfWeek, $endOfWeek])
+                    ->orderBy('transactions.transaction_date', 'desc');
                     break;
 
                 case 'Month':
                     $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
                     $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
-                    $query->whereBetween('transactions.transaction_date', [$startOfMonth, $endOfMonth]);
+                    $query->whereBetween('transactions.transaction_date', [$startOfMonth, $endOfMonth])
+                    ->orderBy('transactions.transaction_date', 'desc');
                     break;
 
                 case 'Year':
                     $startOfYear = Carbon::parse($selectedDate)->startOfYear();
                     $endOfYear = Carbon::parse($selectedDate)->endOfYear();
-                    $query->whereBetween('transactions.transaction_date', [$startOfYear, $endOfYear]);
+                    $query->whereBetween('transactions.transaction_date', [$startOfYear, $endOfYear])
+                    ->orderBy('transactions.transaction_date', 'desc');
                     break;
 
                 case 'Customize':
-                    $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('transactions.transaction_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"])
+                    ->orderBy('transactions.transaction_date', 'asc');
                     break;
                 default:
-                    $query->whereNull('deleted_at');
+                    $query->whereNull('deleted_at')->orderBy('transactions.transaction_date', 'desc');
                     break;
             }
         } else {
-            $query->whereNull('deleted_at');
+            $query->whereNull('deleted_at')->orderBy('transactions.transaction_date', 'desc');
         }
 
         if ($searchQuery) {

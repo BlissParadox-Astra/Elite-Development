@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('transaction_total', 10, 2);
             $table->decimal('payment', 10, 2);
             $table->decimal('change', 10, 2 );
-            $table->date('transaction_date');
+            $table->datetime('transaction_date');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
