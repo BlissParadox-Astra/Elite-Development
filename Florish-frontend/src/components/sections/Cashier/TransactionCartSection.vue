@@ -412,6 +412,7 @@ export default {
             axios.get('/transaction/generate-transaction-number')
                 .then(response => {
                     this.transaction_number = response.data.transaction_number;
+                    this.currentPage = 1;
                 })
                 .catch(error => {
                     console.error('Error fetching invoice number', error);
