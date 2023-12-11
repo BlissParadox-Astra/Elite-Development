@@ -12,7 +12,7 @@
                 </v-col>
 
                 <v-col cols="12" sm="4" md="3" lg="4" xl="5">
-                    <v-text-field label="Stock In Date" type="date" v-model="stock_in_date" readonly />
+                    <v-text-field label="Stock In Date" type="text" variant="plain" v-model="stock_in_date" readonly />
                 </v-col>
 
                 <v-col cols="12" sm="5" md="5" lg="4" xl="2" class="mb-6">
@@ -211,7 +211,7 @@ export default {
         },
 
         isEditQuantitySaveButtonDisabled() {
-            return this.editedQuantity === '' || isNaN(this.editedQuantity);
+            return this.editedQuantity <= 0 || isNaN(this.editedQuantity);
         },
 
         isSaveButtonDisabled() {
@@ -252,28 +252,26 @@ export default {
         },
     },
 
-    created() {
-        const queryDate = this.$route.query.date;
-        if (queryDate) {
-            this.stock_in_date = queryDate;
-        } else {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth() + 1;
-            const day = today.getDate();
-            this.stock_in_date = `${year}-${month}-${day}`;
-        }
-        this.totalItems = this.products.length;
-        this.generateAndFetchReferenceNumber();
-    },
-
     mounted() {
+        this.updateStockInDate();
+
+        this.intervalId = setInterval(() => {
+            this.updateStockInDate();
+        }, 1000);
+
         window.addEventListener('keydown', this.handleKeyDown);
         this.$refs.barcodeSearchField.$refs.searchField.focus();
     },
 
     beforeUnmount() {
+        clearInterval(this.intervalId);
+
         window.removeEventListener('keydown', this.handleKeyDown);
+    },
+
+    created() {
+        this.totalItems = this.products.length;
+        this.generateAndFetchReferenceNumber();
     },
 
     methods: {
@@ -314,6 +312,21 @@ export default {
                 });
 
             this.scannedData = '';
+        },
+
+        updateStockInDate() {
+            const today = new Date();
+            const formattedDate = today.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            });
+
+            this.stock_in_date = formattedDate;
         },
 
         filterNumeric(event) {

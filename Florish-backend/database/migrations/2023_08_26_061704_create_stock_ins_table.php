@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('reference_number');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity_added');
-            $table->date('stock_in_date');
+            $table->datetime('stock_in_date');
             $table->unsignedBigInteger('stock_in_by');
             $table->timestamps();
             $table->softDeletes();

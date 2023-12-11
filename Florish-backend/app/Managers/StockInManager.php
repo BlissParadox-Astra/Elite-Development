@@ -12,7 +12,7 @@ class StockInManager
     public function createStockIn(array $stockInRequest)
     {
         $stockInBy = Auth::id();
-        $stockInDate = Carbon::parse($stockInRequest['stock_in_date'])->format('Y-m-d');
+        $stockInDate = Carbon::parse($stockInRequest['stock_in_date'])->format('Y-m-d H:i:s');
 
         StockIn::create([
             'reference_number' => $stockInRequest['reference_number'],
@@ -44,36 +44,41 @@ class StockInManager
             switch ($filterType) {
                 case 'Day':
                     $dateToFilter = $selectedDate ?? now()->toDateString();
-                    $query->whereDate('stock_ins.stock_in_date', $dateToFilter);
+                    $query->whereDate('stock_ins.stock_in_date', $dateToFilter)
+                    ->orderBy('stock_ins.created_at', 'desc');
                     break;
 
                 case 'Week':
                     $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
                     $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
-                    $query->whereBetween('stock_ins.stock_in_date', [$startOfWeek, $endOfWeek]);
+                    $query->whereBetween('stock_ins.stock_in_date', [$startOfWeek, $endOfWeek])
+                    ->orderBy('stock_ins.created_at', 'desc');
                     break;
 
                 case 'Month':
                     $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
                     $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
-                    $query->whereBetween('stock_ins.stock_in_date', [$startOfMonth, $endOfMonth]);
+                    $query->whereBetween('stock_ins.stock_in_date', [$startOfMonth, $endOfMonth])
+                    ->orderBy('stock_ins.created_at', 'desc');
                     break;
 
                 case 'Year':
                     $startOfYear = Carbon::parse($selectedDate)->startOfYear();
                     $endOfYear = Carbon::parse($selectedDate)->endOfYear();
-                    $query->whereBetween('stock_ins.stock_in_date', [$startOfYear, $endOfYear]);
+                    $query->whereBetween('stock_ins.stock_in_date', [$startOfYear, $endOfYear])
+                    ->orderBy('stock_ins.created_at', 'desc');
                     break;
 
                 case 'Customize':
-                    $query->whereBetween('stock_ins.stock_in_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('stock_ins.stock_in_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"])
+                    ->orderBy('stock_ins.created_at', 'asc');
                     break;
                 default:
-                    $query->whereNull('deleted_at');
+                    $query->whereNull('deleted_at')->orderBy('stock_ins.created_at', 'desc');
                     break;
             }
         } else {
-            $query->whereNull('deleted_at');
+            $query->whereNull('deleted_at')->orderBy('stock_ins.created_at', 'desc');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

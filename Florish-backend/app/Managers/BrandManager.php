@@ -23,7 +23,8 @@ class BrandManager
 
     public function getAllBrands($page, $itemsPerPage, $searchQuery = null)
     {
-        $query = Brand::with(['category']);
+        $query = Brand::with(['category'])
+        ->orderBy('brands.created_at', 'desc');
 
         if ($searchQuery) {
             $query->where(function ($query) use ($searchQuery) {

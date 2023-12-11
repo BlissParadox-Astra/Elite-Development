@@ -54,36 +54,41 @@ class CanceledOrderManager
             switch ($filterType) {
                 case 'Day':
                     $dateToFilter = $selectedDate ?? now()->toDateString();
-                    $query->whereDate('canceled_orders.canceled_date', $dateToFilter);
+                    $query->whereDate('canceled_orders.canceled_date', $dateToFilter)
+                    ->orderBy('canceled_orders.canceled_date', 'desc');
                     break;
 
                 case 'Week':
                     $startOfWeek = Carbon::parse($selectedDate)->startOfWeek();
                     $endOfWeek = Carbon::parse($selectedDate)->endOfWeek();
-                    $query->whereBetween('canceled_orders.canceled_date', [$startOfWeek, $endOfWeek]);
+                    $query->whereBetween('canceled_orders.canceled_date', [$startOfWeek, $endOfWeek])
+                    ->orderBy('canceled_orders.canceled_date', 'desc');
                     break;
 
                 case 'Month':
                     $startOfMonth = Carbon::parse($selectedDate)->startOfMonth();
                     $endOfMonth = Carbon::parse($selectedDate)->endOfMonth();
-                    $query->whereBetween('canceled_orders.canceled_date', [$startOfMonth, $endOfMonth]);
+                    $query->whereBetween('canceled_orders.canceled_date', [$startOfMonth, $endOfMonth])
+                    ->orderBy('canceled_orders.canceled_date', 'desc');
                     break;
 
                 case 'Year':
                     $startOfYear = Carbon::parse($selectedDate)->startOfYear();
                     $endOfYear = Carbon::parse($selectedDate)->endOfYear();
-                    $query->whereBetween('canceled_orders.canceled_date', [$startOfYear, $endOfYear]);
+                    $query->whereBetween('canceled_orders.canceled_date', [$startOfYear, $endOfYear])
+                    ->orderBy('canceled_orders.canceled_date', 'desc');
                     break;
 
                 case 'Customize':
-                    $query->whereBetween('canceled_orders.canceled_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"]);
+                    $query->whereBetween('canceled_orders.canceled_date', ["{$fromDate} 00:00:00", "{$toDate} 23:59:59"])
+                    ->orderBy('canceled_orders.canceled_date', 'asc');
                     break;
                 default:
-                    $query->whereNull('deleted_at');
+                    $query->whereNull('deleted_at')->orderBy('canceled_orders.canceled_date', 'desc');
                     break;
             }
         } else {
-            $query->whereNull('deleted_at');
+            $query->whereNull('deleted_at')->orderBy('canceled_orders.canceled_date', 'desc');
         }
 
         return $query->paginate($itemsPerPage, ['*'], 'page', $page);

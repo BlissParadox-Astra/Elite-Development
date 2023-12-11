@@ -14,7 +14,7 @@
                     </v-col>
 
                     <v-col cols="12" md="5" lg="4" sm="4" class="mt-3">
-                        <v-text-field label="Transaction Date" type="date" variant="plain" v-model="transaction_date"
+                        <v-text-field label="Transaction Date" type="text" variant="plain" v-model="transaction_date"
                             readonly />
                     </v-col>
 
@@ -267,7 +267,7 @@ export default {
         },
 
         isEditQuantitySaveButtonDisabled() {
-            return this.editedQuantity === '' || isNaN(this.editedQuantity);
+            return this.editedQuantity <= 0 || isNaN(this.editedQuantity);
         },
 
         canBrowseProduct() {
@@ -318,28 +318,27 @@ export default {
         },
     },
 
-    created() {
-        const queryDate = this.$route.query.date;
-        if (queryDate) {
-            this.transaction_date = queryDate;
-        } else {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth() + 1;
-            const day = today.getDate();
-            this.transaction_date = `${year}-${month}-${day}`;
-        }
-        this.totalItems = this.products.length;
-        this.generateAndFetchInvoiceNumber();
-    },
-
     mounted() {
+        this.updateTransactionDate();
+
+        this.intervalId = setInterval(() => {
+            this.updateTransactionDate();
+        }, 1000);
+
         window.addEventListener('keydown', this.handleKeyDown);
         this.$refs.barcodeSearchField.$refs.searchField.focus();
     },
 
     beforeUnmount() {
+        clearInterval(this.intervalId);
+
         window.removeEventListener('keydown', this.handleKeyDown);
+    },
+
+
+    created() {
+        this.totalItems = this.products.length;
+        this.generateAndFetchInvoiceNumber();
     },
 
     methods: {
@@ -382,6 +381,21 @@ export default {
             this.scannedData = '';
         },
 
+        updateTransactionDate() {
+            const today = new Date();
+            const formattedDate = today.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            });
+
+            this.transaction_date = formattedDate;
+        },
+
         filterNumeric(event) {
             const keyCode = event.keyCode || event.which;
             const key = String.fromCharCode(keyCode);
@@ -404,17 +418,15 @@ export default {
                 });
         },
 
-        addToCartProduct(product) {
+        async addToCartProduct(product) {
             const existingProduct = this.products.find(p => p.product_code === product.product_code);
 
             if (existingProduct) {
-                const totalQuantity = existingProduct.quantity + 1;
 
-                if (totalQuantity > product.stock_on_hand) {
+                if (existingProduct.quantity >= product.stock_on_hand) {
                     this.showSnackbar('Not enough stock available for this product', 'error');
                     return;
                 }
-
                 existingProduct.quantity++;
                 existingProduct.total = this.calculateTotal(existingProduct);
             } else {
@@ -431,6 +443,7 @@ export default {
                     price: product.price,
                     quantity: 1,
                     total: product.price * 1,
+                    stock_on_hand: product.stock_on_hand,
                 };
 
                 this.products.push(newProduct);
@@ -449,21 +462,14 @@ export default {
         },
 
         addProduct(item) {
-            axios.get(`transaction/get-products/${item.id}`)
-                .then(response => {
-                    const inventoryItem = response.data.product;
+            if (item.quantity >= item.stock_on_hand) {
+                this.showSnackbar('Not enough stock available for this product', 'error');
+                return;
+            }
 
-                    if (inventoryItem && item.quantity + 1 > inventoryItem.stock_on_hand) {
-                        this.showSnackbar('Not enough stock available for this product', 'error');
-                        return;
-                    }
+            item.quantity++;
+            item.total = this.calculateTotal(item);
 
-                    item.quantity++;
-                    item.total = this.calculateTotal(item);
-                })
-                .catch(error => {
-                    console.error('Error fetching inventory data for adding product', error);
-                });
             this.$refs.barcodeSearchField.$refs.searchField.focus();
         },
 
@@ -503,31 +509,28 @@ export default {
             if (this.editingIndex !== -1) {
                 const editedProduct = this.products[this.editingIndex];
 
-                axios.get(`transaction/get-products/${editedProduct.id}`)
-                    .then(response => {
-                        const inventoryItem = response.data.product;
+                if (this.editedQuantity > 0) {
+                    if (this.editedQuantity > editedProduct.stock_on_hand) {
+                        this.snackbarColor = 'error';
+                        this.showSnackbar('Not enough stock available for this product', 'error');
+                        return;
+                    }
 
-                        if (inventoryItem && this.editedQuantity > inventoryItem.stock_on_hand) {
-                            this.snackbarColor = 'error';
-                            this.showSnackbar('Not enough stock available for this product', 'error');
-                            return;
-                        }
+                    editedProduct.quantity = this.editedQuantity;
+                    editedProduct.total = this.calculateTotal(editedProduct);
 
-                        editedProduct.quantity = this.editedQuantity;
-                        editedProduct.total = this.calculateTotal(editedProduct);
-
-                        this.showEditQuantityDialog = false;
-                        this.editingIndex = -1;
-                        this.editedQuantity = 0;
-                        this.snackbarColor = 'success';
-                        this.showSnackbar('Quantity updated successfully', 'success');
-                        this.$nextTick(() => {
-                            this.$refs.barcodeSearchField.$refs.searchField.focus();
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching inventory data for editing quantity', error);
+                    this.showEditQuantityDialog = false;
+                    this.editingIndex = -1;
+                    this.editedQuantity = 0;
+                    this.snackbarColor = 'success';
+                    this.showSnackbar('Quantity updated successfully', 'success');
+                    this.$nextTick(() => {
+                        this.$refs.barcodeSearchField.$refs.searchField.focus();
                     });
+                } else {
+                    this.snackbarColor = 'error';
+                    this.showSnackbar('Quantity must be greater than 0', 'error');
+                }
             } else {
                 console.error('Editing index is invalid');
                 this.snackbarColor = 'error';
