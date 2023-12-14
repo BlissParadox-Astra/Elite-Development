@@ -101,13 +101,17 @@ class ProductManager
 
     public function getPaginatedCriticalStock($page, $itemsPerPage)
     {
-        return Product::with(['category', 'brand'])->where('stock_on_hand', '<=', DB::raw('reorder_level'))->paginate($itemsPerPage, ['*'], 'page', $page);
+        return Product::with(['category', 'brand'])
+        ->where('stock_on_hand', '<=', DB::raw('reorder_level'))
+        ->orderBy('stock_on_hand', 'asc')
+        ->paginate($itemsPerPage, ['*'], 'page', $page);
     }
 
     public function getAllCriticalStock()
     {
         return Product::with(['category', 'brand'])
             ->where('stock_on_hand', '<=', DB::raw('reorder_level'))
+            ->orderBy('stock_on_hand', 'asc')
             ->get();
     }
 

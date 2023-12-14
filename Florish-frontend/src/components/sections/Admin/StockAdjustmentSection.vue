@@ -292,7 +292,7 @@ export default {
       const keyCode = event.keyCode || event.which;
       const key = String.fromCharCode(keyCode);
 
-      if (/^\d*\.?\d*$/.test(key)) {
+      if (/^\d+$/.test(key)) {
         return;
       }
 

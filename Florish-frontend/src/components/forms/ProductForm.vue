@@ -14,8 +14,7 @@
 
           <v-row justify="center" class="bg-dirty-white pa-3">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
-                @keypress="filterNumeric"></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"></v-text-field>
             </v-col>
 
             <v-col cols="12" md="6">
@@ -40,7 +39,7 @@
             <v-col cols="12" md="6">
               <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
                 :error-messages="priceError" :rules="[v => !!v || 'Price is required']"
-                @keypress="filterNumeric"></v-text-field>
+                @keypress="filterDecimalNumeric"></v-text-field>
 
             </v-col>
 
@@ -137,7 +136,7 @@ export default {
       }
     },
 
-    filterNumeric(event) {
+    filterDecimalNumeric(event) {
       const keyCode = event.keyCode || event.which;
       const key = String.fromCharCode(keyCode);
 
@@ -147,6 +146,18 @@ export default {
       }
 
       if (/^\d*\.?\d*$/.test(key)) {
+        return;
+      }
+
+      event.preventDefault();
+    },
+
+
+    filterNumeric(event) {
+      const keyCode = event.keyCode || event.which;
+      const key = String.fromCharCode(keyCode);
+
+      if (/^\d+$/.test(key)) {
         return;
       }
 
@@ -218,7 +229,7 @@ export default {
 
 .bg-dirty-white {
   background-color: rgba(233, 224, 224, 0.949);
-} 
+}
 
 .close-button {
   position: absolute;
