@@ -110,6 +110,11 @@ export default {
   flex-direction: row;
   align-items: center;
   font-weight: bold;
+  cursor: default;
+}
+
+.v-container {
+  cursor: default;
 }
 
 .v-data-table {
