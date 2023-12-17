@@ -11,7 +11,7 @@
           </v-col>
           <v-col cols="12" sm="6" md="3" class="mt-4">
             <v-card class="pa-3 total-card">
-              <span class="total-label">Total of All Total: </span>
+              <span class="total-label">Total of All Total: ₱</span>
               <span class="loading-message" v-if="loadingTotal">Loading...</span>
               <span class="total-value" v-else-if="totalOfAllTotalValue !== null">{{ totalOfAllTotalValue }}</span>
               <span class="loading-message" v-else>Loading...</span>
@@ -36,11 +36,11 @@
               <td>{{ item.transacted_product.barcode }}</td>
               <td>{{ item.transacted_product.description }}</td>
               <td>{{ item.transacted_product.category.category_name }}</td>
-              <td>{{ item.price }}</td>
+              <td>₱{{ item.price }}</td>
               <td>{{ item.quantity }}</td>
-              <td>{{ item.total }}</td>
-              <td>{{ item.payment }}</td>
-              <td>{{ item.change }}</td>
+              <td>₱{{ item.total }}</td>
+              <td>₱{{ item.payment }}</td>
+              <td>₱{{ item.change }}</td>
               <td>{{ item.transaction_date }}</td>
               <td>{{ item.user.first_name }}</td>
             </tr>

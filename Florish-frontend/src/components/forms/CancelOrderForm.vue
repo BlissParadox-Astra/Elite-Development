@@ -31,13 +31,13 @@
                                     <v-text-field v-model="description" label="Description" readonly></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field v-model="price" label="Price" readonly></v-text-field>
+                                    <v-text-field v-model="price" label="Price" readonly>₱</v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-text-field v-model="quantity" label="Quantity" readonly></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field v-model="total" label="Total" readonly></v-text-field>
+                                    <v-text-field v-model="total" label="Total" readonly>₱</v-text-field>
                                 </v-col>
                             </v-row>
                         </v-col>

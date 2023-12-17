@@ -51,14 +51,14 @@
                                     <td>{{ item.product_code }}</td>
                                     <td>{{ item.barcode }}</td>
                                     <td>{{ item.description }}</td>
-                                    <td>{{ item.price }}</td>
+                                    <td>₱{{ item.price }}</td>
                                     <td>
                                         <span v-if="isTransactionPage">
                                             <span @click="openEditQuantityDialog(item)">{{ item.quantity }}</span>
                                         </span>
                                         <span v-else>{{ item.quantity }}</span>
                                     </td>
-                                    <td>{{ item.total }}</td>
+                                    <td>₱{{ item.total }}</td>
                                     <td>
                                         <span>
                                             <v-icon @click="subtractProduct(item)" size="22" class="ml-n3"
@@ -128,7 +128,9 @@
                         </v-col>
                         <v-col cols="12" md="5" sm="12" lg="2" class="text-end ">
                             <v-btn color="#23b78d" @click="showConfirmation"
-                                :disabled="!isPaymentEnough || isSoldButtonDisabled" block>SOLD</v-btn>
+                                :disabled="!isPaymentEnough || isSoldButtonDisabled" block>
+                                SOLD
+                            </v-btn>
                         </v-col>
                     </v-row>
                 </v-row>
@@ -185,17 +187,33 @@
             </template>
         </v-snackbar>
         <v-row class="mt-n4">
-            <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog  no-background">
+            <v-dialog v-model="showConfirmationDialog" max-width="400" class="center-dialog no-background">
                 <v-card>
-                    <v-card-title class="bg-teal pa-1 text-center">
+                    <v-card-title class="bg-teal pa-2 text-center white--text">
                         Confirm Transaction
                     </v-card-title>
                     <v-card-text class="text-center">
                         ARE YOU SURE YOU WANT TO COMPLETE THIS TRANSACTION?
+
+                        <v-divider class="my-3"></v-divider>
+
+                        <div class="confirmation-details">
+                            <div>
+                                <strong>Overall Total:</strong> ₱{{ confirmationDetails.overallTotal }}
+                            </div>
+
+                            <div>
+                                <strong>Payment Received:</strong> ₱{{ confirmationDetails.paymentReceived }}
+                            </div>
+
+                            <div>
+                                <strong>Change:</strong> ₱{{ confirmationDetails.change }}
+                            </div>
+                        </div>
                     </v-card-text>
                     <v-card-actions class="d-flex justify-center">
                         <div>
-                            <v-btn color="#23b78d" @click="saveRecord" style="width: 150px;">Yes</v-btn>
+                            <v-btn color="#23b78d" @click="saveRecord" class="mr-2">Yes</v-btn>
                             <v-btn color="#068863" @click="cancelSave">No</v-btn>
                         </div>
                     </v-card-actions>
@@ -240,6 +258,11 @@ export default {
             payment: '',
             loading: false,
             products: [],
+            confirmationDetails: {
+                overallTotal: 0,
+                paymentReceived: 0,
+                change: 0,
+            },
             headers: [
                 { title: '#', value: 'index' },
                 { title: "Product Code", key: "product_code" },
@@ -480,13 +503,19 @@ export default {
 
             if (!isNaN(payment) && payment >= 0 && payment >= overallTotal) {
                 this.change = (payment - overallTotal).toFixed(2);
+                this.confirmationDetails.paymentReceived = payment.toFixed(2);
+                this.confirmationDetails.change = this.change;
             } else {
                 this.change = '0.00';
+                this.confirmationDetails.paymentReceived = '0.00';
+                this.confirmationDetails.change = '0.00';
             }
         },
 
         calculateOverallTotal() {
-            return this.products.reduce((total, product) => total + parseFloat(product.total), 0);
+            const overallTotal = this.products.reduce((total, product) => total + parseFloat(product.total), 0);
+            this.confirmationDetails.overallTotal = overallTotal.toFixed(2);
+            return overallTotal;
         },
 
         calculateTotal(product) {
@@ -615,6 +644,7 @@ export default {
 
         showConfirmation() {
             this.showConfirmationDialog = true;
+            this.confirmationDetails.totalItems = this.products.length;
         },
 
         cancelSave() {
@@ -737,5 +767,48 @@ export default {
 .total-label {
     font-weight: bold;
     margin-right: 40px;
+}
+
+.confirmation-details {
+    margin-top: 20px;
+}
+
+.confirmation-details>div {
+    margin-bottom: 10px;
+}
+
+.center-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-teal {
+    background-color: #23b78d;
+}
+
+.white--text {
+    color: white;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.my-3 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.mr-2 {
+    margin-right: 0.5rem;
 }
 </style>

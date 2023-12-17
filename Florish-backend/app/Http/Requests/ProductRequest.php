@@ -25,7 +25,7 @@ class ProductRequest extends FormRequest
             'barcode' => [
                 'nullable',
                 'string',
-                'max:39',
+                'max:13',
             ],
             'description' => [
                 'required',
@@ -33,8 +33,8 @@ class ProductRequest extends FormRequest
                 'max:60',
                 'min:5',
             ],
-            'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0',
-            'reorder_level' => 'required|integer|min:1',
+            'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:1|max:10000',
+            'reorder_level' => 'required|integer|max:99|min:1',
             'stock_on_hand' => 'nullable|integer|min:0',
             'category_id' => 'required|integer|exists:categories,id',
             'brand_id' => 'required|integer|exists:brands,id',

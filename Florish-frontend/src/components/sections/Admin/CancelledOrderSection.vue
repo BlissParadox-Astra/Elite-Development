@@ -20,9 +20,9 @@
                             <td>{{ item.canceled_transaction.transacted_product.product_code }}</td>
                             <td>{{ item.canceled_transaction.transacted_product.barcode }}</td>
                             <td>{{ item.canceled_transaction.transacted_product.description }}</td>
-                            <td>{{ item.canceled_transaction.transacted_product.price }}</td>
+                            <td>₱{{ item.canceled_transaction.transacted_product.price }}</td>
                             <td>{{ item.quantity }}</td>
-                            <td>{{ item.total }}</td>
+                            <td>₱{{ parseFloat(item.total).toFixed(2) }}</td>
                             <td>{{ item.canceled_date }}</td>
                             <td>{{ item.user.first_name }}</td>
                             <td>{{ item.reason }}</td>

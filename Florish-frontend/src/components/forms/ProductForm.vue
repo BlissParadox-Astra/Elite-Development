@@ -38,16 +38,15 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field v-model="price" label="Price" placeholder="Enter Price" @input="clearFieldErrors('price')"
-                :error-messages="priceError" :rules="[v => !!v || 'Price is required']"
-                @keypress="filterDecimalNumeric"></v-text-field>
-
+              <v-text-field v-model="price" label="Price" placeholder="Enter Price" :error-messages="priceError"
+                :rules="[v => !!v || 'Price is required', v => v > 0 || 'Price must be greater than 0']"
+                @keypress="filterDecimalNumeric">₱</v-text-field>
             </v-col>
 
             <v-col cols="12" md="6">
               <v-text-field v-model="reorder_level" label="Reorder Level" placeholder="Enter Reorder Level"
-                @input="clearFieldErrors('reorderLevel')" :error-messages="reorderLevelError"
-                :rules="[v => !!v || 'Reorder level is required']" @keypress="filterNumeric"></v-text-field>
+                :error-messages="reorderLevelError" :rules="[v => !!v || 'Reorder level is required']"
+                @keypress="filterNumeric"></v-text-field>
             </v-col>
           </v-row>
           <v-row justify="center" class="bg-dirty-white pa-3">
@@ -76,7 +75,7 @@ export default {
       description: this.initialProduct ? this.initialProduct.description : "",
       category_name: this.initialProduct ? this.initialProduct.category_name : "",
       brand_name: this.initialProduct ? this.initialProduct.brand_name : "",
-      price: this.initialProduct ? this.initialProduct.price : "",
+      price: this.initialProduct ? this.initialProduct.price : null,
       reorder_level: this.initialProduct ? this.initialProduct.reorder_level : "",
       stockOnHand: this.initialProduct ? this.initialProduct.stockOnHand : 0,
       editingProduct: !!this.initialProduct,
@@ -91,11 +90,39 @@ export default {
   },
 
   watch: {
+    barcode(newBarcode) {
+      if (newBarcode.length > 13) {
+        this.barCodeError = 'Barcode must be up to 13 characters.';
+      } else {
+        this.barCodeError = '';
+      }
+    },
+
     brand_name: {
       immediate: true,
       handler(newBrandName) {
         this.category_name = this.findCategoryNameByBrandName(newBrandName);
       },
+    },
+
+    price(newValue) {
+      if (!newValue) {
+        this.priceError = 'Price is required';
+      } else if (!/^\d+(\.\d{1,2})?$/.test(newValue) || parseFloat(newValue) <= 0 || parseFloat(newValue) > 10000) {
+        this.priceError = 'Price must be a valid positive number with up to two decimal places and not exceed 10000.';
+      } else {
+        this.priceError = '';
+      }
+    },
+
+    reorder_level(newValue) {
+      if (!newValue) {
+        this.reorderLevelError = 'Reorder level is required';
+      } else if (!/^\d+$/.test(newValue) || parseInt(newValue) < 1 || parseInt(newValue) > 99) {
+        this.reorderLevelError = 'Reorder level must be a valid integer between 1 and 99.';
+      } else {
+        this.reorderLevelError = '';
+      }
     },
   },
 
@@ -157,7 +184,12 @@ export default {
       const keyCode = event.keyCode || event.which;
       const key = String.fromCharCode(keyCode);
 
-      if (/^[a-zA-Z\d]*$/.test(key)) {
+      if (keyCode === 13) {
+        event.preventDefault();
+        return;
+      }
+
+      if (/^[a-zA-Z\d\s-]*$/.test(key)) {
         return;
       }
 

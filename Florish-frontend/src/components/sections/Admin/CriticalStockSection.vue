@@ -16,7 +16,7 @@
                             <td>{{ item.description }}</td>
                             <td>{{ item.brand.brand_name }}</td>
                             <td>{{ item.category.category_name }}</td>
-                            <td>{{ item.price }}</td>
+                            <td>₱{{ item.price }}</td>
                             <td>{{ item.reorder_level }}</td>
                             <td>{{ item.stock_on_hand }}</td>
                         </tr>
