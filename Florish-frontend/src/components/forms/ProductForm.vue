@@ -14,7 +14,8 @@
 
           <v-row justify="center" class="bg-dirty-white pa-3">
             <v-col cols="12" md="6">
-              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"></v-text-field>
+              <v-text-field v-model="barcode" label="Bar Code" placeholder="Enter BarCode" :error-messages="barCodeError"
+                @keypress="filterLettersNumeric"></v-text-field>
             </v-col>
 
             <v-col cols="12" md="6">
@@ -152,6 +153,16 @@ export default {
       event.preventDefault();
     },
 
+    filterLettersNumeric(event) {
+      const keyCode = event.keyCode || event.which;
+      const key = String.fromCharCode(keyCode);
+
+      if (/^[a-zA-Z\d]*$/.test(key)) {
+        return;
+      }
+
+      event.preventDefault();
+    },
 
     filterNumeric(event) {
       const keyCode = event.keyCode || event.which;
