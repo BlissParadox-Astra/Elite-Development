@@ -24,7 +24,7 @@
                             <td>{{ item.description }}</td>
                             <td>{{ item.brand ? item.brand.brand_name : 'Unknown Brand' }}</td>
                             <td>{{ item.category ? item.category.category_name : 'Unknown Category' }}</td>
-                            <td>{{ item.price }}</td>
+                            <td>₱{{ item.price }}</td>
                             <td>{{ item.reorder_level }}</td>
                             <td>
                                 <span>

@@ -10,7 +10,7 @@
                 <v-col cols="12" md="3">
                     <v-card class="card-box">
                         <v-card-title>DAILY SALES</v-card-title>
-                        <v-card-text>{{ dailySales.toFixed(2) }} PHP</v-card-text>
+                        <v-card-text>₱{{ dailySales.toFixed(2) }} PHP</v-card-text>
                     </v-card>
                 </v-col>
                 <v-col cols="12" md="3">
