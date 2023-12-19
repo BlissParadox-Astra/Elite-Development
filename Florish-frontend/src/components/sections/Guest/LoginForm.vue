@@ -132,6 +132,7 @@ export default {
 
 .login-card {
   margin: 0 auto;
+  cursor: default;
   margin-top: 20%;
   max-width: 90%;
   width: 100%;
